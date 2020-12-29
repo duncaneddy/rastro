@@ -191,6 +191,14 @@ pub const R_SUN:f64 = 6.957*1e8;
 #[allow(dead_code)]
 pub const P_SUN:f64 = 4.560E-6;
 
+// Nominal lunar raidus. Units: [m]
+// 
+// References:
+//  1. O. Montenbruck, and E. Gill, *Satellite Orbits: Models, Methods and 
+//  Applications*, 2012.
+#[allow(dead_code)]
+pub const R_MOON:f64 = 1738.0*1e3;
+
 // Gravitational constant of the Moon. Units: [m^3/s^2]
 // 
 // References:

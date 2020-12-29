@@ -14,7 +14,10 @@ setup(
         "Programming Language :: Rust",
     ],
     packages=["rastro"],
-    rust_extensions=[RustExtension("rastro_python.constants")],
+    rust_extensions=[
+        RustExtension("rastro_python.constants"),
+        RustExtension("rastro_python.orbits")
+    ],
     include_package_data=True,
     zip_safe=False,
 )

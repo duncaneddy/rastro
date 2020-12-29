@@ -80,6 +80,9 @@ def test_R_SUN():
 def test_P_SUN():
     assert rastro.P_SUN == 4.560E-6
 
+def test_R_MOON():
+    assert rastro.R_MOON == 1738*1e3
+
 def test_GM_MOON():
     assert rastro.GM_MOON == 4902.800066*1e9
 
