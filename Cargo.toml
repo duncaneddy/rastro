@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "rastro",
+    "rastro_python"
+]

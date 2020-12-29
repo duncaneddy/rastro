@@ -1,0 +1,16 @@
+# Rust
+/target
+Cargo.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+sdist/
+wheels/
+*.egg-info/
+*.egg
+.pytest_cache/
+*.so
+*.dylib
