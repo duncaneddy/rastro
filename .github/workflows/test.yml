@@ -21,7 +21,7 @@ jobs:
       - name: Build docs
         run: mkdocs build
       - name: Deploy docs
-        run: mkdocs gh-deploy
+        run: mkdocs gh-deploy --force
   test-rust:
     runs-on: ${{ matrix.os }}
     needs: docs
@@ -38,7 +38,7 @@ jobs:
       - run: cargo test
   test-python:
     runs-on: ${{ matrix.os }}
-    needs: docs
+    needs: test-rust
     strategy:
       matrix:
         os: [ubuntu-latest]
