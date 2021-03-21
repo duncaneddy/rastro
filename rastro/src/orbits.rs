@@ -1,4 +1,5 @@
 use std::{f64::consts::PI};
+use nalgebra::{Vector3, Vector6};
 use crate::constants::{GM_EARTH, R_EARTH, J2_EARTH};
 
 /// Computes the orbital period of an object around Earth.
@@ -350,6 +351,17 @@ pub fn anmMEANtoECC(M: f64, e: f64, as_degrees: bool) -> Result<f64, String> {
     } else {
         Ok(E)
     }
+}
+
+///
+///
+///
+pub fn sOSCtoCART(oe: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
+    sOSCtoCART_general(oe, GM_EARTH, as_degrees)
+}
+
+pub fn sOSCtoCART_general(oe: Vector6<f64>, gm: f64, as_degrees: bool) -> Vector6<f64> {
+    Vector6::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 }
 
 //

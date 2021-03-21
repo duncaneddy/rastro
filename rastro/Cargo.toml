@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 rsofa = {version = "^0.2.0"}
+nalgebra = {version = "^0.23.2"}
 
 [dev-dependencies]
 approx = "^0.4.0"

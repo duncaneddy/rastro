@@ -1,0 +1,4 @@
+# Required for pip to install setuptools-rust prior to backage installation
+# Solution taken from: https://github.com/PyO3/setuptools-rust/issues/2
+[build-system]
+requires = ["setuptools", "setuptools-rust", "wheel"]
