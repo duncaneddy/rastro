@@ -6,7 +6,7 @@ from setuptools_rust import RustExtension
 
 setup(
     name="rastro",
-    version="0.1.2",
+    version="0.1.3",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Intended Audience :: Developers",
