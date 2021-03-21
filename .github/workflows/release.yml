@@ -1,0 +1,17 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v[0-9].[0-9]+.[0-9]+
+
+jobs:
+  release-rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cargo publish --token ${{ secrets.CRATES_TOKEN }}
+  release-python:
+    runs-on: ubuntu-latest
+    steps:
+      - run: cargo publish --token ${{ secrets.CRATES_TOKEN }}
