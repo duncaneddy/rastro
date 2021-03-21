@@ -18,6 +18,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install mkdocs
+      - name: Update index from README
+        run: | 
+          cp README.md docs/index.md
       - name: Build docs
         run: mkdocs build
       - name: Deploy docs
@@ -78,10 +81,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install twine
+          python -m pip install twine toml
       - name: Copy README
         run: | 
           cp README.md rastro_python/README.md
+      - name: Set Python version
+        run: |
+          python ./scripts/set_python_version.py
       - name: Publish to pypi.org
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}

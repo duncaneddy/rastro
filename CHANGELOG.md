@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.1.5] - 2020-03-21
+
+### Changed
+- Update release process to handle versioning and local development better.
+  The `rastro_python` package is now kept in a state with a placeholder version
+  of `0.0.0` and a relative path so that it can be developed against locally
+  and it will work in the CI pipeline without having the rust package released.
+  To release you now update the version in `rastro/Cargo.toml` and make a 
+  tagged release on Github to trigger the release pipeline.
+
 ## [0.1.4] - 2020-03-21
 
 ### Added

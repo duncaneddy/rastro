@@ -11,7 +11,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="rastro",
-    version="0.1.4",
+    version="0.0.0", # Do NOT edit. Will be updated for release by CI pipeline
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Intended Audience :: Developers",

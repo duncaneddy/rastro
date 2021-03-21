@@ -1,14 +1,13 @@
 [package]
 name = "rastro_python"
-version = "0.1.4"
+version = "0.0.0" # Do NOT edit. Will be updated for release by CI pipeline
 authors = ["Duncan Eddy <duncan.eddy@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# rastro = { version = "^0.1.4" }
-rastro = { path = "../rastro" }
+rastro = { path = "../rastro" } # Do NOT edit. Will be updated for release by CI pipeline
 
 [dependencies.pyo3]
 version = "0.13.0"
