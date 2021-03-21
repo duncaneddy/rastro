@@ -1,6 +1,7 @@
-<!-- | Testing | Coverage | PyPi | Documentation |
-| :-----: | :------: | :--: | :-----------: |
-| [![Build Status](https://travis-ci.org/duncaneddy/rastro.svg?branch=master)](https://travis-ci.org/duncaneddy/rastro) | [![Coverage Status](https://coveralls.io/repos/github/duncaneddy/rastro/badge.svg?branch=master)](https://coveralls.io/github/duncaneddy/rastro?branch=master) | [![PyPI version](https://badge.fury.io/py/rastro.svg)](https://badge.fury.io/py/rastro) | [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://duncaneddy.github.io/rastro/) | -->
+| Pipelint | Coverage | Cargo | PyPi | Documentation |
+| :-----:  | :------: | :--:  | :--: | :-----------: |
+| [![Pipeline](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) |  |  |  |  |
+<!-- | [![Pipeline](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) | -- | [![PyPI version](https://badge.fury.io/py/rastro.svg)](https://badge.fury.io/py/rastro) | [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://duncaneddy.github.io/rastro/) | -->
 
 # rastro
 rastro (Rust + astro = rastro) is an easy-to-use astrodynamics library written
