@@ -1,7 +1,7 @@
 | Pipeline | Cargo | PyPi | Documentation |
-| :-----:  | :------: | :--:  | :--: | :-----------: |
+| :-----:  | :--:  | :--: | :-----------: |
 | [![Pipeline](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) |  |  |  |
-<!-- | [![Pipeline](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) | -- | [![PyPI version](https://badge.fury.io/py/rastro.svg)](https://badge.fury.io/py/rastro) | [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://duncaneddy.github.io/rastro/) | -->
+ <!-- | [![Pipeline](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) | -- | [![PyPI version](https://badge.fury.io/py/rastro.svg)](https://badge.fury.io/py/rastro) | [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://duncaneddy.github.io/rastro/) | --><!-- -->
 
 # rastro
 rastro (Rust + astro = rastro) is an easy-to-use astrodynamics library written

@@ -11,7 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Publish to crates.io
-        run: cargo publish --token ${{ secrets.CRATES_TOKEN }}
+        run: |
+          cd rastro
+          cargo publish --token ${{ secrets.CRATES_TOKEN }}
   release-python:
     runs-on: ubuntu-latest
     steps:
@@ -30,5 +32,6 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           cd rastro_python
+          python install setuptools setuptools-rust
           python setup.py sdist
           twine upload --verbose dist/*
