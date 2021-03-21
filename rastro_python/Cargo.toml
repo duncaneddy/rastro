@@ -17,5 +17,6 @@ features = ["extension-module"]
 name = "rastro_python"
 crate-type = ["cdylib"]
 
-# [dev-dependencies]
-# rastro = { path = "../rastro", version = "0.1.2" }
+# Used for local development, but removed by CI pipeline before being published
+[patch.crates-io]
+rastro = { path = "../rastro" }
