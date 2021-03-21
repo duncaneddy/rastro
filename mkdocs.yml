@@ -1,0 +1,13 @@
+site_name: rastro
+theme:
+  name: mkdocs
+  # nav:
+  #   - Home: 'index.md'
+    # - Quickstart: 'quick_start.md'
+  highlightjs: true
+  hljs_languages:
+      - yaml
+      - rust
+      - python
+  repo_url: https://github.com/duncaneddy/rastro
+  site_author: Duncan Eddy

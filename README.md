@@ -1,6 +1,6 @@
-| Pipelint | Coverage | Cargo | PyPi | Documentation |
+| Pipeline | Cargo | PyPi | Documentation |
 | :-----:  | :------: | :--:  | :--: | :-----------: |
-| [![Pipeline](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) |  |  |  |  |
+| [![Pipeline](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) |  |  |  |
 <!-- | [![Pipeline](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) | -- | [![PyPI version](https://badge.fury.io/py/rastro.svg)](https://badge.fury.io/py/rastro) | [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://duncaneddy.github.io/rastro/) | -->
 
 # rastro

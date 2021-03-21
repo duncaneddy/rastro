@@ -6,6 +6,22 @@ on:
       - main
 
 jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install mkdocs
+      - name: Build docs
+        run: mkdocs build
+      - name: Deploy docs
+        run: mkdocs gh-deploy
   test-rust:
     runs-on: ${{ matrix.os }}
     strategy:

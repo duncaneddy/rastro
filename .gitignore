@@ -14,3 +14,7 @@ wheels/
 .pytest_cache/
 *.so
 *.dylib
+.python-version
+
+# Documentation
+site/*
