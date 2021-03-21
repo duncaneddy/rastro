@@ -16,6 +16,7 @@ jobs:
           cargo publish --token ${{ secrets.CRATES_TOKEN }}
   release-python:
     runs-on: ubuntu-latest
+    needs: release-rust
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.6

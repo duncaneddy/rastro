@@ -24,6 +24,7 @@ jobs:
         run: mkdocs gh-deploy
   test-rust:
     runs-on: ${{ matrix.os }}
+    needs: docs
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -37,6 +38,7 @@ jobs:
       - run: cargo test
   test-python:
     runs-on: ${{ matrix.os }}
+    needs: docs
     strategy:
       matrix:
         os: [ubuntu-latest]
