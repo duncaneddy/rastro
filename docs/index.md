@@ -1,4 +1,7 @@
 [![Tests](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) 
+[![crates.io](https://img.shields.io/crates/v/rastro.svg)](https://crates.io/crates/rastro)
+[![PyPI](https://badge.fury.io/py/rastro.svg)](https://badge.fury.io/py/rastro)
+[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://duncaneddy.github.io/rastro/)
 
 ----
 

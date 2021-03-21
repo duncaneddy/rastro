@@ -1,13 +1,14 @@
 [package]
 name = "rastro_python"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Duncan Eddy <duncan.eddy@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rastro = { version = "^0.1.3" }
+rastro = { version = "^0.1.4" }
+# rastro = { path = "../rastro" }
 
 [dependencies.pyo3]
 version = "0.13.0"
@@ -16,7 +17,3 @@ features = ["extension-module"]
 [lib]
 name = "rastro_python"
 crate-type = ["cdylib"]
-
-# Used for local development, but removed by CI pipeline before being published
-[patch.crates-io]
-rastro = { path = "../rastro" }
