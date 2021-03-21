@@ -12,7 +12,9 @@
 sed -i.bak "s/version = \"$1\"/version = \"$2\"/" ./rastro/Cargo.toml
 sed -i.bak "s/version = \"$1\"$/version = \"$2\"/" ./rastro_python/Cargo.toml
 sed -i.bak "s/version = \"$1\" }$/version = \"$2\" \}/" ./rastro_python/Cargo.toml
+sed -i.bak "s/version=\"$1\"$/version=\"$2\"/" ./rastro_python/setup.py
 
 # Remove tempoarary files 
 rm ./rastro/Cargo.toml.bak
 rm ./rastro_python/Cargo.toml.bak
+rm ./rastro_python/setup.py.bak
