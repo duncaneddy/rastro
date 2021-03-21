@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+
+## [0.1.2] - 2020-03-21
+
+### Fixed
+- Fixed issue in joint rust/python release where Python package versions weren't
+  being properly updated.
+
 ## [0.1.1] - 2020-03-21
 
 ### Added
