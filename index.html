@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="None">
+        
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>rastro</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/rust.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/python.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body class="homepage">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".">rastro</a>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#rastro" class="nav-link">rastro</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#installation" class="nav-link">Installation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#license" class="nav-link">License</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<p><a href="https://github.com/duncaneddy/rastro/actions/workflows/test.yml"><img alt="Tests" src="https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg" /></a> 
+<a href="https://crates.io/crates/rastro"><img alt="crates.io" src="https://img.shields.io/crates/v/rastro.svg" /></a>
+<a href="https://pypi.org/project/rastro/"><img alt="PyPI" src="https://img.shields.io/pypi/v/rastro?color=blue" /></a>
+<a href="https://duncaneddy.github.io/rastro/"><img alt="" src="https://img.shields.io/badge/docs-latest-blue.svg" /></a></p>
+<hr />
+<p>Documentation: https://duncaneddy.github.io/rastro</p>
+<p>Rust Library Reference: </p>
+<p>Source Code: https://github.com/duncaneddy/rastro</p>
+<hr />
+<h1 id="rastro">rastro</h1>
+<p>rastro is a modern, fast (high-performance), space dynamics library for research and engineering applications.</p>
+<p>The key features are:
+- <strong>Fast</strong>: Very high performance, on par with C++ libraries, thanks to core library being written in rust.
+- <strong>Fast to code</strong>: Rastro provides a Python 3.6+ wrapper that is auto-generated from the core rust libraries. Making it easy to use rastro without recompiling.
+- <strong>Intuitive</strong>: API designed to be composable, making it easy to build on core concepts.
+- <strong>Easy</strong>: Designed to be easy to use and learn. Less time reading docs, more time building.</p>
+<p>rastro gets it's name from the combination of Rust and astrodynamics (Rust + astro = rastro). Space dynamics is an expansive field that covers multiple domains of mathematics, astrodynamics, attitude dynamics, and systems engineering. While the underlying concepts have been studied for a long time (Kepler, Newton, Gauss, and many more), there are few modern software libraries that make these concepts easily a accessible.</p>
+<p>Space dyanmics software generally runs into the following pitfalls:
+1. Expensive, commercially licensed and closed-source software 
+2. High-fidelity heritage libraries making integration with modern tools challenging
+3. Heritage APIs, while extremely well tested, also have an extremely steep learning curve</p>
+<p>Students, researchers, and engineers frequently end up reimplementing common astrodynamics functions with an unforunate regularity. While reimplementation of common code can be a good learning mechansims, in most cases it is both error prone and something people could be spending other time on. This project seeks to address this challenge by providing an easy to use library, built in Rust for performance with bindings to Python for ease of use.</p>
+<p>This project builds on experience from past projects in building space dynamics software:
+- <a href="https://github.com/duncaneddy/brahe">brahe</a> A pure-python astrodynamics library
+- <a href="https://github.com/sisl/SatelliteDynamics.jl">SatelliteDynamics.jl</a> A Julia astrodynamics library</p>
+<h3 id="usage">Usage</h3>
+<p>If you're using rastro for school, research, or commercial endeavour, I'd love 
+to know about it! Tweet me <a href="https://twitter.com/DuncanEddy">@duncaneddy</a></p>
+<h2 id="installation">Installation</h2>
+<p>rastro can be used as either a standalone rust library or a python library.</p>
+<h3 id="python">Python</h3>
+<pre><code class="language-bash">pip install rastro
+</code></pre>
+<h3 id="rust">Rust</h3>
+<pre><code class="language-toml">[dependencies]
+...
+rastro = { version = &quot;0.1.0&quot; }
+</code></pre>
+<h2 id="license">License</h2>
+<p>The rastro package is licensed and distributed under the MIT License to encourage adoption and to make it easy to integrate with other tools.</p>
+<p>The only thing asked is that if you do use the package in your work, or appreciate the project, either send a message or star the project. Knowing that the project is being actively used is a large motivator for continued development.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+        <script src="search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 1.1.2
+Build Date UTC : 2021-03-28 05:02:15.973058+00:00
+-->
