@@ -17,10 +17,10 @@ Source Code: https://github.com/duncaneddy/rastro
 rastro is a modern, fast (high-performance), space dynamics library for research and engineering applications.
 
 The key features are:
-- **Fast**: Very high performance, on par with C++ libraries, thanks to core library being written in rust.
 - **Fast to code**: Rastro provides a Python 3.6+ wrapper that is auto-generated from the core rust libraries. Making it easy to use rastro without recompiling.
-- **Intuitive**: API designed to be composable, making it easy to build on core concepts.
-- **Easy**: Designed to be easy to use and learn. Less time reading docs, more time building.
+- **Fast to run**: Very high performance, on par with C++ libraries, thanks to core library being written in Rust.
+- **Intuitive**: API designed to be easily composable, making it easy to solve complex problems correctly by building on core functionality.
+- **Easy**: Designed to be easy to use and learn. Less time reading papers, more time building.
 
 rastro gets it's name from the combination of Rust and astrodynamics (Rust + astro = rastro). Space dynamics is an expansive field that covers multiple domains of mathematics, astrodynamics, attitude dynamics, and systems engineering. While the underlying concepts have been studied for a long time (Kepler, Newton, Gauss, and many more), there are few modern software libraries that make these concepts easily a accessible.
 
