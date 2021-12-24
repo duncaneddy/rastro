@@ -2,7 +2,7 @@
 name = "rastro"
 version = "0.1.5"
 authors = ["Duncan Eddy <duncan.eddy@gmail.com>"]
-edition = "2018"
+edition = "2021"
 license = "MIT"
 description = "A modern, fast, space dynamics library for research and engineering applications."
 homepage = "https://github.com/duncaneddy/rastro"
