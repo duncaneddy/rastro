@@ -1,4 +1,4 @@
-#[!allow(dead_code)]
+#![allow(dead_code)]
 
 // Constant to convert degrees to radians. Units: [rad/deg]
 pub const DEG2RAD:f64 = std::f64::consts::PI/180.0;
@@ -6,10 +6,10 @@ pub const DEG2RAD:f64 = std::f64::consts::PI/180.0;
 // Constant to convert radians to degrees. Units: [deg/rad]
 pub const RAD2DEG:f64 = 180.0/std::f64::consts::PI;
 
-// Constant to convert arcseconds to radians. Units: [rad/as]
+// Constant to convert arc seconds to radians. Units: [rad/as]
 pub const AS2RAD:f64 = DEG2RAD / 3600.0;
 
-// Constant to convert radians to arcseconds. Units: [ad/rad]
+// Constant to convert radians to arc seconds. Units: [ad/rad]
 pub const RAD2AS:f64 = RAD2DEG * 3600.0;
 
 // Time Constants //
@@ -79,7 +79,7 @@ pub const GPS_TT:f64 = GPS_TAI + TAI_TT;
 pub const TT_GPS:f64 = -GPS_TT;
 
 // Modified Julian Date of the start of the GPS time system in the GPS time 
-// system. This date was January 6, 1980 0H as reckond in the UTC time 
+// system. This date was January 6, 1980 0H as reckoned in the UTC time
 // system. Units: [s]
 // 
 // References:
@@ -154,7 +154,7 @@ pub const OMEGA_EARTH:f64 = 7.292115146706979e-5;
 //  Applications*, 2012.
 pub const GM_SUN:f64 = 132712440041.939400*1e9;
 
-// Nominal solar photospheric radius. Units: [m]
+// Nominal solar photosphere radius. Units: [m]
 // 
 // References:
 //  1. O. Montenbruck, and E. Gill, *Satellite Orbits: Models, Methods and 
@@ -168,7 +168,7 @@ pub const R_SUN:f64 = 6.957*1e8;
 //  Applications*, 2012.
 pub const P_SUN:f64 = 4.560E-6;
 
-// Nominal lunar raidus. Units: [m]
+// Nominal lunar radius. Units: [m]
 // 
 // References:
 //  1. O. Montenbruck, and E. Gill, *Satellite Orbits: Models, Methods and 
