@@ -12,10 +12,11 @@ function test_rust {
 }
 
 function test_python {
-    cd rastro_python
+    cd rastro_python || exit
     pip3 install -r requirements-dev.txt
     pip3 install -e .
     pytest
+    cd ..
 }
 
 case ${1:-all} in
