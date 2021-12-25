@@ -65,20 +65,20 @@ fn apogee_velocity_general(a: f64, e: f64, gm: f64) -> PyResult<f64> {
 
 #[pyfunction]
 #[text_signature = "(a, e, as_degrees)"]
-fn sunsync_inclination(a: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
-    Ok(orbits::sunsync_inclination(a, e, as_degrees))
+fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
+    Ok(orbits::sun_synchronous_inclination(a, e, as_degrees))
 }
 
 #[pyfunction]
 #[text_signature = "(E, e, as_degrees)"]
-fn anmECCtoMEAN(E: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
-    Ok(orbits::anmECCtoMEAN(E, e, as_degrees))
+fn anomaly_eccentric_to_mean(E: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
+    Ok(orbits::anomaly_eccentric_to_mean(E, e, as_degrees))
 }
 
 #[pyfunction]
 #[text_signature = "(M, e, as_degrees)"]
-fn anmMEANtoECC(M: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
-    let res = orbits::anmMEANtoECC(M, e, as_degrees);
+fn anomaly_mean_to_eccentric(M: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
+    let res = orbits::anomaly_mean_to_eccentric(M, e, as_degrees);
     if res.is_ok() {
         Ok(res.unwrap())
     } else {
@@ -98,9 +98,9 @@ pub fn orbits(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(perigee_velocity_general, module)?)?;
     module.add_function(wrap_pyfunction!(apogee_velocity, module)?)?;
     module.add_function(wrap_pyfunction!(apogee_velocity_general, module)?)?;
-    module.add_function(wrap_pyfunction!(sunsync_inclination, module)?)?;
-    module.add_function(wrap_pyfunction!(anmECCtoMEAN, module)?)?;
-    module.add_function(wrap_pyfunction!(anmMEANtoECC, module)?)?;
+    module.add_function(wrap_pyfunction!(sun_synchronous_inclination, module)?)?;
+    module.add_function(wrap_pyfunction!(anomaly_eccentric_to_mean, module)?)?;
+    module.add_function(wrap_pyfunction!(anomaly_mean_to_eccentric, module)?)?;
 
 
     Ok(())

@@ -70,54 +70,54 @@ def test_apogee_velocity_general():
     vp = rastro.apogee_velocity_general(rastro.R_MOON + 500e3, 0.001, rastro.GM_MOON)
     assert vp == pytest.approx(1478.624016435715, abs=1e-12)
 
-def test_sunsync_inclination():
-    vp = rastro.sunsync_inclination(rastro.R_EARTH + 500e3, 0.001, True)
+def test_sun_synchronous_inclination():
+    vp = rastro.sun_synchronous_inclination(rastro.R_EARTH + 500e3, 0.001, True)
     assert vp == pytest.approx(97.40172901366881, abs=1e-12)
 
-def test_anmECCtoMEAN():
+def test_anomaly_eccentric_to_mean():
     # 0 
-    M = rastro.anmECCtoMEAN(0.0, 0.0, as_degrees=False)
+    M = rastro.anomaly_eccentric_to_mean(0.0, 0.0, as_degrees=False)
     assert M == 0
 
-    M = rastro.anmECCtoMEAN(0.0, 0.0, as_degrees=True)
+    M = rastro.anomaly_eccentric_to_mean(0.0, 0.0, as_degrees=True)
     assert M == 0
 
     # 180
-    M = rastro.anmECCtoMEAN(math.pi/2, 0.1, as_degrees=False)
+    M = rastro.anomaly_eccentric_to_mean(math.pi/2, 0.1, as_degrees=False)
     assert M == pytest.approx(1.4707963267948965, abs=1e-12)
 
-    M = rastro.anmECCtoMEAN(90.0, 0.1, as_degrees=True)
+    M = rastro.anomaly_eccentric_to_mean(90.0, 0.1, as_degrees=True)
     assert M == pytest.approx(84.27042204869177, abs=1e-3)
 
     # 180
-    M = rastro.anmECCtoMEAN(math.pi, 0.0, as_degrees=False)
+    M = rastro.anomaly_eccentric_to_mean(math.pi, 0.0, as_degrees=False)
     assert M == pytest.approx(math.pi, abs=1e-12)
 
-    M = rastro.anmECCtoMEAN(180.0, 0.0, as_degrees=True)
+    M = rastro.anomaly_eccentric_to_mean(180.0, 0.0, as_degrees=True)
     assert M == 180.0
 
-def test_anmMEANtoECC():
+def test_anomaly_mean_to_eccentric():
     # 0 
-    E = rastro.anmMEANtoECC(0.0, 0.0, as_degrees=False)
+    E = rastro.anomaly_mean_to_eccentric(0.0, 0.0, as_degrees=False)
     assert E == 0
 
-    E = rastro.anmMEANtoECC(0.0, 0.0, as_degrees=True)
+    E = rastro.anomaly_mean_to_eccentric(0.0, 0.0, as_degrees=True)
     assert E == 0
 
     # 180
-    E = rastro.anmMEANtoECC(1.4707963267948965, 0.1, as_degrees=False)
+    E = rastro.anomaly_mean_to_eccentric(1.4707963267948965, 0.1, as_degrees=False)
     assert E == pytest.approx(math.pi/2, abs=1e-12)
 
-    E = rastro.anmMEANtoECC(84.27042204869177, 0.1, as_degrees=True)
+    E = rastro.anomaly_mean_to_eccentric(84.27042204869177, 0.1, as_degrees=True)
     assert E == pytest.approx(90.0, abs=1e-12)
 
     # 180
-    E = rastro.anmMEANtoECC(math.pi, 0.0, as_degrees=False)
+    E = rastro.anomaly_mean_to_eccentric(math.pi, 0.0, as_degrees=False)
     assert E == pytest.approx(math.pi, abs=1e-12)
 
-    E = rastro.anmMEANtoECC(180.0, 0.0, as_degrees=True)
+    E = rastro.anomaly_mean_to_eccentric(180.0, 0.0, as_degrees=True)
     assert E == 180.0
 
     # Large Eccentricities
-    E = rastro.anmMEANtoECC(180.0, 0.9, as_degrees=True)
+    E = rastro.anomaly_mean_to_eccentric(180.0, 0.9, as_degrees=True)
     assert E == 180.0

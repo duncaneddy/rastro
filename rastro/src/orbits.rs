@@ -13,13 +13,13 @@ use crate::constants::{GM_EARTH, R_EARTH, J2_EARTH};
 ///
 /// # Returns
 ///
-/// * `T` - The orbital period of the astronomical object. Units: [s]
+/// * `period` - The orbital period of the astronomical object. Units: [s]
 ///
 /// # Examples
 /// ```
 /// use rastro::constants::R_EARTH;
 /// use rastro::orbits::orbital_period;
-/// let T = orbital_period(R_EARTH + 500e3);
+/// let period = orbital_period(R_EARTH + 500e3);
 /// ```
 pub fn orbital_period(a: f64) -> f64 {
     orbital_period_general(a, GM_EARTH)
@@ -41,8 +41,8 @@ pub fn orbital_period(a: f64) -> f64 {
 /// ```
 /// use rastro::constants::{R_EARTH, GM_EARTH, R_MOON, GM_MOON};
 /// use rastro::orbits::orbital_period_general;
-/// let T_Earth = orbital_period_general(R_EARTH + 500e3, GM_EARTH);
-/// let T_Moon  = orbital_period_general(R_MOON + 500e3, GM_MOON);
+/// let period_earth = orbital_period_general(R_EARTH + 500e3, GM_EARTH);
+/// let period_moon  = orbital_period_general(R_MOON + 500e3, GM_MOON);
 /// ```
 pub fn orbital_period_general(a: f64, gm: f64) -> f64 {
     2.0 * PI * (a.powi(3) / gm).sqrt()
@@ -246,15 +246,15 @@ pub fn apogee_velocity_general(a: f64, e: f64, gm: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// * `inc` - Inclination for a Sun syncrhonous orbit. Units: [deg] or [rad]
+/// * `inc` - Inclination for a Sun synchronous orbit. Units: [deg] or [rad]
 ///
 /// # Examples
 /// ```
 /// use rastro::constants::{R_EARTH, GM_EARTH};
-/// use rastro::orbits::sunsync_inclination;
-/// let inc = sunsync_inclination(R_EARTH + 500e3, 0.001, true); // approx 97.5 deg
+/// use rastro::orbits::sun_synchronous_inclination;
+/// let inc = sun_synchronous_inclination(R_EARTH + 500e3, 0.001, true); // approx 97.5 deg
 /// ```
-pub fn sunsync_inclination(a: f64, e: f64, as_degrees: bool) -> f64 {
+pub fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> f64 {
     // The required RAAN precession for a sun-synchronous orbit
     let omega_dot_ss = 2.0 * PI / 365.2421897 / 86400.0;
 
@@ -282,12 +282,12 @@ pub fn sunsync_inclination(a: f64, e: f64, as_degrees: bool) -> f64 {
 ///
 /// # Examples
 /// ```
-/// use rastro::orbits::anmMEANtoECC;
-/// let e = anmMEANtoECC(90.0, 0.001, true);
+/// use rastro::orbits::anomaly_mean_to_eccentric;
+/// let e = anomaly_mean_to_eccentric(90.0, 0.001, true);
 /// ```
 #[allow(non_snake_case)]
-pub fn anmECCtoMEAN(E: f64, e: f64, as_degrees: bool) -> f64 {
-    // Ensure E is in radians regadless of input
+pub fn anomaly_eccentric_to_mean(E: f64, e: f64, as_degrees: bool) -> f64 {
+    // Ensure E is in radians regardless of input
     let E = if as_degrees == true { E * PI / 180.0 } else { E };
 
     // Convert to mean anomaly
@@ -301,7 +301,7 @@ pub fn anmECCtoMEAN(E: f64, e: f64, as_degrees: bool) -> f64 {
     }
 }
 
-/// Converts a mean anomaly into an eccenctric anomaly
+/// Converts a mean anomaly into an eccentric anomaly
 ///
 /// # Arguments
 ///
@@ -315,12 +315,12 @@ pub fn anmECCtoMEAN(E: f64, e: f64, as_degrees: bool) -> f64 {
 ///
 /// # Examples
 /// ```
-/// use rastro::orbits::anmMEANtoECC;
-/// let e = anmMEANtoECC(90.0, 0.001, true);
+/// use rastro::orbits::anomaly_mean_to_eccentric;
+/// let e = anomaly_mean_to_eccentric(90.0, 0.001, true);
 /// ```
 #[allow(non_snake_case)]
-pub fn anmMEANtoECC(M: f64, e: f64, as_degrees: bool) -> Result<f64, String> {
-    // Ensure M is in radians regadless of input
+pub fn anomaly_mean_to_eccentric(M: f64, e: f64, as_degrees: bool) -> Result<f64, String> {
+    // Ensure M is in radians regardless of input
     let M = if as_degrees == true { M * PI / 180.0 } else { M };
 
     // Set constants of iteration
@@ -356,11 +356,11 @@ pub fn anmMEANtoECC(M: f64, e: f64, as_degrees: bool) -> Result<f64, String> {
 ///
 ///
 ///
-pub fn sOSCtoCART(oe: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
-    sOSCtoCART_general(oe, GM_EARTH, as_degrees)
+pub fn state_osculating_to_cartesian(oe: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
+    state_osculating_to_cartesian_general(oe, GM_EARTH, as_degrees)
 }
 
-pub fn sOSCtoCART_general(oe: Vector6<f64>, gm: f64, as_degrees: bool) -> Vector6<f64> {
+pub fn state_osculating_to_cartesian_general(oe: Vector6<f64>, gm: f64, as_degrees: bool) -> Vector6<f64> {
     Vector6::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 }
 
@@ -465,60 +465,56 @@ mod tests {
     }
 
     #[test]
-    fn test_sunsync_inclination() {
-        let inc = sunsync_inclination(R_EARTH + 500e3, 0.001, true);
+    fn test_sun_synchronous_inclination() {
+        let inc = sun_synchronous_inclination(R_EARTH + 500e3, 0.001, true);
         assert_abs_diff_eq!(inc, 97.40172901366881, epsilon=1e-12);
     }
 
     #[test]
     fn test_anm_ecc_to_mean() {
         // 0 degrees
-        let m = anmECCtoMEAN(0.0, 0.0, false);
+        let m = anomaly_eccentric_to_mean(0.0, 0.0, false);
         assert_eq!(m, 0.0);
 
-        let m = anmECCtoMEAN(0.0, 0.0, true);
+        let m = anomaly_eccentric_to_mean(0.0, 0.0, true);
         assert_eq!(m, 0.0);
 
         // 180 degrees
-        let m = anmECCtoMEAN(PI, 0.0, false);
+        let m = anomaly_eccentric_to_mean(PI, 0.0, false);
         assert_eq!(m, PI);
 
-        let m = anmECCtoMEAN(180.0, 0.0, true);
+        let m = anomaly_eccentric_to_mean(180.0, 0.0, true);
         assert_eq!(m, 180.0);
 
         // 90 degrees 
-        let m = anmECCtoMEAN(PI / 2.0, 0.1, false);
+        let m = anomaly_eccentric_to_mean(PI / 2.0, 0.1, false);
         assert_abs_diff_eq!(m, 1.4707963267948965, epsilon=1e-12);
 
-        let m = anmECCtoMEAN(90.0, 0.1, true);
+        let m = anomaly_eccentric_to_mean(90.0, 0.1, true);
         assert_abs_diff_eq!(m, 84.27042204869177, epsilon=1e-12);
     }
 
     #[test]
     fn test_anm_mean_to_ecc() {
         // 0 degrees
-        let e = anmMEANtoECC(0.0, 0.0, false).unwrap();
+        let e = anomaly_mean_to_eccentric(0.0, 0.0, false).unwrap();
         assert_eq!(e, 0.0);
 
-        let e = anmMEANtoECC(0.0, 0.0, true).unwrap();
+        let e = anomaly_mean_to_eccentric(0.0, 0.0, true).unwrap();
         assert_eq!(e, 0.0);
 
         // 180 degrees
-        let e = anmMEANtoECC(PI, 0.0, false).unwrap();
+        let e = anomaly_mean_to_eccentric(PI, 0.0, false).unwrap();
         assert_eq!(e, PI);
 
-        let e = anmMEANtoECC(180.0, 0.0, true).unwrap();
+        let e = anomaly_mean_to_eccentric(180.0, 0.0, true).unwrap();
         assert_eq!(e, 180.0);
 
         // 90 degrees 
-        let e = anmMEANtoECC(1.4707963267948965, 0.1, false).unwrap();
+        let e = anomaly_mean_to_eccentric(1.4707963267948965, 0.1, false).unwrap();
         assert_abs_diff_eq!(e, PI/2.0, epsilon=1e-12);
 
-        let e = anmMEANtoECC(84.27042204869177, 0.1, true).unwrap();
+        let e = anomaly_mean_to_eccentric(84.27042204869177, 0.1, true).unwrap();
         assert_abs_diff_eq!(e, 90.0, epsilon=1e-12);
-
-        // Confirm that errors can be properly handled
-        // I can't actually find a case that errors
-        // assert_eq!(anmMEANtoECC(0.1, 27.0, true).is_err(), true);
     }
 }
