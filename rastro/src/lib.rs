@@ -1,6 +1,9 @@
 // Bring Modules into scope
 pub mod constants;
 
-// pub mod data;
+// Bring modules into scope
+pub mod data;
 
+// Bring single functional libraries into scope
 pub mod orbits;
+pub mod coordinates;
