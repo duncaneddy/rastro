@@ -17,7 +17,7 @@ wheels/
 .python-version
 
 # Documentation
-site/*
+docs/*/site/*
 
 # Development
 .idea/*

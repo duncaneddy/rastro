@@ -12,6 +12,8 @@
 SCRIPT_DIR=$( dirname "$0" )
 
 function install_dependencies {
+  echo "Installing dependencies"
+
   # Documentation dependencies
   pip install -U mkdocs-material
 
@@ -20,15 +22,30 @@ function install_dependencies {
 }
 
 function build_docs {
-  # Compile figures
-  echo "Rastro Directory $RASTRO_DIR"
+  echo "Beginning Publish Step"
+
+  # Change to English docs directory
+  echo "Changing directory to: $SCRIPT_DIR/en"
+  cd "$SCRIPT_DIR/en"
 
   # Compile documents
-#  mkdocs build
+  mkdocs build
+}
+
+function publish_docs {
+  echo "Beginning Publish Step"
+
+  # Change to English docs directory
+  echo "Changing directory to: $SCRIPT_DIR/en"
+  cd "$SCRIPT_DIR/en"
+
+  # Compile documents
+  mkdocs gh-deploy --force
 }
 
 function serve_docs {
-  # Change to English directory
+  # Change to English docs directory
+  echo "Changing directory to: $SCRIPT_DIR/en"
   cd "$SCRIPT_DIR/en"
 
   # Serve documents
@@ -44,6 +61,9 @@ case ${1:-all} in
         ;;
     serve)
         serve_docs
+        ;;
+    publish)
+        publish_docs
         ;;
     *)
         build_docs
