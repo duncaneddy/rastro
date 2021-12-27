@@ -22,9 +22,9 @@ jobs:
         run: | 
           cp README.md docs/en/docs/index.md
       - name: Build docs
-        run: ./scripts/build.sh build
+        run: ./docs/build.sh build
       - name: Deploy docs
-        run: ./scripts/build.sh publish
+        run: ./docs/build.sh publish
   test-rust:
     runs-on: ${{ matrix.os }}
     needs: docs
