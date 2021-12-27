@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/duncaneddy/rastro/"><img src="https://raw.githubusercontent.com/duncaneddy/rastro/main/docs/en/docs/img/logo.png" alt="RAstro"></a>
+  <a href="https://github.com/duncaneddy/rastro/"><img src="https://raw.githubusercontent.com/duncaneddy/rastro/main/docs/en/docs/img/logo-gold.png" alt="RAstro"></a>
 </p>
 <p align="center">
     <em>FastAPI framework, high performance, easy to learn, fast to code, ready for production</em>
