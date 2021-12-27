@@ -121,3 +121,59 @@ def test_anomaly_mean_to_eccentric():
     # Large Eccentricities
     E = rastro.anomaly_mean_to_eccentric(180.0, 0.9, as_degrees=True)
     assert E == 180.0
+
+def test_anomaly_true_to_eccentric():
+    # 0 degrees
+    anm_ecc = rastro.anomaly_true_to_eccentric(0.0, 0.0, False)
+    assert anm_ecc == 0.0
+
+    anm_ecc = rastro.anomaly_true_to_eccentric(0.0, 0.0, True)
+    assert anm_ecc == 0.0
+
+    # 180 degrees
+    anm_ecc = rastro.anomaly_true_to_eccentric(math.pi, 0.0, False)
+    assert anm_ecc == math.pi
+
+    anm_ecc = rastro.anomaly_true_to_eccentric(180.0, 0.0, True)
+    assert anm_ecc == 180.0
+
+    # 90 degrees
+    anm_ecc = rastro.anomaly_true_to_eccentric(math.pi / 2.0, 0.0, False)
+    assert anm_ecc == pytest.approx(math.pi/2.0, abs=1e-12);
+
+    anm_ecc = rastro.anomaly_true_to_eccentric(90.0, 0.0, True)
+    assert anm_ecc == pytest.approx(90.0, abs=1e-12);
+
+    anm_ecc = rastro.anomaly_true_to_eccentric(math.pi / 2.0, 0.1, False)
+    assert anm_ecc == pytest.approx(1.4706289056333368, abs=1e-12)
+
+    anm_ecc = rastro.anomaly_true_to_eccentric(90.0, 0.1, True)
+    assert anm_ecc == pytest.approx(84.26082952273322, abs=1e-12)
+
+def test_anomaly_eccentric_to_true():
+    # 0 degrees
+    anm_true = rastro.anomaly_eccentric_to_true(0.0, 0.0, False)
+    assert anm_true == 0.0
+
+    anm_true = rastro.anomaly_eccentric_to_true(0.0, 0.0, True)
+    assert anm_true == 0.0
+
+    # 180 degrees
+    anm_true = rastro.anomaly_eccentric_to_true(math.pi, 0.0, False)
+    assert anm_true == math.pi
+
+    anm_true = rastro.anomaly_eccentric_to_true(180.0, 0.0, True)
+    assert anm_true == 180.0
+
+    # 90 degrees
+    anm_true = rastro.anomaly_eccentric_to_true(math.pi/2.0, 0.0, False)
+    assert anm_true == pytest.approx(math.pi/2.0, abs=1e-12);
+
+    anm_true = rastro.anomaly_eccentric_to_true(90.0, 0.0, True)
+    assert anm_true == pytest.approx(90.0, abs=1e-12);
+
+    anm_true = rastro.anomaly_eccentric_to_true(math.pi/2.0, 0.1, False)
+    assert anm_true == pytest.approx(1.6709637479564563, abs=1e-12)
+
+    anm_true = rastro.anomaly_eccentric_to_true(90.0, 0.1, True)
+    assert anm_true == pytest.approx(95.73917047726677, abs=1e-12)

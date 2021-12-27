@@ -106,20 +106,20 @@ pub const AU:f64 = 1.49597870700e11;
 /// Earth's equatorial radius. Units: [m]
 ///
 /// # References:
-///  1. GGM05s Gravity Model
+///  1. J. Ries, S. Bettadpur, R. Eanes, Z. Kang, U. Ko, C. McCullough, P. Nagel, N. Pie, S. Poole, T. Richter, H. Save, and B. Tapley, Development and Evaluation of the Global Gravity Model GGM05, 2016
 pub const R_EARTH:f64 = 6.378136300e6;
 
 /// Earth's semi-major axis as defined by the WGS84 geodetic system.
 /// Units: [m]
 ///
 /// # References:
-///  1. NIMA Technical Report TR8350.2
+///  1. NIMA Technical Report TR8350.2, Department of Defense World Geodetic System 1984, Its Definition and Relationships With Local Geodetic Systems
 pub const WGS84_A:f64 = 6378137.0;
 
 /// Earth's ellipsoidal flattening. WGS84 Value. Units: [m]
 ///
 /// # References:
-///  1. NIMA Technical Report TR8350.2
+///  1. NIMA Technical Report TR8350.2, Department of Defense World Geodetic System 1984, Its Definition and Relationships With Local Geodetic Systems
 pub const WGS84_F:f64 = 1.0/298.257223563;
 
 /// Earth's Gravitational constant. Units: [m^3/s^2]

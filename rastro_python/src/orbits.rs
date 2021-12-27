@@ -70,20 +70,32 @@ fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> PyResult<f64
 }
 
 #[pyfunction]
-#[text_signature = "(E, e, as_degrees)"]
-fn anomaly_eccentric_to_mean(E: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
-    Ok(orbits::anomaly_eccentric_to_mean(E, e, as_degrees))
+#[text_signature = "(anm_ecc, e, as_degrees)"]
+fn anomaly_eccentric_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
+    Ok(orbits::anomaly_eccentric_to_mean(anm_ecc, e, as_degrees))
 }
 
 #[pyfunction]
-#[text_signature = "(M, e, as_degrees)"]
-fn anomaly_mean_to_eccentric(M: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
-    let res = orbits::anomaly_mean_to_eccentric(M, e, as_degrees);
+#[text_signature = "(anm_mean, e, as_degrees)"]
+fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
+    let res = orbits::anomaly_mean_to_eccentric(anm_mean, e, as_degrees);
     if res.is_ok() {
         Ok(res.unwrap())
     } else {
         Err(PyRuntimeError::new_err(res.err().unwrap()))
     }
+}
+
+#[pyfunction]
+#[text_signature = "(anm_true, e, as_degrees))"]
+fn anomaly_true_to_eccentric(anm_true: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
+    Ok(orbits::anomaly_true_to_eccentric(anm_true, e, as_degrees))
+}
+
+#[pyfunction]
+#[text_signature = "(anm_ecc, e, as_degrees))"]
+fn anomaly_eccentric_to_true(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
+    Ok(orbits::anomaly_eccentric_to_true(anm_ecc, e, as_degrees))
 }
 
 #[pymodule]
@@ -101,6 +113,8 @@ pub fn orbits(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(sun_synchronous_inclination, module)?)?;
     module.add_function(wrap_pyfunction!(anomaly_eccentric_to_mean, module)?)?;
     module.add_function(wrap_pyfunction!(anomaly_mean_to_eccentric, module)?)?;
+    module.add_function(wrap_pyfunction!(anomaly_true_to_eccentric, module)?)?;
+    module.add_function(wrap_pyfunction!(anomaly_eccentric_to_true, module)?)?;
 
 
     Ok(())

@@ -1,8 +1,38 @@
 site_name: RAstro
 site_author: Duncan Eddy
-site_description: RAstro astrodynamics - high performance, easy to learn, and fast to code, ready for flight
+site_description: RAstro astrodynamics - high performance, easy to learn, and
+  fast to code, ready for production
 site_url: https://github.com/duncaneddy/rastro
 repo_url: https://github.com/duncaneddy/rastro
+
+plugins:
+  - search
+  - mkdocstrings
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+#  - javascript/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 theme:
   name: material
   highlightjs: true
@@ -26,3 +56,24 @@ theme:
   logo: img/icon.svg
   favicon: img/favicon.png
   language: en
+
+nav:
+  - RAstro: index.md
+  - installation.md
+  - User Guide:
+      - user_guide/index.md
+      - user_guide/constants.md
+      - Data [WIP]:
+        - user_guide/data/index.md
+        - user_guide/data/eop.md
+      - Time [WIP]:
+        - user_guide/time/index.md
+        - user_guide/time/epoch.md
+      - Orbits [WIP]:
+        - user_guide/orbits/index.md
+        - user_guide/orbits/two_body_problem.md
+        - user_guide/orbits/properties.md
+        - user_guide/orbits/anomalies.md
+  - Reference [WIP]:
+      - reference/index.md
+  - glossary.md
