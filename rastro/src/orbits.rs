@@ -1,5 +1,5 @@
 use std::{f64::consts::PI};
-use nalgebra::{Vector3, Vector6};
+// use nalgebra::{Vector3, Vector6};
 use crate::constants::{GM_EARTH, R_EARTH, J2_EARTH};
 
 /// Computes the orbital period of an object around Earth.
@@ -268,100 +268,153 @@ pub fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> f64 {
     }
 }
 
-/// Converts an eccentric anomaly into an mean anomaly.
+/// Converts eccentric anomaly into mean anomaly.
 ///
 /// # Arguments
 ///
-/// * `E` - Eccentric anomaly. Units: [m]
+/// * `anm_ecc` - Eccentric anomaly. Units: [rad] or [deg]
 /// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees` - Interprets input and returns output in degrees if `true` or radians if `false`
+/// * `as_degrees` - Interprets input and returns output in [deg] if `true` or [rad] if `false`
 ///
 /// # Returns
 ///
-/// * `M` - Mean anomaly. Units: [deg] or [rad]
+/// * `anm_mean` - Mean anomaly. Units: [rad] or [deg]
 ///
 /// # Examples
 /// ```
 /// use rastro::orbits::anomaly_mean_to_eccentric;
 /// let e = anomaly_mean_to_eccentric(90.0, 0.001, true);
 /// ```
-#[allow(non_snake_case)]
-pub fn anomaly_eccentric_to_mean(E: f64, e: f64, as_degrees: bool) -> f64 {
-    // Ensure E is in radians regardless of input
-    let E = if as_degrees == true { E * PI / 180.0 } else { E };
+pub fn anomaly_eccentric_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 {
+    // Ensure anm_ecc is in radians regardless of input
+    let anm_ecc = if as_degrees == true { anm_ecc * PI / 180.0 } else { anm_ecc };
 
     // Convert to mean anomaly
-    let M = E - e * E.sin();
+    let anm_mean = anm_ecc - e * anm_ecc.sin();
 
     // Convert output to desired angular format
     if as_degrees == true {
-        M * 180.0 / PI
+        anm_mean * 180.0 / PI
     } else {
-        M
+        anm_mean
     }
 }
 
-/// Converts a mean anomaly into an eccentric anomaly
+/// Converts mean anomaly into eccentric anomaly
 ///
 /// # Arguments
 ///
-/// * `M` - Mean anomaly. Units: [m]
+/// * `anm_mean` - Mean anomaly. Units: [rad] or [deg]
 /// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees` - Interprets input and returns output in degrees if `true` or radians if `false`
+/// * `as_degrees` - Interprets input and returns output in [deg] if `true` or [rad] if `false`
 ///
 /// # Returns
 ///
-/// * `E` - Eccentric anomaly. Units: [deg] or [rad]
+/// * `anm_ecc` - Eccentric anomaly. Units: [rad] or [deg]
 ///
 /// # Examples
 /// ```
 /// use rastro::orbits::anomaly_mean_to_eccentric;
 /// let e = anomaly_mean_to_eccentric(90.0, 0.001, true);
 /// ```
-#[allow(non_snake_case)]
-pub fn anomaly_mean_to_eccentric(M: f64, e: f64, as_degrees: bool) -> Result<f64, String> {
-    // Ensure M is in radians regardless of input
-    let M = if as_degrees == true { M * PI / 180.0 } else { M };
+pub fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> Result<f64, String> {
+    // Ensure anm_mean is in radians regardless of input
+    let anm_mean = if as_degrees == true { anm_mean * PI / 180.0 } else { anm_mean };
 
     // Set constants of iteration
-    let MAX_ITER = 5;
-    let EPS = 100.0 * f64::EPSILON;
+    let max_iter = 10;
+    let eps = 100.0 * f64::EPSILON; // Convergence with respect to data-type precision
 
     // Initialize starting iteration values
-    let M = M % (2.0 * PI);
-    let mut E = if e < 0.8 { M } else { PI };
+    let anm_mean = anm_mean % (2.0 * PI);
+    let mut anm_ecc = if e < 0.8 { anm_mean } else { PI };
 
-    let mut f = E - e * E.sin() - M;
+    let mut f = anm_ecc - e * anm_ecc.sin() - anm_mean;
     let mut i = 0;
 
     // Iterate until convergence
-    while f.abs() > EPS {
-        f = E - e * E.sin() - M;
-        E = E - f / (1.0 - e * E.cos());
+    while f.abs() > eps {
+        f = anm_ecc - e * anm_ecc.sin() - anm_mean;
+        anm_ecc = anm_ecc - f / (1.0 - e * anm_ecc.cos());
 
         i += 1;
-        if i > MAX_ITER {
-            return Err(format!("Reached maximum number of iterations ({}) before convergence.", MAX_ITER));
+        if i > max_iter {
+            return Err(format!("Reached maximum number of iterations ({}) before convergence for (M: {}, e: {}).", max_iter, anm_mean, e));
         }
     }
 
     // Convert output to desired angular format
     if as_degrees == true {
-        Ok(E * 180.0 / PI)
+        Ok(anm_ecc * 180.0 / PI)
     } else {
-        Ok(E)
+        Ok(anm_ecc)
     }
 }
 
+/// Converts true anomaly into eccentric anomaly
 ///
+/// # Arguments
 ///
+/// * `anm_true` - true anomaly. Units: [rad] or [deg]
+/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees` - Interprets input and returns output in [deg] if `true` or [rad] if `false`
 ///
-pub fn state_osculating_to_cartesian(oe: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
-    state_osculating_to_cartesian_general(oe, GM_EARTH, as_degrees)
+/// # Returns
+///
+/// * `anm_ecc` - Eccentric anomaly. Units: [rad] or [deg]
+///
+/// # Examples
+/// ```
+/// use rastro::orbits::anomaly_true_to_eccentric;
+/// let anm_ecc = anomaly_true_to_eccentric(15.0, 0.001, true);
+/// ```
+///
+/// # Reference
+/// 1. D. Vallado, *Fundamentals of Astrodynamics and Applications (4th Ed.)*, pp. 47, eq. 2-9, 2010.
+pub fn anomaly_true_to_eccentric(anm_true: f64, e: f64, as_degrees: bool) -> f64 {
+    // Ensure anm_true is in radians regardless of input
+    let anm_true = if as_degrees == true { anm_true * PI / 180.0 } else { anm_true };
+
+    let anm_ecc = (anm_true.sin()*(1.0-e.powi(2)).sqrt()).atan2(anm_true.cos() + e);
+
+    if as_degrees == true {
+        anm_ecc * 180.0 / PI
+    } else {
+        anm_ecc
+    }
 }
 
-pub fn state_osculating_to_cartesian_general(oe: Vector6<f64>, gm: f64, as_degrees: bool) -> Vector6<f64> {
-    Vector6::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+/// Converts eccentric anomaly into true anomaly
+///
+/// # Arguments
+///
+/// * `anm_ecc` - Eccentric anomaly. Units: [rad] or [deg]
+/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees` - Interprets input and returns output in [deg] if `true` or [rad] if `false`
+///
+/// # Returns
+///
+/// * `anm_true` - true anomaly. Units: [rad] or [deg]
+///
+/// # Examples
+/// ```
+/// use rastro::orbits::anomaly_eccentric_to_true;
+/// let ecc_anm = anomaly_eccentric_to_true(15.0, 0.001, true);
+/// ```
+///
+/// # Reference
+/// 1. D. Vallado, *Fundamentals of Astrodynamics and Applications (4th Ed.)*, pp. 47, eq. 2-9, 2010.
+pub fn anomaly_eccentric_to_true(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 {
+    // Ensure anm_ecc is in radians regardless of input
+    let anm_ecc = if as_degrees == true { anm_ecc * PI / 180.0 } else { anm_ecc };
+
+    let anm_true = (anm_ecc.sin()*(1.0-e.powi(2)).sqrt()).atan2(anm_ecc.cos() - e);
+
+    if as_degrees == true {
+        anm_true * 180.0 / PI
+    } else {
+        anm_true
+    }
 }
 
 //
@@ -471,7 +524,7 @@ mod tests {
     }
 
     #[test]
-    fn test_anm_ecc_to_mean() {
+    fn test_anomaly_eccentric_to_mean() {
         // 0 degrees
         let m = anomaly_eccentric_to_mean(0.0, 0.0, false);
         assert_eq!(m, 0.0);
@@ -495,7 +548,7 @@ mod tests {
     }
 
     #[test]
-    fn test_anm_mean_to_ecc() {
+    fn test_anomaly_mean_to_eccentric() {
         // 0 degrees
         let e = anomaly_mean_to_eccentric(0.0, 0.0, false).unwrap();
         assert_eq!(e, 0.0);
@@ -516,5 +569,105 @@ mod tests {
 
         let e = anomaly_mean_to_eccentric(84.27042204869177, 0.1, true).unwrap();
         assert_abs_diff_eq!(e, 90.0, epsilon=1e-12);
+    }
+
+    #[test]
+    fn test_anm_mean_ecc() {
+        // Test to confirm the bijectivity of the mean and eccentric anomaly
+        for j in 0..9 {
+            let e = f64::from(j) * 0.1;
+
+            // Test starting conversion from eccentric anomaly and returning
+            for i in 0..180 {
+                let theta = f64::from(i);
+                assert_abs_diff_eq!(theta, anomaly_mean_to_eccentric(anomaly_eccentric_to_mean(theta, e, true), e, true).unwrap(), epsilon=1e-12);
+            }
+
+            // Test starting conversion from mean anomaly and returning
+            for i in 0..180 {
+                let theta = f64::from(i);
+                assert_abs_diff_eq!(theta, anomaly_eccentric_to_mean(anomaly_mean_to_eccentric(theta, e, true).unwrap(), e, true), epsilon=1e-12);
+            }
+        }
+    }
+
+    #[test]
+    fn test_anomaly_true_to_eccentric() {
+        // 0 degrees
+        let anm_ecc = anomaly_true_to_eccentric(0.0, 0.0, false);
+        assert_eq!(anm_ecc, 0.0);
+
+        let anm_ecc = anomaly_true_to_eccentric(0.0, 0.0, true);
+        assert_eq!(anm_ecc, 0.0);
+
+        // 180 degrees
+        let anm_ecc = anomaly_true_to_eccentric(PI, 0.0, false);
+        assert_eq!(anm_ecc, PI);
+
+        let anm_ecc = anomaly_true_to_eccentric(180.0, 0.0, true);
+        assert_eq!(anm_ecc, 180.0);
+
+        // 90 degrees
+        let anm_ecc = anomaly_true_to_eccentric(PI / 2.0, 0.0, false);
+        assert_abs_diff_eq!(anm_ecc, PI/2.0, epsilon=1e-12);
+
+        let anm_ecc = anomaly_true_to_eccentric(90.0, 0.0, true);
+        assert_abs_diff_eq!(anm_ecc, 90.0, epsilon=1e-12);
+
+        let anm_ecc = anomaly_true_to_eccentric(PI / 2.0, 0.1, false);
+        assert_abs_diff_eq!(anm_ecc, 1.4706289056333368, epsilon=1e-12);
+
+        let anm_ecc = anomaly_true_to_eccentric(90.0, 0.1, true);
+        assert_abs_diff_eq!(anm_ecc, 84.26082952273322, epsilon=1e-12);
+    }
+
+    #[test]
+    fn test_anomaly_eccentric_to_true() {
+        // 0 degrees
+        let anm_true = anomaly_eccentric_to_true(0.0, 0.0, false);
+        assert_eq!(anm_true, 0.0);
+
+        let anm_true = anomaly_eccentric_to_true(0.0, 0.0, true);
+        assert_eq!(anm_true, 0.0);
+
+        // 180 degrees
+        let anm_true = anomaly_eccentric_to_true(PI, 0.0, false);
+        assert_eq!(anm_true, PI);
+
+        let anm_true = anomaly_eccentric_to_true(180.0, 0.0, true);
+        assert_eq!(anm_true, 180.0);
+
+        // 90 degrees
+        let anm_true = anomaly_eccentric_to_true(PI/2.0, 0.0, false);
+        assert_abs_diff_eq!(anm_true, PI/2.0, epsilon=1e-12);
+
+        let anm_true = anomaly_eccentric_to_true(90.0, 0.0, true);
+        assert_abs_diff_eq!(anm_true, 90.0, epsilon=1e-12);
+
+        let anm_true = anomaly_eccentric_to_true(PI/2.0, 0.1, false);
+        assert_abs_diff_eq!(anm_true, 1.6709637479564563, epsilon=1e-12);
+
+        let anm_true = anomaly_eccentric_to_true(90.0, 0.1, true);
+        assert_abs_diff_eq!(anm_true, 95.73917047726677, epsilon=1e-12);
+    }
+
+    #[test]
+    fn test_anomaly_mean_eccentric() {
+        // Test to confirm the bijectivity of the mean and eccentric anomaly
+        for j in 0..9 {
+            let e = f64::from(j) * 0.1;
+
+            // Test starting conversion from eccentric anomaly and returning
+            for i in 0..180 {
+                let theta = f64::from(i);
+                assert_abs_diff_eq!(theta, anomaly_eccentric_to_true(anomaly_true_to_eccentric(theta, e, true), e, true), epsilon=1e-12);
+            }
+
+            // Test starting conversion from mean anomaly and returning
+            for i in 0..180 {
+                let theta = f64::from(i);
+                assert_abs_diff_eq!(theta, anomaly_true_to_eccentric(anomaly_eccentric_to_true(theta, e, true), e, true), epsilon=1e-12);
+            }
+        }
     }
 }
