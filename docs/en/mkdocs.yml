@@ -1,0 +1,28 @@
+site_name: RAstro
+site_author: Duncan Eddy
+site_description: RAstro astrodynamics - high performance, easy to learn, and fast to code, ready for flight
+site_url: https://github.com/duncaneddy/rastro
+repo_url: https://github.com/duncaneddy/rastro
+theme:
+  name: material
+  highlightjs: true
+  hljs_languages:
+      - yaml
+      - rust
+      - python
+  palette:
+    - scheme: default
+      primary: orange
+      accent: black
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
+    - scheme: slate
+      primary: orange
+      accent: black
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+  logo: img/icon.svg
+  favicon: img/favicon.png
+  language: en

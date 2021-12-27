@@ -20,7 +20,7 @@ jobs:
           python -m pip install mkdocs
       - name: Update index from README
         run: | 
-          cp README.md docs/index.md
+          cp README.md docs/en/docs/index.md
       - name: Build docs
         run: mkdocs build
       - name: Deploy docs

@@ -1,13 +1,13 @@
-[![Tests](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) 
+[![Tests](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml)
 [![crates.io](https://img.shields.io/crates/v/rastro.svg)](https://crates.io/crates/rastro)
-[![PyPI](https://badge.fury.io/py/rastro.svg)](https://badge.fury.io/py/rastro)
+[![PyPI](https://img.shields.io/pypi/v/rastro?color=blue)](https://pypi.org/project/rastro/)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://duncaneddy.github.io/rastro/)
 
 ----
 
 Documentation: https://duncaneddy.github.io/rastro
 
-Rust Library Reference: 
+Rust Library Reference:
 
 Source Code: https://github.com/duncaneddy/rastro
 
@@ -17,15 +17,16 @@ Source Code: https://github.com/duncaneddy/rastro
 rastro is a modern, fast (high-performance), space dynamics library for research and engineering applications.
 
 The key features are:
-- **Fast**: Very high performance, on par with C++ libraries, thanks to core library being written in rust.
+
 - **Fast to code**: Rastro provides a Python 3.6+ wrapper that is auto-generated from the core rust libraries. Making it easy to use rastro without recompiling.
-- **Intuitive**: API designed to be composable, making it easy to build on core concepts.
-- **Easy**: Designed to be easy to use and learn. Less time reading docs, more time building.
+- **Fast to run**: Very high performance, on par with C++ libraries, thanks to core library being written in Rust.
+- **Intuitive**: API designed to be easily composable, making it easy to solve complex problems correctly by building on core functionality.
+- **Easy**: Designed to be easy to use and learn. Less time reading papers, more time building.
 
 rastro gets it's name from the combination of Rust and astrodynamics (Rust + astro = rastro). Space dynamics is an expansive field that covers multiple domains of mathematics, astrodynamics, attitude dynamics, and systems engineering. While the underlying concepts have been studied for a long time (Kepler, Newton, Gauss, and many more), there are few modern software libraries that make these concepts easily a accessible.
 
 Space dyanmics software generally runs into the following pitfalls:
-1. Expensive, commercially licensed and closed-source software 
+1. Expensive, commercially licensed and closed-source software
 2. High-fidelity heritage libraries making integration with modern tools challenging
 3. Heritage APIs, while extremely well tested, also have an extremely steep learning curve
 
@@ -37,7 +38,7 @@ This project builds on experience from past projects in building space dynamics 
 
 ### Usage
 
-If you're using rastro for school, research, or commercial endeavour, I'd love 
+If you're using rastro for school, research, or commercial endeavour, I'd love
 to know about it! Tweet me [@duncaneddy](https://twitter.com/DuncanEddy)
 
 ## Installation
