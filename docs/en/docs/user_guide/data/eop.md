@@ -16,9 +16,3 @@ and an inertial reference frame.
 ## Earth Orientation Products
 
 ## Earth Orientation Parameters
-
-### Precession/Nutation
-
-### Polar Motion
-
-### Length of Day

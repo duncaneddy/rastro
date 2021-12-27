@@ -29,7 +29,7 @@ markdown_extensions:
       generic: true
 
 extra_javascript:
-#  - javascript/mathjax.js
+  - javascript/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
@@ -56,6 +56,9 @@ theme:
   logo: img/icon.svg
   favicon: img/favicon.png
   language: en
+  features:
+    - navigation.instant
+    - navigation.top
 
 nav:
   - RAstro: index.md
@@ -71,9 +74,12 @@ nav:
         - user_guide/time/epoch.md
       - Orbits [WIP]:
         - user_guide/orbits/index.md
-        - user_guide/orbits/two_body_problem.md
         - user_guide/orbits/properties.md
         - user_guide/orbits/anomalies.md
-  - Reference [WIP]:
+  - Reference:
       - reference/index.md
+      - Orbits:
+          - reference/orbits/index.md
+          - reference/orbits/two_body_problem.md
+          - reference/orbits/orbital_elements.md
   - glossary.md

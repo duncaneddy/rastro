@@ -1,4 +1,4 @@
-# The Two-Body Problem
+# The Two-Body Problem [WIP]
 
 The two-body problem is the simplest dynamical scenario analyzed in
 astrodynamics. The two-body is the problem of predicting the motion of to
@@ -13,7 +13,8 @@ system.
 ## Kepler's Laws of Planetary Motion
 
 [Johannes Kepler](https://en.wikipedia.org/wiki/Johannes_Kepler) 
-first published his laws of planetary motion Between 1609 and 1619. Although, Kepler derived his 
-laws from empirical observations of the motion of the planets around the Sun, their 
-validity can be proven from analysis of the two-body problem. Analysis of the 
-two-body problem provides useful insight into the motion of objects in space.
+first published his laws of planetary motion Between 1609 and 1619. Although, 
+Kepler derived his laws from empirical observations of the motion of the planets
+around the Sun, their validity can be proven from analysis of the two-body 
+problem. Analysis of the two-body problem provides useful insight into the 
+motion of objects in space.
