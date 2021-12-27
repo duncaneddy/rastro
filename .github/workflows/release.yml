@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          ./scripts/build.sh install
+          ./docs/build.sh install
       - name: Update index from README
         run: | 
           cp README.md docs/en/docs/index.md
