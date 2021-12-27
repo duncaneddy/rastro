@@ -1,4 +1,9 @@
-
+<p align="center">
+  <a href="https://github.com/duncaneddy/rastro/"><img src="https://raw.githubusercontent.com/duncaneddy/rastro/main/docs/en/docs/img/logo.png" alt="RAstro"></a>
+</p>
+<p align="center">
+    <em>FastAPI framework, high performance, easy to learn, fast to code, ready for production</em>
+</p>
 
 [![Tests](https://github.com/duncaneddy/rastro/actions/workflows/test.yml/badge.svg)](https://github.com/duncaneddy/rastro/actions/workflows/test.yml) 
 [![crates.io](https://img.shields.io/crates/v/rastro.svg)](https://crates.io/crates/rastro)
