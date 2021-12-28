@@ -165,10 +165,10 @@ pub fn semimajor_axis_general(n: f64, gm: f64, as_degrees: bool) -> f64 {
 /// let vp = perigee_velocity(R_EARTH + 500e3, 0.001);
 /// ```
 pub fn perigee_velocity(a: f64, e: f64) -> f64 {
-    perigee_velocity_general(a, e, GM_EARTH)
+    periapsis_velocity(a, e, GM_EARTH)
 }
 
-/// Computes the perigee velocity of an astronomical object around a general body.
+/// Computes the periapsis velocity of an astronomical object around a general body.
 ///
 /// # Arguments
 ///
@@ -183,10 +183,10 @@ pub fn perigee_velocity(a: f64, e: f64) -> f64 {
 /// # Examples
 /// ```
 /// use rastro::constants::{R_EARTH, GM_EARTH};
-/// use rastro::orbits::perigee_velocity_general;
-/// let vp = perigee_velocity_general(R_EARTH + 500e3, 0.001, GM_EARTH);
+/// use rastro::orbits::periapsis_velocity;
+/// let vp = periapsis_velocity(R_EARTH + 500e3, 0.001, GM_EARTH);
 /// ```
-pub fn perigee_velocity_general(a: f64, e: f64, gm: f64) -> f64 {
+pub fn periapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
     // math.sqrt(gm/a)*math.sqrt((1+e)/(1-e))
     (gm / a).sqrt() * ((1.0 + e) / (1.0 - e)).sqrt()
 }
@@ -209,10 +209,10 @@ pub fn perigee_velocity_general(a: f64, e: f64, gm: f64) -> f64 {
 /// let va = apogee_velocity(R_EARTH + 500e3, 0.001);
 /// ```
 pub fn apogee_velocity(a: f64, e: f64) -> f64 {
-    apogee_velocity_general(a, e, GM_EARTH)
+    apoapsis_velocity(a, e, GM_EARTH)
 }
 
-/// Computes the apogee velocity of an astronomical object around a general body.
+/// Computes the apoapsis velocity of an astronomical object around a general body.
 ///
 /// # Arguments
 ///
@@ -227,10 +227,10 @@ pub fn apogee_velocity(a: f64, e: f64) -> f64 {
 /// # Examples
 /// ```
 /// use rastro::constants::{R_EARTH, GM_EARTH};
-/// use rastro::orbits::apogee_velocity_general;
-/// let va = apogee_velocity_general(R_EARTH + 500e3, 0.001, GM_EARTH);
+/// use rastro::orbits::apoapsis_velocity;
+/// let va = apoapsis_velocity(R_EARTH + 500e3, 0.001, GM_EARTH);
 /// ```
-pub fn apogee_velocity_general(a: f64, e: f64, gm: f64) -> f64 {
+pub fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
     (gm / a).sqrt() * ((1.0 - e) / (1.0 + e)).sqrt()
 }
 
@@ -500,8 +500,8 @@ mod tests {
     }
 
     #[test]
-    fn test_perigee_velocity_general() {
-        let vp = perigee_velocity_general(R_MOON + 500e3, 0.001, constants::GM_MOON);
+    fn test_periapsis_velocity() {
+        let vp = periapsis_velocity(R_MOON + 500e3, 0.001, constants::GM_MOON);
         assert_abs_diff_eq!(vp, 1481.5842246768275, epsilon=1e-12);
     }
 
@@ -512,8 +512,8 @@ mod tests {
     }
 
     #[test]
-    fn test_apogee_velocity_general() {
-        let va = apogee_velocity_general(R_MOON + 500e3, 0.001, constants::GM_MOON);
+    fn test_apoapsis_velocity() {
+        let va = apoapsis_velocity(R_MOON + 500e3, 0.001, constants::GM_MOON);
         assert_abs_diff_eq!(va, 1478.624016435715, epsilon=1e-12);
     }
 

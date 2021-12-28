@@ -47,8 +47,8 @@ fn perigee_velocity(a: f64, e: f64) -> PyResult<f64> {
 
 #[pyfunction]
 #[text_signature = "(a, e)"]
-fn perigee_velocity_general(a: f64, e: f64, gm: f64) -> PyResult<f64> {
-    Ok(orbits::perigee_velocity_general(a, e, gm))
+fn periapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
+    Ok(orbits::periapsis_velocity(a, e, gm))
 }
 
 #[pyfunction]
@@ -59,8 +59,8 @@ fn apogee_velocity(a: f64, e: f64) -> PyResult<f64> {
 
 #[pyfunction]
 #[text_signature = "(a, e)"]
-fn apogee_velocity_general(a: f64, e: f64, gm: f64) -> PyResult<f64> {
-    Ok(orbits::apogee_velocity_general(a, e, gm))
+fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
+    Ok(orbits::apoapsis_velocity(a, e, gm))
 }
 
 #[pyfunction]
@@ -107,9 +107,9 @@ pub fn orbits(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(semimajor_axis, module)?)?;
     module.add_function(wrap_pyfunction!(semimajor_axis_general, module)?)?;
     module.add_function(wrap_pyfunction!(perigee_velocity, module)?)?;
-    module.add_function(wrap_pyfunction!(perigee_velocity_general, module)?)?;
+    module.add_function(wrap_pyfunction!(periapsis_velocity, module)?)?;
     module.add_function(wrap_pyfunction!(apogee_velocity, module)?)?;
-    module.add_function(wrap_pyfunction!(apogee_velocity_general, module)?)?;
+    module.add_function(wrap_pyfunction!(apoapsis_velocity, module)?)?;
     module.add_function(wrap_pyfunction!(sun_synchronous_inclination, module)?)?;
     module.add_function(wrap_pyfunction!(anomaly_eccentric_to_mean, module)?)?;
     module.add_function(wrap_pyfunction!(anomaly_mean_to_eccentric, module)?)?;
