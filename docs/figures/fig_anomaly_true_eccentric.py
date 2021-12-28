@@ -3,40 +3,47 @@
 import os
 import pathlib
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.io as pio
 import rastro
 
+## Define Constants
 SCRIPT_NAME = pathlib.Path(__file__).stem
+OUTDIR = os.getenv("RASTRO_FIGURE_OUTPUT_DIR") # Build Environment Variable
+OUTFILE = f"{OUTDIR}/{SCRIPT_NAME}.html"
 
-# RASTRO_FIGURE_OUTPUT_DIR is an environment variable set at build time
-# to determine where generated figures are located
-OUTDIR = os.getenv("RASTRO_FIGURE_OUTPUT_DIR")
+## Create figure
+layout = go.Layout(
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)'
+)
+fig = go.Figure(layout=layout)
+fig.update_xaxes(
+    showgrid=True, gridwidth=1, gridcolor='LightGrey', range=[0, 360],
+    showline=True, linewidth=2, linecolor='Grey'
+)
+fig.update_yaxes(
+    showgrid=True, gridwidth=1, gridcolor='LightGrey', range=[0, 360],
+    showline=True, linewidth=2, linecolor='Grey'
+)
+fig.update_layout(
+    xaxis=dict(tickmode='linear', tick0=0, dtick=30,
+               title_text=r"$\text{True Anomaly}, \nu \; \text{[deg]}$"),
+    yaxis=dict(tickmode='linear', tick0=0, dtick=30,
+               title_text=r"$\text{Eccentric Anomaly}, E \; \text{[deg]}$")
+)
 
-if __name__ == '__main__':
-    # Create figure
-    ax = plt.subplot(111)
+## Generate and plot data
 
-    # Generate range of true anomalies
-    nu = [x for x in range(0, 360)]
+# Generate range of true anomalies
+nu = [x for x in range(0, 360)]
 
-    # Compute and plot eccentric anomaly for range of true anomalies
-    for e in [0.0, 0.1, 0.3, 0.5, 0.7, 0.9]:
-        # Take output mod 360 to wrap from 0 to 2pi
-        ecc = [rastro.anomaly_true_to_eccentric(x, e, True) % 360 for x in nu]
-        ax.plot(nu, ecc, linewidth=2, label=f'e={e:.1f}')
+# Compute and plot eccentric anomaly for range of true anomalies
+for e in [0.0, 0.1, 0.3, 0.5, 0.7, 0.9]:
+    # Take output mod 360 to wrap from 0 to 2pi
+    ecc = [rastro.anomaly_true_to_eccentric(x, e, True) % 360 for x in nu]
+    fig.add_trace(go.Scatter(x=nu, y=ecc, name=f"e = {e:.1f}"))
 
-    # Adjust figure style
-    ax.set_xlim([0, 360])
-    ax.set_ylim([0, 360])
-    ax.spines['right'].set_visible(False)
-    ax.spines['top'].set_visible(False)
-    plt.xticks(np.arange(0, 390, step=30))
-    plt.yticks(np.arange(0, 390, step=30))
-    plt.xlabel(r"True Anomaly, $\nu$ [deg]")
-    plt.ylabel(r"Eccentric Anomaly, $E$ [deg]")
-    plt.grid(color='grey', linestyle='--', linewidth=0.5)
-
-    # Save figure
-    ax.legend()
-    OUTFILE = f"{OUTDIR}/{SCRIPT_NAME}.svg"
-    plt.savefig(OUTFILE, transparent=True)
+pio.write_html(fig, file=OUTFILE, include_plotlyjs='cdn', full_html=False, auto_play=False)
