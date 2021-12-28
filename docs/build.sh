@@ -14,13 +14,13 @@ export RASTRO_FIGURE_OUTPUT_DIR="$SCRIPT_DIR/en/docs/figures/"
 
 function install_dependencies {
   echo "Install rastro pyhton"
-  pip install -U -e ./rastro_python
+  pip install -U -e ./rastro_python || exit 1
 
   echo "Installing example and figure dependencies"
-  pip install -U -r "$SCRIPT_DIR/requirements.txt"
+  pip install -U -r "$SCRIPT_DIR/requirements.txt" || exit 1
 
   echo "Installing rust-script"
-  cargo install rust-script
+  cargo install rust-script || exit 1
 }
 
 function change_dir {
@@ -150,7 +150,7 @@ function publish_docs {
   change_dir "en"
 
   # Compile documents
-  mkdocs gh-deploy --force
+  mkdocs gh-deploy --force || exit 1
 
   # Return to source director
   cd "$SCRIPT_DIR" || exit 1
