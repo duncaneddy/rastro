@@ -72,7 +72,7 @@ nav:
       - Time [WIP]:
         - user_guide/time/index.md
         - user_guide/time/epoch.md
-      - Orbits [WIP]:
+      - Orbits:
         - user_guide/orbits/index.md
         - user_guide/orbits/properties.md
         - user_guide/orbits/anomalies.md
