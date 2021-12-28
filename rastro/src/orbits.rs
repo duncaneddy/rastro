@@ -35,7 +35,7 @@ pub fn orbital_period(a: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// * `T` - The orbital period of the astronomical object. Units: [s]
+/// * `period` - The orbital period of the astronomical object. Units: [s]
 ///
 /// # Examples
 /// ```
@@ -76,8 +76,8 @@ pub fn mean_motion(a: f64, as_degrees: bool) -> f64 {
 /// # Arguments
 ///
 /// * `a` - The semi-major axis of the astronomical object. Units: [m]
-/// * `as_degrees` - Return output in degrees instead of radians
 /// * `gm` - The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `as_degrees` - Return output in degrees instead of radians
 ///
 /// # Returns
 ///
@@ -127,8 +127,8 @@ pub fn semimajor_axis(n: f64, as_degrees: bool) -> f64 {
 /// # Arguments
 ///
 /// * `n` - The mean motion of the astronomical object. Units: [rad] or [deg]
-/// * `as_degrees` - Interpret mean motion as degrees if `true` or radians if `false`
 /// * `gm` - The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `as_degrees` - Interpret mean motion as degrees if `true` or radians if `false`
 ///
 /// # Returns
 ///
@@ -178,7 +178,7 @@ pub fn perigee_velocity(a: f64, e: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at perigee. Units: [m/s]
+/// * `v` - The magnitude of velocity of the object at periapsis. Units: [m/s]
 ///
 /// # Examples
 /// ```
@@ -222,7 +222,7 @@ pub fn apogee_velocity(a: f64, e: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at apogee. Units: [m/s]
+/// * `v` - The magnitude of velocity of the object at apoapsis. Units: [m/s]
 ///
 /// # Examples
 /// ```

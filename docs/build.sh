@@ -161,7 +161,7 @@ function serve_docs {
   change_dir "en"
 
   # Serve documents
-  mkdocs serve
+  mkdocs serve # Add -v for debug if desired
 
   # Return to source director
   cd "$SCRIPT_DIR" || exit 1

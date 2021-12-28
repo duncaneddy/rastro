@@ -1,1 +1,3 @@
-# Orbits API Reference
+# Orbits API
+
+::: rastro.orbital_period
