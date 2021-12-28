@@ -13,11 +13,16 @@ SCRIPT_DIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )" || return
 
 function install_dependencies {
   echo "Installing dependencies"
+  pip install -U -r "$SCRIPT_DIR/requirements.txt"
+}
 
-  # Documentation dependencies
-  pip install -U mkdocs-material mkdocstrings
+function build_figures {
+  # Change to figures directory
+  if [[ $(pwd) != "$SCRIPT_DIR/figures" ]]; then
+      echo "Changing directory to: $SCRIPT_DIR/figures"
+      cd "$SCRIPT_DIR/figures" || return
+  fi
 
-  # Figure dependencies
 
 }
 
