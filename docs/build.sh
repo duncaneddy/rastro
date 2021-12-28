@@ -10,21 +10,30 @@
 
 # Directory of build script
 SCRIPT_DIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )" || return
-export RASTRO_FIGURE_OUTPUT_DIR="$SCRIPT_DIR/en/docs/figures"
+export RASTRO_FIGURE_OUTPUT_DIR="$SCRIPT_DIR/en/docs/figures/"
 
 function install_dependencies {
-  echo "Installing dependencies"
+  echo "Install rastro pyhton"
+  pip install -U -e ./rastro_python
+
+  echo "Installing example and figure dependencies"
   pip install -U -r "$SCRIPT_DIR/requirements.txt"
 
+  echo "Installing rust-script"
   cargo install rust-script
+}
+
+function change_dir {
+  target_dir="$SCRIPT_DIR/$1"
+  if [[ $(pwd) != "$target_dir" ]]; then
+#      echo "Changing directory to: $target_dir"
+      cd "$target_dir" || exit 1
+  fi
 }
 
 function build_figures {
   # Change to figures directory
-  if [[ $(pwd) != "$SCRIPT_DIR/figures" ]]; then
-      echo "Changing directory to: $SCRIPT_DIR/figures"
-      cd "$SCRIPT_DIR/figures" || exit 1
-  fi
+  change_dir "figures"
 
   # Ensure directory exists
   mkdir -p "$RASTRO_FIGURE_OUTPUT_DIR"
@@ -41,49 +50,78 @@ function build_figures {
   unset RASTRO_FIGURE_OUTPUT_DIR
 }
 
+# Build and execute a standalone rust script
+# If second argument is present supress output
+function run_rust_script () {
+  tmpfile=$(mktemp /tmp/rust-script.rs)
+
+  # Add appropriate local dependency to header
+  echo "//! \`\`\`cargo" >> $tmpfile
+  echo "//! [dependencies]" >> $tmpfile
+  echo "//! rastro = {path = \"$SCRIPT_DIR/../rastro\"}" >> $tmpfile
+  echo "//! approx = \"^0.4.0\"" >> $tmpfile
+  echo "//! \`\`\`" >> $tmpfile
+  cat "$1" >> $tmpfile
+
+  # Execute script
+  if [[ "$2" == "quiet" ]]; then
+    (printf %s "Test example $1" && (rust-script "$tmpfile" >> /dev/null) &&
+    echo "...done") ||
+    (echo "Error building figure $1. Exiting without completing" &&
+    rm "$tmpfile" && exit 1)
+  else
+    (echo "Executing: $1" && (rust-script "$tmpfile")) ||
+    (echo "Error building figure $1. Exiting without completing" &&
+    rm "$tmpfile" && exit 1)
+  fi
+
+  rm "$tmpfile"
+}
+
+# Build and execute a standalone python script
+# If second argument is present supress output
+function run_python_script () {
+  if [[ "$2" == "quiet" ]]; then
+    (printf %s "Testing example $1" && (python "$1" >> /dev/null) &&
+    echo "...done") || (echo "Error testing figure $1. Exiting without completing example tests" && exit 1)
+  else
+    (echo "Execuing: $1" && (python "$1")) ||
+    (echo "Error testing figure $1. Exiting without completing example tests" && exit 1)
+  fi
+}
+
 # test_examples attempts to execute every file in the ./docs/examples directory
 # This folder contains all of the code examples used as part of the
 # documentation.
 function test_examples {
-  # Change to figures directory
-  if [[ $(pwd) != "$SCRIPT_DIR/examples" ]]; then
-      echo "Changing directory to: $SCRIPT_DIR/examples"
-      cd "$SCRIPT_DIR/examples" || exit 1
-  fi
+  # Change to examples
+  change_dir "examples"
 
   # Test Rust code examples
-  echo "Testing rust code examples"
+  echo "" && echo "=== Testing Rust code examples ===" && echo ""
   for i in *.rs; do
-      echo "Testing example $i"
-
-      # Create temporary file
-#      tmpfile=$(mktemp ./test.rs)
-      tmpfile=$(mktemp /tmp/rust-script.rs)
-
-      # Add appropriate local dependency to header
-      echo "//! \`\`\`cargo" >> $tmpfile
-      echo "//! [dependencies]" >> $tmpfile
-      echo "//! rastro = {path = \"$SCRIPT_DIR/../rastro\"}" >> $tmpfile
-      echo "//! \`\`\`" >> $tmpfile
-      cat "$i" >> $tmpfile
-
-      # Build
-      echo "$tmpfile"
-      (printf %s "Test example $i" && (rust-script "$tmpfile" >> /dev/null) &&
-      echo "...done") ||
-      (echo "Error building figure $i. Exiting without completing" &&
-      rm "$tmpfile" && exit 1)
-
-      rm "$tmpfile"
+      run_rust_script "$i" "quiet"
   done
 
   # Test Python code examples
-  echo "Testing python code examples"
+  echo "" && echo "=== Testing Python code examples ===" && echo ""
   for i in *.py; do
-      (printf %s "Testing example $i" && (python "$i" >> /dev/null) &&
-      echo "...done") ||
-      (echo "Error testing figure $i. Exiting without completing example tests" && exit 1)
+      run_python_script "$i" "quiet"
   done
+}
+
+function test_example_script {
+  filename="${BASH_ARGV[0]}"
+  extension="${filename##*.}"
+
+  if [[ "$extension" == "rs" ]]; then
+    run_rust_script "$filename"
+  elif [[ "$extension" == "py" ]]; then
+    run_python_script "$filename"
+  else
+    echo "Unknown script extension \"$extension\""
+    exit 1
+  fi
 }
 
 function build_docs {
@@ -96,10 +134,7 @@ function build_docs {
   # Build Docs
   echo "Building documentation..."
   # Change to English docs directory
-  if [[ $(pwd) != "$SCRIPT_DIR/en" ]]; then
-      echo "Changing directory to: $SCRIPT_DIR/en"
-      cd "$SCRIPT_DIR/en" || exit 1
-  fi
+  change_dir "en"
 
   # Compile documents
   mkdocs build
@@ -112,10 +147,7 @@ function publish_docs {
   echo "Beginning Publish Step"
 
   # Change to English docs directory
-  if [[ $(pwd) != "$SCRIPT_DIR/en" ]]; then
-      echo "Changing directory to: $SCRIPT_DIR/en"
-      cd "$SCRIPT_DIR/en" || exit 1
-  fi
+  change_dir "en"
 
   # Compile documents
   mkdocs gh-deploy --force
@@ -126,10 +158,7 @@ function publish_docs {
 
 function serve_docs {
   # Change to English docs directory
-  if [[ $(pwd) != "$SCRIPT_DIR/en" ]]; then
-      echo "Changing directory to: $SCRIPT_DIR/en"
-      cd "$SCRIPT_DIR/en" || exit 1
-  fi
+  change_dir "en"
 
   # Serve documents
   mkdocs serve
@@ -144,6 +173,12 @@ case ${1:-all} in
         ;;
     test)
         test_examples
+        ;;
+    example)
+        test_example_script
+        ;;
+    figures)
+        build_figures
         ;;
     build)
         build_docs

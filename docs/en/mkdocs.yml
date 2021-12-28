@@ -10,10 +10,11 @@ plugins:
   - mkdocstrings
 
 markdown_extensions:
-  - attr_list
-  - md_in_html
   - admonition
   - footnotes
+  - tables
+  - toc:
+      permalink: true
   - pymdownx.critic
   - pymdownx.caret
   - pymdownx.keys
@@ -29,10 +30,12 @@ markdown_extensions:
       alternate_style: true
   - pymdownx.arithmatex:
       generic: true
+  - attr_list
+  - md_in_html
 
 extra_javascript:
   - javascript/mathjax.js
-  - https://cdn.plot.ly/plotly-latest.min.js
+#  - https://cdn.plot.ly/plotly-latest.min.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 

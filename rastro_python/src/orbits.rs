@@ -116,6 +116,5 @@ pub fn orbits(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(anomaly_true_to_eccentric, module)?)?;
     module.add_function(wrap_pyfunction!(anomaly_eccentric_to_true, module)?)?;
 
-
     Ok(())
 }

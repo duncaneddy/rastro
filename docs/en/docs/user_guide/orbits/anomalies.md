@@ -38,6 +38,11 @@ To convert from true anomaly to eccentric anomaly, you can use the function
     ``` python
     --8<-- "../examples/anomaly_true_and_eccentric.py"
     ```
+<figure markdown> 
+![Eccentric and True Anomaly](../../figures/fig_anomaly_true_eccentric.svg)
+</figure>
+
+--8<-- "./docs/figures/fig_anomaly_true_eccentric_2.html"
 
 ??? "Plot Source"
     

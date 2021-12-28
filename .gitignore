@@ -1,8 +1,9 @@
-# Rust
+# Build Artifacts - Rust
 /target
 Cargo.lock
 
-# Python
+# Build Artifacts - Python
+rastro_python/build/*
 __pycache__/
 *.py[cod]
 *$py.class
@@ -18,6 +19,7 @@ wheels/
 
 # Documentation
 docs/*/site/*
+docs/*/docs/figures/*
 
 # Development
 .idea/*
