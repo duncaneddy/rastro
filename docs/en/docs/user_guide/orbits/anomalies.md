@@ -30,11 +30,19 @@ To convert from true anomaly to eccentric anomaly, you can use the function
 === "Rust"
 
     ``` rust
+    --8<-- "../examples/anomaly_true_and_eccentric.rs"
     ```
 
 === "Python"
 
     ``` python
+    --8<-- "../examples/anomaly_true_and_eccentric.py"
+    ```
+
+??? "Plot Source"
+    
+    ``` python title="fig_anomaly_true_eccentric.py"
+    --8<-- "../figures/fig_anomaly_true_eccentric.py"
     ```
 
 ## Eccentric and Mean Anomaly Conversions
