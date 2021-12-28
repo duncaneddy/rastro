@@ -59,7 +59,7 @@ def test_perigee_velocity():
     assert vp == pytest.approx(7620.224976404526, abs=1e-12)
 
 def test_perigee_velocity_general():
-    vp = rastro.perigee_velocity_general(rastro.R_MOON + 500e3, 0.001, rastro.GM_MOON)
+    vp = rastro.periapsis_velocity(rastro.R_MOON + 500e3, 0.001, rastro.GM_MOON)
     assert vp == pytest.approx(1481.5842246768275, abs=1e-12)
 
 def test_apogee_velocity():
@@ -67,7 +67,7 @@ def test_apogee_velocity():
     assert vp == pytest.approx(7604.999751676446, abs=1e-12)
 
 def test_apogee_velocity_general():
-    vp = rastro.apogee_velocity_general(rastro.R_MOON + 500e3, 0.001, rastro.GM_MOON)
+    vp = rastro.apoapsis_velocity(rastro.R_MOON + 500e3, 0.001, rastro.GM_MOON)
     assert vp == pytest.approx(1478.624016435715, abs=1e-12)
 
 def test_sun_synchronous_inclination():
