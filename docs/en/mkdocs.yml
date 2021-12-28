@@ -5,6 +5,34 @@ site_description: RAstro astrodynamics - high performance, easy to learn, and
 site_url: https://github.com/duncaneddy/rastro
 repo_url: https://github.com/duncaneddy/rastro
 
+theme:
+  name: material
+  custom_dir: overrides
+  highlightjs: true
+  hljs_languages:
+      - yaml
+      - rust
+      - python
+  palette:
+    - scheme: default
+      primary: orange
+      accent: black
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
+    - scheme: slate
+      primary: orange
+      accent: black
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+  logo: img/icon.svg
+  favicon: img/favicon.png
+  language: en
+  features:
+    - navigation.instant
+    - navigation.top
+
 plugins:
   - search
   - mkdocstrings
@@ -33,40 +61,6 @@ markdown_extensions:
   - attr_list
   - md_in_html
 
-extra_javascript:
-  - javascripts/mathjax.js
-  - https://cdn.plot.ly/plotly-latest.min.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.0.0/es5/latest?tex-mml-chtml.js
-
-theme:
-  name: material
-  highlightjs: true
-  hljs_languages:
-      - yaml
-      - rust
-      - python
-  palette:
-    - scheme: default
-      primary: orange
-      accent: black
-      toggle:
-        icon: material/lightbulb
-        name: Switch to light mode
-    - scheme: slate
-      primary: orange
-      accent: black
-      toggle:
-        icon: material/lightbulb-outline
-        name: Switch to dark mode
-  logo: img/icon.svg
-  favicon: img/favicon.png
-  language: en
-  features:
-    - navigation.instant
-    - navigation.top
-
 nav:
   - RAstro: index.md
   - installation.md
@@ -89,4 +83,14 @@ nav:
           - reference/orbits/index.md
           - reference/orbits/two_body_problem.md
           - reference/orbits/orbital_elements.md
+  - Python API Reference:
+      - python_api/index.md
+      - python_api/constants.md
+      - python_api/orbits.md
   - glossary.md
+
+extra_javascript:
+  - js/mathjax.js
+  - https://cdn.plot.ly/plotly-latest.min.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

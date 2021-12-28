@@ -8,18 +8,19 @@ the position of an object moving along a Keplerian orbit. It is the angle
 between the eccentricity vector (vector pointing from the main pericenter to 
 the periapsis) and the current position of the body in the orbital plane itself.
 
-The eccentric anomaly is another angular parameter that defines the position 
+The eccentric anomaly, $E$, is another angular parameter that defines the position 
 of an object moving along a Keplerian orbit if viewed from the center of the 
 ellipse. 
 
-Finally, the mean anomaly defines the fraction of an orbital period that has 
+Finally, the mean anomaly, $M$, defines the fraction of an orbital period that has 
 elapsed since the orbiting object has passed its periapsis. It is the angle 
 from the pericenter an object moving on a fictitious circular orbit with the 
 same semi-major axis would have progressed through in the same time as the 
 body on the true elliptical orbit.
 
-Conversion between true, eccentric, and mean anomaly is done converting 
-between true and eccentric anomaly, and eccentric and mean anomaly.
+Conversion between all types of angular anomaly is possible. However, there is 
+no known direct conversion between true and mean anomaly. Conversion between the two is 
+accomplished by transformation through eccentric anomaly.
 
 ## True and Eccentric Anomaly Conversions
 
@@ -70,11 +71,21 @@ and receiving a runtime error will generally work.
 === "Rust"
 
     ``` rust
+    --8<-- "../examples/anomaly_eccentric_and_mean.rs"
     ```
 
 === "Python"
 
     ``` python
+    --8<-- "../examples/anomaly_eccentric_and_mean.py"
+    ```
+
+--8<-- "./docs/figures/fig_anomaly_eccentric_mean.html"
+
+??? "Plot Source"
+
+    ``` python title="fig_anomaly_eccentric_mean.py"
+    --8<-- "../figures/fig_anomaly_eccentric_mean.py"
     ```
 
 ## True and Mean Anomaly Conversions

@@ -3,6 +3,15 @@ use pyo3::wrap_pyfunction;
 use rastro::orbits as orbits;
 
 
+/// Computes the orbital period of an object around Earth.
+///
+/// Uses rastro.constants.GM_EARTH as the standard gravitational parameter for the calculation.
+///
+/// Args:
+///     a (`float`): The semi-major axis of the astronomical object. Units: [m]
+///
+/// Returns:
+///     period (`float`): The orbital period of the astronomical object. Units: [s]
 #[pyfunction]
 #[text_signature = "(a)"]
 fn orbital_period(a: f64) -> PyResult<f64> {

@@ -1,5 +1,6 @@
-# Generate plot of eccentric anomaly versus true anomaly for a range of eccentricies.
+# Generate plot of mean anomaly versus eccentric anomaly for a range of eccentricies.
 # Highlights the effect of eccentricity on the difference of the two.
+
 
 import os
 import pathlib
@@ -36,12 +37,12 @@ fig.update_layout(
 ## Generate and plot data
 
 # Generate range of true anomalies
-nu = [x for x in range(0, 360)]
+ecc = [x for x in range(0, 360)]
 
 # Compute and plot eccentric anomaly for range of true anomalies
 for e in [0.0, 0.1, 0.3, 0.5, 0.7, 0.9]:
     # Take output mod 360 to wrap from 0 to 2pi
-    ecc = [rastro.anomaly_true_to_eccentric(x, e, True) % 360 for x in nu]
-    fig.add_trace(go.Scatter(x=nu, y=ecc, name=f"e = {e:.1f}"))
+    mean = [rastro.anomaly_eccentric_to_mean(x, e, True) % 360 for x in ecc]
+    fig.add_trace(go.Scatter(x=ecc, y=mean, name=f"e = {e:.1f}"))
 
 pio.write_html(fig, file=OUTFILE, include_plotlyjs='cdn', full_html=False, auto_play=False)
