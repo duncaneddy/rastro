@@ -100,7 +100,7 @@ fn semimajor_axis_general(n: f64, gm: f64, as_degrees: bool) -> PyResult<f64> {
 ///     e (`float`): The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// Returns:
-///     v (`float`): The magnitude of velocity of the object at perigee. Units: [m/s]
+///     v (`float`): The magnitude of velocity of the object at perigee. Units: (m/s)
 #[pyfunction]
 #[text_signature = "(a, e)"]
 fn perigee_velocity(a: f64, e: f64) -> PyResult<f64> {
@@ -115,11 +115,27 @@ fn perigee_velocity(a: f64, e: f64) -> PyResult<f64> {
 ///     gm (`float`): The standard gravitational parameter of primary body. Units: [m^3/s^2]
 ///
 /// Returns:
-///     v (`float`): The magnitude of velocity of the object at periapsis. Units: [m/s]
+///     v (`float`): The magnitude of velocity of the object at periapsis. Units: (m/s)
 #[pyfunction]
 #[text_signature = "(a, e)"]
 fn periapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
     Ok(orbits::periapsis_velocity(a, e, gm))
+}
+
+/// Calculate the distance of an object at its periapsis
+///
+/// # Arguments
+///
+/// * `a` - The semi-major axis of the astronomical object. Units: (m)
+/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+///
+/// # Returns
+///
+/// * `r` - The distance of the object at periapsis. Units (s)
+#[pyfunction]
+#[text_signature = "(a, e)"]
+fn periapsis_distance(a: f64, e: f64) -> PyResult<f64> {
+    Ok(orbits::periapsis_distance(a, e))
 }
 
 /// Computes the apogee velocity of an astronomical object around Earth.
@@ -129,7 +145,7 @@ fn periapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
 ///     e (`float`): The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// Returns:
-///     v (`float`): The magnitude of velocity of the object at apogee. Units: [m/s]
+///     v (`float`): The magnitude of velocity of the object at apogee. Units: (m/s)
 #[pyfunction]
 #[text_signature = "(a, e)"]
 fn apogee_velocity(a: f64, e: f64) -> PyResult<f64> {
@@ -144,11 +160,27 @@ fn apogee_velocity(a: f64, e: f64) -> PyResult<f64> {
 ///     gm (`float`): The standard gravitational parameter of primary body. Units: [m^3/s^2]
 ///
 /// Returns:
-///     v (`float`): The magnitude of velocity of the object at apoapsis. Units: [m/s]
+///     v (`float`): The magnitude of velocity of the object at apoapsis. Units: (m/s)
 #[pyfunction]
 #[text_signature = "(a, e)"]
 fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
     Ok(orbits::apoapsis_velocity(a, e, gm))
+}
+
+/// Calculate the distance of an object at its apoapsis
+///
+/// # Arguments
+///
+/// * `a` - The semi-major axis of the astronomical object. Units: (m)
+/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+///
+/// # Returns
+///
+/// * `r` - The distance of the object at apoapsis. Units (s)
+#[pyfunction]
+#[text_signature = "(a, e)"]
+fn apoapsis_distance(a: f64, e: f64) -> PyResult<f64> {
+    Ok(orbits::apoapsis_distance(a, e))
 }
 
 /// Computes the inclination for a Sun-synchronous orbit around Earth based on
@@ -277,8 +309,10 @@ pub fn orbits(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(semimajor_axis_general, module)?)?;
     module.add_function(wrap_pyfunction!(perigee_velocity, module)?)?;
     module.add_function(wrap_pyfunction!(periapsis_velocity, module)?)?;
+    module.add_function(wrap_pyfunction!(periapsis_distance, module)?)?;
     module.add_function(wrap_pyfunction!(apogee_velocity, module)?)?;
     module.add_function(wrap_pyfunction!(apoapsis_velocity, module)?)?;
+    module.add_function(wrap_pyfunction!(apoapsis_distance, module)?)?;
     module.add_function(wrap_pyfunction!(sun_synchronous_inclination, module)?)?;
     module.add_function(wrap_pyfunction!(anomaly_eccentric_to_mean, module)?)?;
     module.add_function(wrap_pyfunction!(anomaly_mean_to_eccentric, module)?)?;

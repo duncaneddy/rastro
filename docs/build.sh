@@ -53,7 +53,7 @@ function build_figures {
 # Build and execute a standalone rust script
 # If second argument is present supress output
 function run_rust_script () {
-  tmpfile=$(mktemp /tmp/rust-script.rs)
+  tmpfile=$(mktemp)
 
   # Add appropriate local dependency to header
   echo "//! \`\`\`cargo" >> $tmpfile

@@ -14,11 +14,8 @@ OUTDIR = os.getenv("RASTRO_FIGURE_OUTPUT_DIR") # Build Environment Variable
 OUTFILE = f"{OUTDIR}/{SCRIPT_NAME}.html"
 
 ## Create figure
-layout = go.Layout(
-    paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)'
-)
-fig = go.Figure(layout=layout)
+fig = go.Figure()
+fig.update_layout(dict(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)'))
 fig.update_xaxes(
     showgrid=True, gridwidth=1, gridcolor='LightGrey', range=[0, 360],
     showline=True, linewidth=2, linecolor='Grey'

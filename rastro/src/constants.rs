@@ -89,7 +89,7 @@ pub const GPS_ZERO:f64 = 44244.0;
 
 /// Physical Constants //
 
-/// Speed of light in vacuum. Units: [m/s]
+/// Speed of light in vacuum. Units: (m/s)
 ///
 /// # References:
 /// 1. D. Vallado, *Fundamentals of Astrodynamics and Applications (4th Ed.)*, 2010

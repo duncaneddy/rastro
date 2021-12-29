@@ -1,9 +1,10 @@
-# Generate plot of mean anomaly versus eccentric anomaly for a range of eccentricies.
+# Generate plot of mean anomaly versus true anomaly for a range of eccentricies.
 # Highlights the effect of eccentricity on the difference of the two.
 
 
 import os
 import pathlib
+import numpy as np
 import plotly.graph_objects as go
 import plotly.io as pio
 import rastro
@@ -17,29 +18,29 @@ OUTFILE = f"{OUTDIR}/{SCRIPT_NAME}.html"
 fig = go.Figure()
 fig.update_layout(dict(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)'))
 fig.update_xaxes(
-    showgrid=True, gridwidth=1, gridcolor='LightGrey', range=[0, 360],
+    showgrid=True, gridwidth=1, gridcolor='LightGrey', range=[300, 1000],
     showline=True, linewidth=2, linecolor='Grey'
 )
 fig.update_yaxes(
-    showgrid=True, gridwidth=1, gridcolor='LightGrey', range=[0, 360],
+    showgrid=True, gridwidth=1, gridcolor='LightGrey', #range=[0, 360],
     showline=True, linewidth=2, linecolor='Grey'
 )
-fig.update_layout(
-    xaxis=dict(tickmode='linear', tick0=0, dtick=30,
-               title_text=r"True Anomaly (deg)"),
-    yaxis=dict(tickmode='linear', tick0=0, dtick=30,
-               title_text=r"Eccentric Anomaly (deg)")
+fig.update_xaxes(
+    tickmode='linear', tick0=300, dtick=100, title_text=r"Satellite Altitude [km]"
+)
+fig.update_yaxes(
+    tickmode='linear', title_text=r"Inclination [deg]"
 )
 
 ## Generate and plot data
 
 # Generate range of true anomalies
-ecc = [x for x in range(0, 360)]
+alt = np.arange(300e3, 1000e3, 1e3)
 
 # Compute and plot eccentric anomaly for range of true anomalies
-for e in [0.0, 0.1, 0.3, 0.5, 0.7, 0.9]:
+for e in [0.0, 0.1, 0.3, 0.5]:
     # Take output mod 360 to wrap from 0 to 2pi
-    mean = [rastro.anomaly_eccentric_to_mean(x, e, True) % 360 for x in ecc]
-    fig.add_trace(go.Scatter(x=ecc, y=mean, name=f"e = {e:.1f}"))
+    ssi = [rastro.sun_synchronous_inclination(rastro.R_EARTH + a, e, True) for a in alt]
+    fig.add_trace(go.Scatter(x=alt/1e3, y=ssi, name=f"e = {e:.1f}"))
 
 pio.write_html(fig, file=OUTFILE, include_plotlyjs='cdn', full_html=False, auto_play=False)

@@ -156,7 +156,7 @@ pub fn semimajor_axis_general(n: f64, gm: f64, as_degrees: bool) -> f64 {
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at perigee. Units: [m/s]
+/// * `v` - The magnitude of velocity of the object at perigee. Units: (m/s)
 ///
 /// # Examples
 /// ```
@@ -178,7 +178,7 @@ pub fn perigee_velocity(a: f64, e: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at periapsis. Units: [m/s]
+/// * `v` - The magnitude of velocity of the object at periapsis. Units: (m/s)
 ///
 /// # Examples
 /// ```
@@ -187,8 +187,28 @@ pub fn perigee_velocity(a: f64, e: f64) -> f64 {
 /// let vp = periapsis_velocity(R_EARTH + 500e3, 0.001, GM_EARTH);
 /// ```
 pub fn periapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
-    // math.sqrt(gm/a)*math.sqrt((1+e)/(1-e))
     (gm / a).sqrt() * ((1.0 + e) / (1.0 - e)).sqrt()
+}
+
+/// Calculate the distance of an object at its periapsis
+///
+/// # Arguments
+///
+/// * `a` - The semi-major axis of the astronomical object. Units: (m)
+/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+///
+/// # Returns
+///
+/// * `r` - The distance of the object at periapsis. Units (s)
+///
+/// # Examples
+/// ```
+/// use rastro::constants::{R_EARTH};
+/// use rastro::orbits::periapsis_distance;
+/// let rp = periapsis_distance(R_EARTH + 500e3, 0.1);
+/// ```
+pub fn periapsis_distance(a: f64, e:f64) -> f64 {
+    a*(1.0-e)
 }
 
 /// Computes the apogee velocity of an astronomical object around Earth.
@@ -200,7 +220,7 @@ pub fn periapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at apogee. Units: [m/s]
+/// * `v` - The magnitude of velocity of the object at apogee. Units: (m/s)
 ///
 /// # Examples
 /// ```
@@ -222,7 +242,7 @@ pub fn apogee_velocity(a: f64, e: f64) -> f64 {
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at apoapsis. Units: [m/s]
+/// * `v` - The magnitude of velocity of the object at apoapsis. Units: (m/s)
 ///
 /// # Examples
 /// ```
@@ -234,6 +254,26 @@ pub fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
     (gm / a).sqrt() * ((1.0 - e) / (1.0 + e)).sqrt()
 }
 
+/// Calculate the distance of an object at its apoapsis
+///
+/// # Arguments
+///
+/// * `a` - The semi-major axis of the astronomical object. Units: (m)
+/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+///
+/// # Returns
+///
+/// * `r` - The distance of the object at apoapsis. Units (s)
+///
+/// # Examples
+/// ```
+/// use rastro::constants::{R_EARTH};
+/// use rastro::orbits::apoapsis_distance;
+/// let ra = apoapsis_distance(R_EARTH + 500e3, 0.1);
+/// ```
+pub fn apoapsis_distance(a: f64, e:f64) -> f64 {
+    a*(1.0+e)
+}
 
 /// Computes the inclination for a Sun-synchronous orbit around Earth based on
 /// the J2 gravitational perturbation.
@@ -588,6 +628,15 @@ mod tests {
     }
 
     #[test]
+    fn test_periapsis_distance() {
+        let rp = periapsis_distance(R_EARTH + 500e3, 0.0);
+        assert_eq!(rp, R_EARTH + 500e3);
+
+        let rp = periapsis_distance(500e3, 0.1);
+        assert_eq!(rp, 450e3);
+    }
+
+    #[test]
     fn test_apogee_velocity() {
         let va = apogee_velocity(R_EARTH + 500e3, 0.001);
         assert_abs_diff_eq!(va, 7604.999751676446, epsilon=1e-12);
@@ -597,6 +646,15 @@ mod tests {
     fn test_apoapsis_velocity() {
         let va = apoapsis_velocity(R_MOON + 500e3, 0.001, constants::GM_MOON);
         assert_abs_diff_eq!(va, 1478.624016435715, epsilon=1e-12);
+    }
+
+    #[test]
+    fn test_apoapsis_distance() {
+        let rp = apoapsis_distance(R_EARTH + 500e3, 0.0);
+        assert_eq!(rp, R_EARTH + 500e3);
+
+        let rp = apoapsis_distance(500e3, 0.1);
+        assert_eq!(rp, 550e3);
     }
 
     #[test]
