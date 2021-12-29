@@ -3,17 +3,23 @@ name = "rastro"
 version = "0.1.5"
 authors = ["Duncan Eddy <duncan.eddy@gmail.com>"]
 edition = "2021"
+description = """
+A modern space dynamics library for research and engineering applications.
+Designed to be high performance, easy to learn, and fast to code, and ready for flight.
+"""
+homepage = "https://https://duncaneddy.github.io/rastro/"
+documentation = "https://docs.rs/rastro/"
+repository = "https://github.com/duncaneddy/rastro/"
+keywords = ["space", "astrodynamics", "satellite"]
+categories = ["science"]
+readme = "README.md"
 license = "MIT"
-description = "A modern, fast, space dynamics library for research and engineering applications."
-homepage = "https://github.com/duncaneddy/rastro"
-repository = "https://github.com/duncaneddy/rastro"
-readme = "../README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 rsofa = {version = "^0.3.0"}
-nalgebra = {version = "^0.25.3"}
+nalgebra = {version = "^0.29.0"}
 
 [dev-dependencies]
 approx = "^0.4.0"

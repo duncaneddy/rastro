@@ -3,6 +3,18 @@ name = "rastro_python"
 version = "0.0.0" # Do NOT edit. Will be updated for release by CI pipeline
 authors = ["Duncan Eddy <duncan.eddy@gmail.com>"]
 edition = "2021"
+description = """
+A modern space dynamics library for research and engineering applications.
+Designed to be high performance, easy to learn, and fast to code, and ready for flight.
+"""
+homepage = "https://https://duncaneddy.github.io/rastro/"
+documentation = "https://docs.rs/rastro/"
+repository = "https://github.com/duncaneddy/rastro/"
+keywords = ["space", "astrodynamics", "satellite"]
+categories = ["science"]
+readme = "README.md"
+license = "MIT"
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -10,7 +22,7 @@ edition = "2021"
 rastro = { path = "../rastro" } # Do NOT edit. Will be updated for release by CI pipeline
 
 [dependencies.pyo3]
-version = "0.13.0"
+version = "0.15.1"
 features = ["extension-module"]
 
 [lib]

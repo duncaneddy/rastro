@@ -232,6 +232,41 @@ fn anomaly_eccentric_to_true(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult
     Ok(orbits::anomaly_eccentric_to_true(anm_ecc, e, as_degrees))
 }
 
+/// Converts true anomaly into mean anomaly.
+///
+/// Arguments:
+///     anm_true (`float`): True anomaly. Units: [rad] or [deg]
+///     e (`float`): The eccentricity of the astronomical object's orbit. Dimensionless
+///     as_degrees (`bool`): Interprets input and returns output in [deg] if `true` or [rad] if `false`
+///
+/// Returns:
+///     anm_mean (`float`): Mean anomaly. Units: [rad] or [deg]
+#[pyfunction]
+#[text_signature = "(anm_ecc, e, as_degrees))"]
+fn anomaly_true_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
+    Ok(orbits::anomaly_true_to_mean(anm_ecc, e, as_degrees))
+}
+
+/// Converts mean anomaly into true anomaly
+///
+/// Arguments:
+///     anm_mean (`float`): Mean anomaly. Units: [rad] or [deg]
+///     e (`float`): The eccentricity of the astronomical object's orbit. Dimensionless
+///     as_degrees (`bool`): Interprets input and returns output in [deg] if `true` or [rad] if `false`
+///
+/// Returns:
+///     anm_true (`float`): True anomaly. Units: [rad] or [deg]
+#[pyfunction]
+#[text_signature = "(anm_mean, e, as_degrees)"]
+fn anomaly_mean_to_true(anm_mean: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
+    let res = orbits::anomaly_mean_to_true(anm_mean, e, as_degrees);
+    if res.is_ok() {
+        Ok(res.unwrap())
+    } else {
+        Err(PyRuntimeError::new_err(res.err().unwrap()))
+    }
+}
+
 #[pymodule]
 pub fn orbits(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(orbital_period, module)?)?;
@@ -249,6 +284,8 @@ pub fn orbits(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(anomaly_mean_to_eccentric, module)?)?;
     module.add_function(wrap_pyfunction!(anomaly_true_to_eccentric, module)?)?;
     module.add_function(wrap_pyfunction!(anomaly_eccentric_to_true, module)?)?;
+    module.add_function(wrap_pyfunction!(anomaly_true_to_mean, module)?)?;
+    module.add_function(wrap_pyfunction!(anomaly_mean_to_true, module)?)?;
 
     Ok(())
 }

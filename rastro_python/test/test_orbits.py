@@ -177,3 +177,47 @@ def test_anomaly_eccentric_to_true():
 
     anm_true = rastro.anomaly_eccentric_to_true(90.0, 0.1, True)
     assert anm_true == pytest.approx(95.73917047726677, abs=1e-12)
+
+def test_anomaly_true_to_mean():
+    # 0 degrees
+    m = rastro.anomaly_true_to_mean(0.0, 0.0, False)
+    assert m == 0.0
+
+    m = rastro.anomaly_true_to_mean(0.0, 0.0, True)
+    assert m == 0.0
+
+    # 180 degrees
+    m = rastro.anomaly_true_to_mean(math.pi, 0.0, False)
+    assert m == math.pi
+
+    m = rastro.anomaly_true_to_mean(180.0, 0.0, True)
+    assert m == 180.0
+
+    # 90 degrees
+    m = rastro.anomaly_true_to_mean(math.pi / 2.0, 0.1, False)
+    assert m == pytest.approx(1.3711301619226748, abs=1e-12)
+
+    m = rastro.anomaly_true_to_mean(90.0, 0.1, True)
+    assert m == pytest.approx(78.55997144125844, abs=1e-12)
+
+def test_anomaly_mean_to_true():
+    # 0 degrees
+    nu = rastro.anomaly_mean_to_true(0.0, 0.0, False)
+    assert nu == 0.0
+
+    nu = rastro.anomaly_mean_to_true(0.0, 0.0, True)
+    assert nu == 0.0
+
+    # 180 degrees
+    nu = rastro.anomaly_mean_to_true(math.pi, 0.0, False)
+    assert nu == math.pi
+
+    nu = rastro.anomaly_mean_to_true(180.0, 0.0, True)
+    assert nu == 180.0
+
+    # 90 degrees
+    nu = rastro.anomaly_mean_to_true(math.pi/2.0, 0.1, False)
+    assert nu == pytest.approx(1.7694813731148669, abs=1e-12)
+
+    nu = rastro.anomaly_mean_to_true(90.0, 0.1, True)
+    assert nu == pytest.approx(101.38381460649556, abs=1e-12)
