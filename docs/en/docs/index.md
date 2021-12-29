@@ -23,7 +23,7 @@
 
 Documentation: https://duncaneddy.github.io/rastro
 
-[//]: # (Rust Library Reference: )
+Rust Library Reference: https://docs.rs/crate/rastro/latest 
 
 Source Code: https://github.com/duncaneddy/rastro
 
