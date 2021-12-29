@@ -145,17 +145,24 @@ Due to Earth's oblateness known as the $J_2$ zonal harmonic, frequently referred
 there is a constant, secular drift of the right ascension of all Earth orbiting objects. Since 
 the $J_2$ harmonic is the second largest after that of point-mass gravity, it is a dominant 
 effect on the orbit
-<figure markdown>
-![Nodal Precession](../../figures/eqn_j2_nodal_precession.png){ width="200" }
-</figure>
+
+$$
+\dot{\Omega} = -\frac{3nR^2_EJ_2}{2a^2(1-e^2)^2}
+$$
+
 when combined with the required nodal precession rate for sun synchronicity
-<figure markdown>
-![Sun Synchronous Precession Rate](../../figures/eqn_sun_synchronous_rate.png){ width="500" }
-</figure>
+
+$$
+\dot{\Omega} = \frac{360 \; \text{deg}}{1 \; \text{year}}\frac{1 \; \text{year}}{365.2421897 \; 
+\text{day}} = 0.98564736 \frac{\text{deg}}{\text{day}}
+$$
+
 can be rearranged to solve for the inclination as a function of semi-major axis and eccentricity
-<figure markdown>
-![Sun Synchronous Inclination](../../figures/eqn_sun_synchronous_inclination.png){ width="300" }
-</figure>
+
+$$
+i = \arccos{\Big(-\frac{2a^{\frac{7}{2}}\dot{\Omega}_{ss}(1-e^2)^2}{3R^2_EJ_2\sqrt{\mu}}\Big)}
+$$
+
 The function `sun_syncrhonous_inclination` calculates this inclination.
 
 The figure below shows how the inclination required to maintain a sun-synchronous orbit varies 
