@@ -29,9 +29,9 @@ fig.update_yaxes(
 )
 fig.update_layout(
     xaxis=dict(tickmode='linear', tick0=0, dtick=30,
-               title_text=r"True Anomaly [deg]"),
+               title_text=r"True Anomaly (deg)"),
     yaxis=dict(tickmode='linear', tick0=0, dtick=30,
-               title_text=r"Eccentric Anomaly [deg]")
+               title_text=r"Eccentric Anomaly (deg)")
 )
 
 ## Generate and plot data
