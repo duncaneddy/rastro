@@ -33,6 +33,7 @@ for improved style and feature support.
 
 ### Fixed
 - Made change to main `cargo.toml` file in attempt to get rust documentation publishing on docs.rs
+- Fixed regression in release workflow
 
 ## [0.1.5] - 2021-03-21
 
