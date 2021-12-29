@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+## [0.1.7] - 2021-12-28
+
+### Fixed
+- Fixed regression in path of `README.md` file in base rastro `Cargo.toml`
+
 ## [0.1.6] - 2021-12-28
 
 ### Added
