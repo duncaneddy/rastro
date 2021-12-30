@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- Fix issue displaying math in Sun-synchronous user guide documentation
+- Added call guards to rastro-python `setup.py` script to prevent accidental installation.
 
 ## [0.1.8] - 2021-12-28
 
