@@ -25,7 +25,7 @@ The periapsis velocity is given by `periapsis_velocity` or, for an Earth-orbitin
 function `perigee_velocity` can be used. `perigee_velocity` simplified the call by supplying the 
 gravitational parameter of Earth to the function call. Periapsis velocity is calculated by
 $$
-v_{per} = \sqrt{\frac{\mu}{a}}\sqrt{\frac{1+e}{1-e}}
+v_{p} = \sqrt{\frac{\mu}{a}}\sqrt{\frac{1+e}{1-e}}
 $$
 where $\mu$ is the gravitational constant of the central body, $a$ is the semi-major axis of the 
 orbit, and $e$ is the eccentricity.
@@ -67,11 +67,11 @@ furthest point from the central body. It is also the point of lowest speed throu
 The apoapsis velocity is given by `apoapsis_velocity` or, for an Earth-orbiting object, the
 function `apoapsis_velocity` can be used. Apoapsis velocity is given by
 $$
-v_{apo} = \sqrt{\frac{\mu}{a}}\sqrt{\frac{1-e}{1+e}}
+v_{a} = \sqrt{\frac{\mu}{a}}\sqrt{\frac{1-e}{1+e}}
 $$
 The distance of the object to the central body is given by
 $$
-r_p = \frac{a(1-e^2)}{1+e} = a(1+e)
+r_a = \frac{a(1-e^2)}{1+e} = a(1+e)
 $$
 
 ???+ warning
