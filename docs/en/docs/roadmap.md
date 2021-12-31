@@ -1,0 +1,95 @@
+# Roadmap
+
+This page documents the current feature development roadmap for RAstro.
+
+- [x] Constants
+    - [x] Mathematics
+    - [x] Time
+    - [x] Planetary Constants
+- [ ] Earth Orientation Parameters
+    - [ ] Data Model Structure
+    - [ ] Fetching updated parameters
+    - [ ] Data retrieval
+    - [ ] Management / Versioning with packaging
+    - [ ] Customized of handling of out-of-range EOP requests
+- [ ] Time Management (Epoch)
+    - [ ] Epoch Class
+        - [ ] Initialization
+            - [ ] String
+            - [ ] Caldate
+            - [ ] MJD
+            - [ ] GPS Elapsed Seconds
+            - [ ] GPS Week / Seconds
+        - [ ] Fundamental Operations
+    - [ ] Epoch Range Iterator
+- [ ] Reference Frames
+    - [ ] Precession/Nutation Model
+    - [ ] Earth Rotation Model
+    - [ ] Polar Motion
+- [ ] Orbits
+    - [x] Orbital Period
+    - [x] Mean Motion
+    - [x] Periapsis/Apoapsis Velocity
+    - [x] Perigee/Apogee Velocity
+    - [x] Periapsis/Apoapsis Distance
+    - [x] Anomaly True <-> Eccentric
+    - [x] Anomaly Eccentric <-> Mean
+    - [x] Anomaly True <-> Mean
+    - [x] Sun-synchronous Inclination
+    - [ ] Osculating <-> Mean Transformation
+- [ ] Transformations
+    - [ ] State ECI <-> ECEF (IAU 2010)
+    - [ ] Rotation ECI <-> ECEF (IAU 2010)
+    - [ ] State OSC <-> CART
+    - [ ] State OSC <-> ECEF
+- [ ] Coordinate Transform
+    - [ ] Cart <-> Geocentric
+    - [ ] Cart <-> Geodetic
+    - [ ] Geocentric <-> Topocentric (ENU)
+    - [ ] Geocentric <-> Topocentric (SEZ)
+    - [ ] Geodetic <-> Topocentric (ENU)
+    - [ ] Geodetic <-> Topocentric (SEZ)
+    - [ ] ENU <-> AzEl
+    - [ ] SEZ <-> AzEl
+- [ ] Relative Transformations
+    - [ ] ECI <-> RTN
+    - [ ] RTN <-> ROE
+    - [ ] ECI <-> ROE
+- [ ] TLE
+    - [ ] TLE Object
+    - [ ] SGP4 Propagation
+- [ ] Force Modeling
+    - [ ] Gravity
+        - [ ] Point Gravity
+        - [ ] Spherical Harmonic
+        - [ ] Third-Body Gravity
+    - [ ] SRP
+        - [ ] Direct Sun
+        - [ ] Earth Albedo
+    - [ ] Eclipse
+    - [ ] Drag Model
+        - [ ] Harris Priester
+        - [ ] NRLMSISE00
+    - [ ] Relativistic Corrections
+    - [ ] Tides 
+        - [ ] Solid Earth
+        - [ ] Ocean
+- [ ] Numerical Integrators
+    - [ ] Arbitrary RK integrator
+        - [ ] RK4
+        - [ ] RK8
+    - [ ] Variable Step
+- [ ] Orbit Propagators
+    - [ ] Keplerian
+    - [ ] Full Force
+    - [ ] Event Detection
+    - [ ] State propagation (multithreaded Jacobian evaluation)
+    - [ ] Arbitrary Python Force/Function Inclusion
+    - [ ] Arbitrary State Inclusion / Addition
+- [ ] Access
+    - [ ] Location Data Model
+    - [ ] Access Computation - Constraint Definition
+    - [ ] Tessellation (Area Access)
+- [ ] Estimation
+    - [ ] EKF
+    - [ ] UKF
