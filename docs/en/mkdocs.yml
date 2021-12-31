@@ -4,6 +4,7 @@ site_description: RAstro astrodynamics - high performance, easy to learn, and
   fast to code, ready for production
 site_url: https://github.com/duncaneddy/rastro
 repo_url: https://github.com/duncaneddy/rastro
+edit_uri: ''
 
 theme:
   name: material
@@ -58,6 +59,8 @@ markdown_extensions:
       alternate_style: true
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - attr_list
   - md_in_html
 
@@ -88,6 +91,8 @@ nav:
       - python_api/constants.md
       - python_api/orbits.md
   - glossary.md
+  - developer_guide.md
+  - roadmap.md
 
 extra_javascript:
   - js/mathjax.js
