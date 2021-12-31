@@ -16,7 +16,7 @@ use crate::constants::{GM_EARTH, R_EARTH, J2_EARTH};
 /// * `period`:The orbital period of the astronomical object. Units: (s)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::R_EARTH;
 /// use rastro::orbits::orbital_period;
 /// let period = orbital_period(R_EARTH + 500e3);
@@ -38,7 +38,7 @@ pub fn orbital_period(a: f64) -> f64 {
 /// * `period`:The orbital period of the astronomical object. Units: (s)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH, GM_EARTH, R_MOON, GM_MOON};
 /// use rastro::orbits::orbital_period_general;
 /// let period_earth = orbital_period_general(R_EARTH + 500e3, GM_EARTH);
@@ -60,7 +60,7 @@ pub fn orbital_period_general(a: f64, gm: f64) -> f64 {
 /// * `n`:The mean motion of the astronomical object. Units: (rad) or (deg)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH};
 /// use rastro::orbits::mean_motion;
 /// let n_rad = mean_motion(R_EARTH + 500e3, false);
@@ -84,7 +84,7 @@ pub fn mean_motion(a: f64, as_degrees: bool) -> f64 {
 /// * `n`:The mean motion of the astronomical object. Units: (rad) or (deg)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH, GM_EARTH, R_MOON, GM_MOON};
 /// use rastro::orbits::mean_motion_general;
 /// let n_earth = mean_motion_general(R_EARTH + 500e3, GM_EARTH, false);
@@ -113,7 +113,7 @@ pub fn mean_motion_general(a: f64,  gm: f64, as_degrees: bool) -> f64 {
 /// * `a`:The semi-major axis of the astronomical object. Units: (m)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::orbits::semimajor_axis;
 /// let a_earth = semimajor_axis(0.0011067836148773837, false);
 /// ```
@@ -135,7 +135,7 @@ pub fn semimajor_axis(n: f64, as_degrees: bool) -> f64 {
 /// * `a`:The semi-major axis of the astronomical object. Units: (m)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{GM_MOON};
 /// use rastro::orbits::semimajor_axis_general;
 /// let a_moon = semimajor_axis_general(0.0011067836148773837, GM_MOON, false);
@@ -159,7 +159,7 @@ pub fn semimajor_axis_general(n: f64, gm: f64, as_degrees: bool) -> f64 {
 /// * `v`:The magnitude of velocity of the object at perigee. Units: (m/s)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH};
 /// use rastro::orbits::perigee_velocity;
 /// let vp = perigee_velocity(R_EARTH + 500e3, 0.001);
@@ -181,7 +181,7 @@ pub fn perigee_velocity(a: f64, e: f64) -> f64 {
 /// * `v`:The magnitude of velocity of the object at periapsis. Units: (m/s)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH, GM_EARTH};
 /// use rastro::orbits::periapsis_velocity;
 /// let vp = periapsis_velocity(R_EARTH + 500e3, 0.001, GM_EARTH);
@@ -202,7 +202,7 @@ pub fn periapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
 /// * `r`:The distance of the object at periapsis. Units (s)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH};
 /// use rastro::orbits::periapsis_distance;
 /// let rp = periapsis_distance(R_EARTH + 500e3, 0.1);
@@ -223,7 +223,7 @@ pub fn periapsis_distance(a: f64, e:f64) -> f64 {
 /// * `v`:The magnitude of velocity of the object at apogee. Units: (m/s)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH};
 /// use rastro::orbits::apogee_velocity;
 /// let va = apogee_velocity(R_EARTH + 500e3, 0.001);
@@ -245,7 +245,7 @@ pub fn apogee_velocity(a: f64, e: f64) -> f64 {
 /// * `v`:The magnitude of velocity of the object at apoapsis. Units: (m/s)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH, GM_EARTH};
 /// use rastro::orbits::apoapsis_velocity;
 /// let va = apoapsis_velocity(R_EARTH + 500e3, 0.001, GM_EARTH);
@@ -266,7 +266,7 @@ pub fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
 /// * `r`:The distance of the object at apoapsis. Units (s)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH};
 /// use rastro::orbits::apoapsis_distance;
 /// let ra = apoapsis_distance(R_EARTH + 500e3, 0.1);
@@ -289,7 +289,7 @@ pub fn apoapsis_distance(a: f64, e:f64) -> f64 {
 /// * `inc`:Inclination for a Sun synchronous orbit. Units: (deg) or (rad)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::constants::{R_EARTH, GM_EARTH};
 /// use rastro::orbits::sun_synchronous_inclination;
 /// let inc = sun_synchronous_inclination(R_EARTH + 500e3, 0.001, true); // approx 97.5 deg
@@ -321,7 +321,7 @@ pub fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> f64 {
 /// * `anm_mean`:Mean anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::orbits::anomaly_mean_to_eccentric;
 /// let e = anomaly_mean_to_eccentric(90.0, 0.001, true);
 /// ```
@@ -357,7 +357,7 @@ pub fn anomaly_eccentric_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 
 /// * `anm_ecc`:Eccentric anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::orbits::anomaly_mean_to_eccentric;
 /// let e = anomaly_mean_to_eccentric(90.0, 0.001, true).unwrap();
 /// ```
@@ -408,7 +408,7 @@ pub fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> Res
 /// * `anm_ecc`:Eccentric anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::orbits::anomaly_true_to_eccentric;
 /// let anm_ecc = anomaly_true_to_eccentric(15.0, 0.001, true);
 /// ```
@@ -441,7 +441,7 @@ pub fn anomaly_true_to_eccentric(anm_true: f64, e: f64, as_degrees: bool) -> f64
 /// * `anm_true`:true anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::orbits::anomaly_eccentric_to_true;
 /// let ecc_anm = anomaly_eccentric_to_true(15.0, 0.001, true);
 /// ```
@@ -474,7 +474,7 @@ pub fn anomaly_eccentric_to_true(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 
 /// * `anm_mean`:Mean anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::orbits::anomaly_true_to_mean;
 /// let anm_mean = anomaly_true_to_mean(90.0, 0.001, true);
 /// ```
@@ -499,7 +499,7 @@ pub fn anomaly_true_to_mean(anm_true: f64, e: f64, as_degrees: bool) -> f64 {
 /// * `anm_true`:True anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
-/// ```
+/// ```rust
 /// use rastro::orbits::anomaly_mean_to_true;
 /// let e = anomaly_mean_to_true(90.0, 0.001, true).unwrap();
 /// ```
