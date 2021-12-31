@@ -67,11 +67,11 @@ function run_rust_script () {
   if [[ "$2" == "quiet" ]]; then
     (printf %s "Test example $1" && (rust-script "$tmpfile" >> /dev/null) &&
     echo "...done") ||
-    (echo "Error building figure $1. Exiting without completing" &&
+    (echo "Error building script $1. Exiting without completing" &&
     rm "$tmpfile" && exit 1)
   else
     (echo "Executing: $1" && (rust-script "$tmpfile")) ||
-    (echo "Error building figure $1. Exiting without completing" &&
+    (echo "Error building script $1. Exiting without completing" &&
     rm "$tmpfile" && exit 1)
   fi
 
@@ -83,10 +83,10 @@ function run_rust_script () {
 function run_python_script () {
   if [[ "$2" == "quiet" ]]; then
     (printf %s "Testing example $1" && (python "$1" >> /dev/null) &&
-    echo "...done") || (echo "Error testing figure $1. Exiting without completing example tests" && exit 1)
+    echo "...done") || (echo "Error testing script $1. Exiting without completing example tests" && exit 1)
   else
     (echo "Execuing: $1" && (python "$1")) ||
-    (echo "Error testing figure $1. Exiting without completing example tests" && exit 1)
+    (echo "Error testing script $1. Exiting without completing example tests" && exit 1)
   fi
 }
 
