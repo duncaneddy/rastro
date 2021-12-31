@@ -126,12 +126,12 @@ fn periapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `a`: The semi-major axis of the astronomical object. Units: (m)
+/// * `e`: The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
 ///
-/// * `r` - The distance of the object at periapsis. Units (s)
+/// * `r`: The distance of the object at periapsis. Units (s)
 #[pyfunction]
 #[text_signature = "(a, e)"]
 fn periapsis_distance(a: f64, e: f64) -> PyResult<f64> {
@@ -171,12 +171,12 @@ fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `a`: The semi-major axis of the astronomical object. Units: (m)
+/// * `e`: The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
 ///
-/// * `r` - The distance of the object at apoapsis. Units (s)
+/// * `r`: The distance of the object at apoapsis. Units (s)
 #[pyfunction]
 #[text_signature = "(a, e)"]
 fn apoapsis_distance(a: f64, e: f64) -> PyResult<f64> {
