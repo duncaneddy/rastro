@@ -8,9 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add `periapsis_distance` and `apoapsis_distance` distance functions.
+- Added developer guide documentation section for how to set up a local development environment 
+  as well at the steps needed to create new modules and features.
+- Added `EarthOrientationData` class with associated traits and methods to load Earth 
+  orientation data.
 
 ### Changed
-- Completed [Orbital Properties](https://duncaneddy.github.io/rastro/user_guide/orbits/properties/) user guide section
+- Completed [Orbital Properties](https://duncaneddy.github.io/rastro/user_guide/orbits/properties/) user guide section.
 
 ### Deprecated
 
@@ -19,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix issue displaying math in Sun-synchronous user guide documentation
 - Added call guards to rastro-python `setup.py` script to prevent accidental installation.
+- Fix mislabling of units on `fig_orbital_period.py` 
+- Removed use of wildcard imports in python package
+- Various documentation improvements
 
 ## [0.1.8] - 2021-12-28
 

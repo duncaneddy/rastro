@@ -29,7 +29,7 @@ fig.update_yaxes(
     showgrid=False, range=[0, 30], secondary_y=True
 )
 fig.update_xaxes(
-    tickmode='linear', tick0=0, dtick=1, title_text=r"Satellite Altitude [km]"
+    tickmode='linear', tick0=0, dtick=1, title_text=r"Satellite Altitude [1000 km]"
 )
 fig.update_yaxes(
     tickmode='linear', tick0=0, dtick=1, title_text=r"Velocity [km/s]"

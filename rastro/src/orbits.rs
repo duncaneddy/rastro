@@ -9,11 +9,11 @@ use crate::constants::{GM_EARTH, R_EARTH, J2_EARTH};
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
 ///
 /// # Returns
 ///
-/// * `period` - The orbital period of the astronomical object. Units: (s)
+/// * `period`:The orbital period of the astronomical object. Units: (s)
 ///
 /// # Examples
 /// ```
@@ -30,12 +30,12 @@ pub fn orbital_period(a: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `gm` - The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
 ///
 /// # Returns
 ///
-/// * `period` - The orbital period of the astronomical object. Units: (s)
+/// * `period`:The orbital period of the astronomical object. Units: (s)
 ///
 /// # Examples
 /// ```
@@ -52,12 +52,12 @@ pub fn orbital_period_general(a: f64, gm: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `as_degrees` - Return output in degrees instead of radians
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `as_degrees`:Return output in degrees instead of radians
 ///
 /// # Returns
 ///
-/// * `n` - The mean motion of the astronomical object. Units: (rad) or (deg)
+/// * `n`:The mean motion of the astronomical object. Units: (rad) or (deg)
 ///
 /// # Examples
 /// ```
@@ -75,13 +75,13 @@ pub fn mean_motion(a: f64, as_degrees: bool) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `gm` - The standard gravitational parameter of primary body. Units: [m^3/s^2]
-/// * `as_degrees` - Return output in degrees instead of radians
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `as_degrees`:Return output in degrees instead of radians
 ///
 /// # Returns
 ///
-/// * `n` - The mean motion of the astronomical object. Units: (rad) or (deg)
+/// * `n`:The mean motion of the astronomical object. Units: (rad) or (deg)
 ///
 /// # Examples
 /// ```
@@ -105,12 +105,12 @@ pub fn mean_motion_general(a: f64,  gm: f64, as_degrees: bool) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `n` - The mean motion of the astronomical object. Units: (rad) or (deg)
-/// * `as_degrees` - Interpret mean motion as degrees if `true` or radians if `false`
+/// * `n`:The mean motion of the astronomical object. Units: (rad) or (deg)
+/// * `as_degrees`:Interpret mean motion as degrees if `true` or radians if `false`
 ///
 /// # Returns
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
 ///
 /// # Examples
 /// ```
@@ -126,13 +126,13 @@ pub fn semimajor_axis(n: f64, as_degrees: bool) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `n` - The mean motion of the astronomical object. Units: (rad) or (deg)
-/// * `gm` - The standard gravitational parameter of primary body. Units: [m^3/s^2]
-/// * `as_degrees` - Interpret mean motion as degrees if `true` or radians if `false`
+/// * `n`:The mean motion of the astronomical object. Units: (rad) or (deg)
+/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `as_degrees`:Interpret mean motion as degrees if `true` or radians if `false`
 ///
 /// # Returns
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
 ///
 /// # Examples
 /// ```
@@ -151,12 +151,12 @@ pub fn semimajor_axis_general(n: f64, gm: f64, as_degrees: bool) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at perigee. Units: (m/s)
+/// * `v`:The magnitude of velocity of the object at perigee. Units: (m/s)
 ///
 /// # Examples
 /// ```
@@ -172,13 +172,13 @@ pub fn perigee_velocity(a: f64, e: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `gm` - The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at periapsis. Units: (m/s)
+/// * `v`:The magnitude of velocity of the object at periapsis. Units: (m/s)
 ///
 /// # Examples
 /// ```
@@ -194,12 +194,12 @@ pub fn periapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
 ///
-/// * `r` - The distance of the object at periapsis. Units (s)
+/// * `r`:The distance of the object at periapsis. Units (s)
 ///
 /// # Examples
 /// ```
@@ -215,12 +215,12 @@ pub fn periapsis_distance(a: f64, e:f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at apogee. Units: (m/s)
+/// * `v`:The magnitude of velocity of the object at apogee. Units: (m/s)
 ///
 /// # Examples
 /// ```
@@ -236,13 +236,13 @@ pub fn apogee_velocity(a: f64, e: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `gm` - The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
 ///
 /// # Returns
 ///
-/// * `v` - The magnitude of velocity of the object at apoapsis. Units: (m/s)
+/// * `v`:The magnitude of velocity of the object at apoapsis. Units: (m/s)
 ///
 /// # Examples
 /// ```
@@ -258,12 +258,12 @@ pub fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
 ///
-/// * `r` - The distance of the object at apoapsis. Units (s)
+/// * `r`:The distance of the object at apoapsis. Units (s)
 ///
 /// # Examples
 /// ```
@@ -280,13 +280,13 @@ pub fn apoapsis_distance(a: f64, e:f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a` - The semi-major axis of the astronomical object. Units: (m)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees` - Return output in degrees instead of radians
+/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees`:Return output in degrees instead of radians
 ///
 /// # Returns
 ///
-/// * `inc` - Inclination for a Sun synchronous orbit. Units: (deg) or (rad)
+/// * `inc`:Inclination for a Sun synchronous orbit. Units: (deg) or (rad)
 ///
 /// # Examples
 /// ```
@@ -312,13 +312,13 @@ pub fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `anm_ecc` - Eccentric anomaly. Units: (rad) or (deg)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees` - Interprets input and returns output in (deg) if `true` or (rad) if `false`
+/// * `anm_ecc`:Eccentric anomaly. Units: (rad) or (deg)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees`:Interprets input and returns output in (deg) if `true` or (rad) if `false`
 ///
 /// # Returns
 ///
-/// * `anm_mean` - Mean anomaly. Units: (rad) or (deg)
+/// * `anm_mean`:Mean anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
 /// ```
@@ -348,13 +348,13 @@ pub fn anomaly_eccentric_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 
 ///
 /// # Arguments
 ///
-/// * `anm_mean` - Mean anomaly. Units: (rad) or (deg)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees` - Interprets input and returns output in (deg) if `true` or (rad) if `false`
+/// * `anm_mean`:Mean anomaly. Units: (rad) or (deg)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees`:Interprets input and returns output in (deg) if `true` or (rad) if `false`
 ///
 /// # Returns
 ///
-/// * `anm_ecc` - Eccentric anomaly. Units: (rad) or (deg)
+/// * `anm_ecc`:Eccentric anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
 /// ```
@@ -399,13 +399,13 @@ pub fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> Res
 ///
 /// # Arguments
 ///
-/// * `anm_true` - true anomaly. Units: (rad) or (deg)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees` - Interprets input and returns output in (deg) if `true` or (rad) if `false`
+/// * `anm_true`:true anomaly. Units: (rad) or (deg)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees`:Interprets input and returns output in (deg) if `true` or (rad) if `false`
 ///
 /// # Returns
 ///
-/// * `anm_ecc` - Eccentric anomaly. Units: (rad) or (deg)
+/// * `anm_ecc`:Eccentric anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
 /// ```
@@ -432,13 +432,13 @@ pub fn anomaly_true_to_eccentric(anm_true: f64, e: f64, as_degrees: bool) -> f64
 ///
 /// # Arguments
 ///
-/// * `anm_ecc` - Eccentric anomaly. Units: (rad) or (deg)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees` - Interprets input and returns output in (deg) if `true` or (rad) if `false`
+/// * `anm_ecc`:Eccentric anomaly. Units: (rad) or (deg)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees`:Interprets input and returns output in (deg) if `true` or (rad) if `false`
 ///
 /// # Returns
 ///
-/// * `anm_true` - true anomaly. Units: (rad) or (deg)
+/// * `anm_true`:true anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
 /// ```
@@ -465,13 +465,13 @@ pub fn anomaly_eccentric_to_true(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 
 ///
 /// # Arguments
 ///
-/// * `anm_true` - True anomaly. Units: (rad) or (deg)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees` - Interprets input and returns output in (deg) if `true` or (rad) if `false`
+/// * `anm_true`:True anomaly. Units: (rad) or (deg)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees`:Interprets input and returns output in (deg) if `true` or (rad) if `false`
 ///
 /// # Returns
 ///
-/// * `anm_mean` - Mean anomaly. Units: (rad) or (deg)
+/// * `anm_mean`:Mean anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
 /// ```
@@ -490,13 +490,13 @@ pub fn anomaly_true_to_mean(anm_true: f64, e: f64, as_degrees: bool) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `anm_mean` - Mean anomaly. Units: (rad) or (deg)
-/// * `e` - The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees` - Interprets input and returns output in (deg) if `true` or (rad) if `false`
+/// * `anm_mean`:Mean anomaly. Units: (rad) or (deg)
+/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees`:Interprets input and returns output in (deg) if `true` or (rad) if `false`
 ///
 /// # Returns
 ///
-/// * `anm_true` - True anomaly. Units: (rad) or (deg)
+/// * `anm_true`:True anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
 /// ```
