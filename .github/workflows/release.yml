@@ -17,7 +17,10 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - run: cargo test
+      - name: Run main package tests
+        run: cargo test
+      - name: Run ignored tests
+        run: cargo test -- --ignored
   test-python:
     runs-on: ${{ matrix.os }}
     needs: test-rust

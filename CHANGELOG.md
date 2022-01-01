@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Completed [Orbital Properties](https://duncaneddy.github.io/rastro/user_guide/orbits/properties/) user guide section.
+- Add class of `#[ignore]` tests that are run only on release builds
 
 ### Deprecated
 
