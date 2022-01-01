@@ -13,7 +13,7 @@ use rastro::orbits as orbits;
 /// Returns:
 ///     period (`float`): The orbital period of the astronomical object. Units: (s)
 #[pyfunction]
-#[text_signature = "(a)"]
+#[pyo3(text_signature = "(a)")]
 fn orbital_period(a: f64) -> PyResult<f64> {
     Ok(orbits::orbital_period(a))
 }
@@ -27,7 +27,7 @@ fn orbital_period(a: f64) -> PyResult<f64> {
 /// Returns:
 ///     period (`float`): The orbital period of the astronomical object. Units: (s)
 #[pyfunction]
-#[text_signature = "(a, gm)"]
+#[pyo3(text_signature = "(a, gm)")]
 fn orbital_period_general(a: f64, gm: f64) -> PyResult<f64> {
     Ok(orbits::orbital_period_general(a, gm))
 }
@@ -41,7 +41,7 @@ fn orbital_period_general(a: f64, gm: f64) -> PyResult<f64> {
 /// Returns:
 ///     n (`float`): The mean motion of the astronomical object. Units: (rad) or (deg)
 #[pyfunction(as_degrees="true")]
-#[text_signature = "(a, as_degrees)"]
+#[pyo3(text_signature = "(a, as_degrees)")]
 fn mean_motion(a: f64, as_degrees: bool) -> PyResult<f64> {
     Ok(orbits::mean_motion(a, as_degrees))
 }
@@ -57,7 +57,7 @@ fn mean_motion(a: f64, as_degrees: bool) -> PyResult<f64> {
 /// Returns:
 ///     n (`float`): The mean motion of the astronomical object. Units: (rad) or (deg)
 #[pyfunction(as_degrees="true")]
-#[text_signature = "(a, gm, as_degrees)"]
+#[pyo3(text_signature = "(a, gm, as_degrees)")]
 fn mean_motion_general(a: f64, gm: f64, as_degrees: bool) -> PyResult<f64> {
     Ok(orbits::mean_motion_general(a, gm, as_degrees))
 }
@@ -72,7 +72,7 @@ fn mean_motion_general(a: f64, gm: f64, as_degrees: bool) -> PyResult<f64> {
 /// Returns:
 ///     a (`float`): The semi-major axis of the astronomical object. Units: (m)
 #[pyfunction(as_degrees="true")]
-#[text_signature = "(a, as_degrees)"]
+#[pyo3(text_signature = "(a, as_degrees)")]
 fn semimajor_axis(n: f64, as_degrees: bool) -> PyResult<f64> {
     Ok(orbits::semimajor_axis(n, as_degrees))
 }
@@ -88,7 +88,7 @@ fn semimajor_axis(n: f64, as_degrees: bool) -> PyResult<f64> {
 /// Returns:
 ///     a (`float`): The semi-major axis of the astronomical object. Units: (m)
 #[pyfunction(as_degrees="true")]
-#[text_signature = "(a, gm, as_degrees)"]
+#[pyo3(text_signature = "(a, gm, as_degrees)")]
 fn semimajor_axis_general(n: f64, gm: f64, as_degrees: bool) -> PyResult<f64> {
     Ok(orbits::semimajor_axis_general(n, gm, as_degrees))
 }
@@ -102,7 +102,7 @@ fn semimajor_axis_general(n: f64, gm: f64, as_degrees: bool) -> PyResult<f64> {
 /// Returns:
 ///     v (`float`): The magnitude of velocity of the object at perigee. Units: (m/s)
 #[pyfunction]
-#[text_signature = "(a, e)"]
+#[pyo3(text_signature = "(a, e)")]
 fn perigee_velocity(a: f64, e: f64) -> PyResult<f64> {
     Ok(orbits::perigee_velocity(a, e))
 }
@@ -117,7 +117,7 @@ fn perigee_velocity(a: f64, e: f64) -> PyResult<f64> {
 /// Returns:
 ///     v (`float`): The magnitude of velocity of the object at periapsis. Units: (m/s)
 #[pyfunction]
-#[text_signature = "(a, e)"]
+#[pyo3(text_signature = "(a, e)")]
 fn periapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
     Ok(orbits::periapsis_velocity(a, e, gm))
 }
@@ -133,7 +133,7 @@ fn periapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
 ///
 /// * `r`: The distance of the object at periapsis. Units (s)
 #[pyfunction]
-#[text_signature = "(a, e)"]
+#[pyo3(text_signature = "(a, e)")]
 fn periapsis_distance(a: f64, e: f64) -> PyResult<f64> {
     Ok(orbits::periapsis_distance(a, e))
 }
@@ -147,7 +147,7 @@ fn periapsis_distance(a: f64, e: f64) -> PyResult<f64> {
 /// Returns:
 ///     v (`float`): The magnitude of velocity of the object at apogee. Units: (m/s)
 #[pyfunction]
-#[text_signature = "(a, e)"]
+#[pyo3(text_signature = "(a, e)")]
 fn apogee_velocity(a: f64, e: f64) -> PyResult<f64> {
     Ok(orbits::apogee_velocity(a, e))
 }
@@ -162,7 +162,7 @@ fn apogee_velocity(a: f64, e: f64) -> PyResult<f64> {
 /// Returns:
 ///     v (`float`): The magnitude of velocity of the object at apoapsis. Units: (m/s)
 #[pyfunction]
-#[text_signature = "(a, e)"]
+#[pyo3(text_signature = "(a, e)")]
 fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
     Ok(orbits::apoapsis_velocity(a, e, gm))
 }
@@ -178,7 +178,7 @@ fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> PyResult<f64> {
 ///
 /// * `r`: The distance of the object at apoapsis. Units (s)
 #[pyfunction]
-#[text_signature = "(a, e)"]
+#[pyo3(text_signature = "(a, e)")]
 fn apoapsis_distance(a: f64, e: f64) -> PyResult<f64> {
     Ok(orbits::apoapsis_distance(a, e))
 }
@@ -194,7 +194,7 @@ fn apoapsis_distance(a: f64, e: f64) -> PyResult<f64> {
 /// Returns:
 ///     inc (`float`) Inclination for a Sun synchronous orbit. Units: (deg) or (rad)
 #[pyfunction]
-#[text_signature = "(a, e, as_degrees)"]
+#[pyo3(text_signature = "(a, e, as_degrees)")]
 fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
     Ok(orbits::sun_synchronous_inclination(a, e, as_degrees))
 }
@@ -209,7 +209,7 @@ fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> PyResult<f64
 /// Returns:
 ///     anm_mean (`float`): Mean anomaly. Units: (rad) or (deg)
 #[pyfunction]
-#[text_signature = "(anm_ecc, e, as_degrees)"]
+#[pyo3(text_signature = "(anm_ecc, e, as_degrees)")]
 fn anomaly_eccentric_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
     Ok(orbits::anomaly_eccentric_to_mean(anm_ecc, e, as_degrees))
 }
@@ -224,7 +224,7 @@ fn anomaly_eccentric_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult
 /// Returns:
 ///     anm_ecc (`float`): Eccentric anomaly. Units: (rad) or (deg)
 #[pyfunction]
-#[text_signature = "(anm_mean, e, as_degrees)"]
+#[pyo3(text_signature = "(anm_mean, e, as_degrees)")]
 fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
     let res = orbits::anomaly_mean_to_eccentric(anm_mean, e, as_degrees);
     if res.is_ok() {
@@ -244,7 +244,7 @@ fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> PyResul
 /// Returns:
 ///     anm_ecc (`float`): Eccentric anomaly. Units: (rad) or (deg)
 #[pyfunction]
-#[text_signature = "(anm_true, e, as_degrees))"]
+#[pyo3(text_signature = "(anm_true, e, as_degrees))")]
 fn anomaly_true_to_eccentric(anm_true: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
     Ok(orbits::anomaly_true_to_eccentric(anm_true, e, as_degrees))
 }
@@ -259,7 +259,7 @@ fn anomaly_true_to_eccentric(anm_true: f64, e: f64, as_degrees: bool) -> PyResul
 /// # Returns
 ///     anm_true (`float`): true anomaly. Units: (rad) or (deg)
 #[pyfunction]
-#[text_signature = "(anm_ecc, e, as_degrees))"]
+#[pyo3(text_signature = "(anm_ecc, e, as_degrees))")]
 fn anomaly_eccentric_to_true(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
     Ok(orbits::anomaly_eccentric_to_true(anm_ecc, e, as_degrees))
 }
@@ -274,7 +274,7 @@ fn anomaly_eccentric_to_true(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult
 /// Returns:
 ///     anm_mean (`float`): Mean anomaly. Units: (rad) or (deg)
 #[pyfunction]
-#[text_signature = "(anm_ecc, e, as_degrees))"]
+#[pyo3(text_signature = "(anm_ecc, e, as_degrees))")]
 fn anomaly_true_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
     Ok(orbits::anomaly_true_to_mean(anm_ecc, e, as_degrees))
 }
@@ -289,7 +289,7 @@ fn anomaly_true_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> PyResult<f64>
 /// Returns:
 ///     anm_true (`float`): True anomaly. Units: (rad) or (deg)
 #[pyfunction]
-#[text_signature = "(anm_mean, e, as_degrees)"]
+#[pyo3(text_signature = "(anm_mean, e, as_degrees)")]
 fn anomaly_mean_to_true(anm_mean: f64, e: f64, as_degrees: bool) -> PyResult<f64> {
     let res = orbits::anomaly_mean_to_true(anm_mean, e, as_degrees);
     if res.is_ok() {

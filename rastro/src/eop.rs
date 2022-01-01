@@ -8,9 +8,9 @@ use crate::constants::AS2RAD;
 
 // Package EOP data as part of crate
 /// Packaged C04 EOP Data File
-static PACKAGED_C04_FILE: &'static [u8] = include_bytes!("../../data/iau2000A_c04_14.txt");
+static PACKAGED_C04_FILE: &'static [u8] = include_bytes!("../data/iau2000A_c04_14.txt");
 /// Packaged Finals 2000A Data File
-static PACKAGED_FINALS2000_FILE: &'static [u8] = include_bytes!("../../data/iau2000A_finals_ab.txt");
+static PACKAGED_FINALS2000_FILE: &'static [u8] = include_bytes!("../data/iau2000A_finals_ab.txt");
 
 /// Enumerated value that indicates the preferred behavior of the Earth Orientation Data provider
 /// when the desired time point is not present.
@@ -81,15 +81,15 @@ pub struct EarthOrientationData {
     /// - `dY`: "Y" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
     /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI.Units: (seconds)
     ///   day. Units: (seconds)
-    data: HashMap<u32, (f64, f64, f64, Option<f64>, Option<f64>, Option<f64>)>,
+    pub data: HashMap<u32, (f64, f64, f64, Option<f64>, Option<f64>, Option<f64>)>,
     /// Defines desired behavior for out-of-bounds Earth Orientation data access
-    extrapolate: EOPExtrapolation,
+    pub extrapolate: EOPExtrapolation,
     /// Defines interpolation behavior of data for requests between data points in table.
     ///
     /// When set to `true` data will be linearly interpolated to the desired time.
     /// When set to `false` data will be given as the value as the closest previous data entry
     /// present.
-    interpolate: bool,
+    pub interpolate: bool,
     /// Minimum date of stored data. This is the value of the smallest key stored in the `data`
     /// HashMap. Value is a modified Julian date.
     pub mjd_min: u32,
@@ -427,7 +427,7 @@ impl EarthOrientationData {
     /// ```rust
     /// use std::env;
     /// use std::path::Path;
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// // Get crate root directly to provide consistent path to test data file
     /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
@@ -469,7 +469,7 @@ impl EarthOrientationData {
     /// ```rust
     /// use std::env;
     /// use std::path::Path;
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// // Set EOP extrapolation behavior will hold the last value
     /// let eop_extrapolation = EOPExtrapolation::Hold;
@@ -505,7 +505,7 @@ impl EarthOrientationData {
     /// ```rust
     /// use std::env;
     /// use std::path::Path;
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// // Get crate root directly to provide consistent path to test data file
     /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
@@ -550,7 +550,7 @@ impl EarthOrientationData {
     ///
     /// # Examples
     /// ```rust
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// // Set EOP extrapolation behavior will hold the last value
     /// let eop_extrapolation = EOPExtrapolation::Hold;
@@ -593,10 +593,10 @@ impl EarthOrientationData {
     /// - `ut1_utc`: Offset of UT1 time scale from UTC time scale. Units: (seconds)
     ///
     /// # Examples
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// ```rust
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
     /// let eop_extrapolation = EOPExtrapolation::Hold;
@@ -666,10 +666,10 @@ impl EarthOrientationData {
     /// - `pm_y`: y-component of polar motion correction. Units: (radians)
     ///
     /// # Examples
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// ```rust
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
     /// let eop_extrapolation = EOPExtrapolation::Hold;
@@ -745,10 +745,10 @@ impl EarthOrientationData {
     /// - `dY`: "Y" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
     ///
     /// # Examples
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// ```rust
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
     /// let eop_extrapolation = EOPExtrapolation::Hold;
@@ -823,10 +823,10 @@ impl EarthOrientationData {
     /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI.Units: (seconds)
     ///
     /// # Examples
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// ```rust
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
     /// let eop_extrapolation = EOPExtrapolation::Hold;
@@ -903,7 +903,7 @@ impl EarthOrientationData {
     ///
     /// # Examples
     /// ```rust
-    /// use rastro::data::*;
+    /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
     /// let eop_extrapolation = EOPExtrapolation::Hold;
@@ -949,7 +949,7 @@ mod tests {
     use std::path::Path;
     use std::env;
     use crate::constants::AS2RAD;
-    use crate::data::eop::*;
+    use crate::eop::*;
 
     #[test]
     fn test_parse_c04_line() {

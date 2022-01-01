@@ -57,3 +57,7 @@ from rastro_python.orbits import (
     anomaly_true_to_mean,
     anomaly_mean_to_true,
 )
+
+from rastro_python.eop import (
+    EarthOrientationData
+)
