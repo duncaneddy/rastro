@@ -26,5 +26,5 @@ version = "0.15.1"
 features = ["extension-module"]
 
 [lib]
-name = "rastro_python"
+name = "rastro"
 crate-type = ["cdylib"]
