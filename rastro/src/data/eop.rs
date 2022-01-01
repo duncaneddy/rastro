@@ -18,7 +18,7 @@ static PACKAGED_FINALS2000_FILE: &'static [u8] = include_bytes!("../../data/iau2
 /// # Values
 /// - `Zero`: Return a value of zero for the missing data
 /// - `Hold`: Return the last value prior to the requested date
-/// - `Error`: Throw an
+/// - `Error`: Panics current execution thread, immediately terminating the program
 #[derive(Debug,Clone,PartialEq,Copy)]
 pub enum EOPExtrapolation {
     Zero,
@@ -67,7 +67,7 @@ impl fmt::Display for EOPType {
 #[derive(Clone)]
 pub struct EarthOrientationData {
     /// Type of Earth orientation data loaded
-    eop_type: EOPType,
+    pub eop_type: EOPType,
     /// Primary data structure storing loaded Earth orientation parameter data.
     ///
     /// Key:
@@ -79,7 +79,7 @@ pub struct EarthOrientationData {
     /// - `ut1_utc`: Offset of UT1 time scale from UTC time scale. Units: (seconds)
     /// - `dX`: "X" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
     /// - `dY`: "Y" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
-    /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI
+    /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI.Units: (seconds)
     ///   day. Units: (seconds)
     data: HashMap<u32, (f64, f64, f64, Option<f64>, Option<f64>, Option<f64>)>,
     /// Defines desired behavior for out-of-bounds Earth Orientation data access
@@ -92,18 +92,18 @@ pub struct EarthOrientationData {
     interpolate: bool,
     /// Minimum date of stored data. This is the value of the smallest key stored in the `data`
     /// HashMap. Value is a modified Julian date.
-    mjd_min: u32,
+    pub mjd_min: u32,
     /// Maximum date of stored data. This is the value of the largest key stored in the `data`
     /// HashMap. Behavior
     /// of data retrieval for dates larger than this will be defined by the `extrapolate` value.
     /// Babylon's Fall
-    mjd_max: u32,
+    pub mjd_max: u32,
     /// Modified Julian date of last valid Length of Day (LOD) value. Only applicable for
     /// Bulletin A EOP data. Will be 0 for Bulletin B data and the same as `mjd_max` for C04 data.
-    mjd_last_lod: u32,
+    pub mjd_last_lod: u32,
     /// Modified Julian date of last valid precession/nutation dX/dY correction values. Only
     /// applicable for Bulletin A. Will always be the sam as `mjd_max` for Bulletin B and C04 data.
-    mjd_last_dxdy: u32,
+    pub mjd_last_dxdy: u32,
 }
 
 impl fmt::Display for EarthOrientationData {
@@ -137,7 +137,7 @@ impl fmt::Debug for EarthOrientationData {
 /// - `ut1_utc`: Offset of UT1 time scale from UTC time scale. Units: (seconds)
 /// - `dX`: "X" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
 /// - `dY`: "Y" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
-/// - `lod`: Difference between astronomically determined length of day and 86400 second TAI
+/// - `lod`: Difference between astronomically determined length of day and 86400 second TAI. Units: (seconds)
 #[allow(non_snake_case)]
 fn parse_c04_line(line: &str) -> Result<(u32, f64, f64, f64, Option<f64>, Option<f64>,
                                              Option<f64>), String> {
@@ -251,7 +251,7 @@ fn eop_c04_from_bufreader<T: Read>(reader: BufReader<T>, extrapolate: EOPExtrapo
 /// - `ut1_utc`: Offset of UT1 time scale from UTC time scale. Units: (seconds)
 /// - `dX`: "X" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
 /// - `dY`: "Y" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
-/// - `lod`: Difference between astronomically determined length of day and 86400 second TAI
+/// - `lod`: Difference between astronomically determined length of day and 86400 second TAI. Units: (seconds)
 #[allow(non_snake_case)]
 fn parse_standard_eop_line(line: &str, eop_type: EOPType) -> Result<(u32, f64, f64, f64,
                              Option<f64>, Option<f64>, Option<f64>), String> {
@@ -422,6 +422,27 @@ impl EarthOrientationData {
     ///
     /// # Returns
     /// - `eop`: On successful parse returns `EarthOrientationData` object
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::data::*;
+    ///
+    /// // Get crate root directly to provide consistent path to test data file
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// // Create filepath object of desired Earth orientation data to load
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");
+    /// // Set EOP extrapolation behavior will hold the last value
+    /// let eop_extrapolation = EOPExtrapolation::Hold;
+    /// // Set EOP interpolation behavior -> will interpolate between points
+    /// let eop_interpolation = true;
+    /// // Create Earth orientation data object loading the
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(),
+    ///     eop_extrapolation, eop_interpolation).unwrap();
+    /// // Display the properties of the loaded data including the number of data points
+    /// println!("{}", eop);
+    /// ```
     pub fn from_c04_file(filepath: &str, extrapolate: EOPExtrapolation, interpolate: bool) ->
                                                                                             Result<Self, String> {
         let f = match File::open(filepath) {
@@ -444,6 +465,21 @@ impl EarthOrientationData {
     ///
     /// # Returns
     /// - `eop`: Returns `EarthOrientationData` object
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::data::*;
+    ///
+    /// // Set EOP extrapolation behavior will hold the last value
+    /// let eop_extrapolation = EOPExtrapolation::Hold;
+    /// // Set EOP interpolation behavior -> will interpolate between points
+    /// let eop_interpolation = true;
+    /// // Load packaged C04 data
+    /// let eop = EarthOrientationData::from_default_c04(eop_extrapolation, eop_interpolation);
+    /// // Display the properties of the loaded data including the number of data points
+    /// println!("{}", eop);
+    /// ```
     pub fn from_default_c04(extrapolate: EOPExtrapolation, interpolate: bool) -> Self {
         let reader = BufReader::new(PACKAGED_C04_FILE);
         eop_c04_from_bufreader(reader, extrapolate, interpolate).expect("Failed to parse and \
@@ -464,6 +500,29 @@ impl EarthOrientationData {
     ///
     /// # Returns
     /// - `eop`: On successful parse returns `EarthOrientationData` object
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::data::*;
+    ///
+    /// // Get crate root directly to provide consistent path to test data file
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// // Create filepath object of desired Earth orientation data to load
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_finals_ab.txt");
+    /// // Set EOP extrapolation behavior will hold the last value
+    /// let eop_extrapolation = EOPExtrapolation::Hold;
+    /// // Set EOP interpolation behavior -> will interpolate between points
+    /// let eop_interpolation = true;
+    /// // Set type of EOP data to load
+    /// let eop_type = EOPType::StandardBulletinA;
+    /// // Load standard Earth orientation file. Typically a "Finals2000" file
+    /// let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+    ///             eop_extrapolation, eop_interpolation, eop_type).unwrap();
+    /// // Display the properties of the loaded data including the number of data points
+    /// println!("{}", eop);
+    /// ```
     pub fn from_standard_file(filepath: &str, extrapolate: EOPExtrapolation, interpolate: bool, eop_type: EOPType) ->
     Result<Self, String> {
         let f = match File::open(filepath) {
@@ -488,16 +547,401 @@ impl EarthOrientationData {
     ///
     /// # Returns
     /// - `eop`: Returns `EarthOrientationData` object
+    ///
+    /// # Examples
+    /// ```rust
+    /// use rastro::data::*;
+    ///
+    /// // Set EOP extrapolation behavior will hold the last value
+    /// let eop_extrapolation = EOPExtrapolation::Hold;
+    /// // Set EOP interpolation behavior -> will interpolate between points
+    /// let eop_interpolation = true;
+    /// // Set type of EOP data to load
+    /// let eop_type = EOPType::StandardBulletinA;
+    /// // Load packaged standard EOP data
+    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// // Display the properties of the loaded data including the number of data points
+    /// println!("{}", eop);
+    /// ```
     pub fn from_default_standard(extrapolate: EOPExtrapolation, interpolate: bool, eop_type: EOPType) -> Self {
         let reader = BufReader::new(PACKAGED_FINALS2000_FILE);
         eop_standard_eop_from_bufreader(reader, extrapolate, interpolate, eop_type).expect("Failed to \
         parse and \
         load packed Standard Earth Orientation Data.")
     }
+
+    /// Get UT1-UTC offset set for specified date.
+    ///
+    /// Function will return the UT1-UTC time scale for the given date.
+    /// Function is guaranteed to return a value. If the request value is beyond the end of the
+    /// loaded Earth orientation data set the behavior is specified by the `extrapolate` setting of
+    /// the underlying `EarthOrientationData` object. The possible behaviors for the returned
+    /// data are:
+    /// - `Zero`: Returned values will be `0.0` where data is not available
+    /// - `Hold`: Will return the last available returned value when data is not available
+    /// - `Error`: Function call will panic and terminate the program
+    ///
+    /// If the date is in between data points, which typically are at integer day intervals, the
+    /// function will linearly interpolate between adjacent data points if `interpolate` was set
+    /// to `true` for the `EarthOrientationData` object or will return the value from the most
+    /// recent data point if `false`.
+    ///
+    /// # Arguments
+    /// - `mjd`: Modified Julian date to get Earth orientation parameters for
+    ///
+    /// # Returns
+    /// - `ut1_utc`: Offset of UT1 time scale from UTC time scale. Units: (seconds)
+    ///
+    /// # Examples
+    /// use rastro::data::*;
+    ///
+    /// ```rust
+    /// use rastro::data::*;
+    ///
+    /// // Load Standard EOP
+    /// let eop_extrapolation = EOPExtrapolation::Hold;
+    /// let eop_interpolation = true;
+    /// let eop_type = EOPType::StandardBulletinA;
+    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    ///
+    /// // Get EOP for 36 hours before the end of the table
+    /// let ut1_utc = eop.get_ut1_utc(eop.mjd_max as f64 - 1.5);
+    /// ```
+    pub fn get_ut1_utc(&self, mjd: f64) -> f64 {
+        // Check if time is beyond bounds of data table
+        if mjd < self.mjd_max as f64 {
+            if self.interpolate == true {
+                // Get Time points
+                let t1:f64 = mjd.floor();
+                let t2:f64 = mjd.floor() + 1.0;
+
+                // Get Values
+                let y1:f64 = self.data[&(mjd.floor() as u32)].2;
+                let y2:f64 = self.data[&(mjd.floor() as u32 + 1)].2;
+
+                // Interpolate
+                (y2 - y1) / (t2 - t1) * (mjd - t1) + y1
+            } else {
+                // Prior value
+                self.data[&(mjd.floor() as u32)].2
+            }
+        } else {
+            match self.extrapolate {
+                EOPExtrapolation::Zero => {
+                    0.0
+                },
+                EOPExtrapolation::Hold => {
+                    // UT1-UTC is guaranteed to be present through `mjd_max`
+                    self.data[&self.mjd_max].2
+                },
+                EOPExtrapolation::Error => {
+                    panic!("Attempted ut1-utc beyond end of loaded EOP data. Accessed: {}, Max \
+                    MJD: {}", mjd, self.mjd_max)
+                }
+            }
+        }
+    }
+
+    /// Get polar motion offset set for specified date.
+    ///
+    /// Function will return the pm-x and pm-y for the given date.
+    /// Function is guaranteed to return a value. If the request value is beyond the end of the
+    /// loaded Earth orientation data set the behavior is specified by the `extrapolate` setting of
+    /// the underlying `EarthOrientationData` object. The possible behaviors for the returned
+    /// data are:
+    /// - `Zero`: Returned values will be `0.0` where data is not available
+    /// - `Hold`: Will return the last available returned value when data is not available
+    /// - `Error`: Function call will panic and terminate the program
+    ///
+    /// If the date is in between data points, which typically are at integer day intervals, the
+    /// function will linearly interpolate between adjacent data points if `interpolate` was set
+    /// to `true` for the `EarthOrientationData` object or will return the value from the most
+    /// recent data point if `false`.
+    ///
+    /// # Arguments
+    /// - `mjd`: Modified Julian date to get Earth orientation parameters for
+    ///
+    /// # Returns
+    /// - `pm_x`: x-component of polar motion correction. Units: (radians)
+    /// - `pm_y`: y-component of polar motion correction. Units: (radians)
+    ///
+    /// # Examples
+    /// use rastro::data::*;
+    ///
+    /// ```rust
+    /// use rastro::data::*;
+    ///
+    /// // Load Standard EOP
+    /// let eop_extrapolation = EOPExtrapolation::Hold;
+    /// let eop_interpolation = true;
+    /// let eop_type = EOPType::StandardBulletinA;
+    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    ///
+    /// // Get EOP for 36 hours before the end of the table
+    /// let (pm_x, pm_y) = eop.get_pm(eop.mjd_max as f64 - 1.5);
+    /// ```
+    pub fn get_pm(&self, mjd: f64) -> (f64, f64) {
+        // Check if time is beyond bounds of data table
+        if mjd < self.mjd_max as f64 {
+            if self.interpolate == true {
+                // Get Time points
+                let t1:f64 = mjd.floor();
+                let t2:f64 = mjd.floor() + 1.0;
+
+                // Get Values
+                let pmx1:f64 = self.data[&(mjd.floor() as u32)].0;
+                let pmx2:f64 = self.data[&(mjd.floor() as u32 + 1)].0;
+
+                let pmy1:f64 = self.data[&(mjd.floor() as u32)].1;
+                let pmy2:f64 = self.data[&(mjd.floor() as u32 + 1)].1;
+
+                // Interpolate
+                (
+                    (pmx2 - pmx1) / (t2 - t1) * (mjd - t1) + pmx1,
+                    (pmy2 - pmy1) / (t2 - t1) * (mjd - t1) + pmy1
+                )
+            } else {
+                // Prior value
+                (self.data[&(mjd.floor() as u32)].0, self.data[&(mjd.floor() as u32)].1)
+            }
+        } else {
+            match self.extrapolate {
+                EOPExtrapolation::Zero => {
+                    (0.0, 0.0)
+                },
+                EOPExtrapolation::Hold => {
+                    // pm-x and pm-y are guaranteed to be present through `mjd_max`
+                    (self.data[&self.mjd_max].0, self.data[&self.mjd_max].1)
+                },
+                EOPExtrapolation::Error => {
+                    panic!("Attempted pm-x,pm-y beyond end of loaded EOP data. Accessed: {}, Max \
+                    MJD: {}", mjd, self.mjd_max)
+                }
+            }
+        }
+    }
+
+    /// Get precession-nutation for specified date.
+    ///
+    /// Function will return the dX and dY for the given date.
+    /// Function is guaranteed to return a value. If the request value is beyond the end of the
+    /// loaded Earth orientation data set the behavior is specified by the `extrapolate` setting of
+    /// the underlying `EarthOrientationData` object. The possible behaviors for the returned
+    /// data are:
+    /// - `Zero`: Returned values will be `0.0` where data is not available
+    /// - `Hold`: Will return the last available returned value when data is not available
+    /// - `Error`: Function call will panic and terminate the program
+    ///
+    /// If the date is in between data points, which typically are at integer day intervals, the
+    /// function will linearly interpolate between adjacent data points if `interpolate` was set
+    /// to `true` for the `EarthOrientationData` object or will return the value from the most
+    /// recent data point if `false`.
+    ///
+    /// # Arguments
+    /// - `mjd`: Modified Julian date to get Earth orientation parameters for
+    ///
+    /// # Returns
+    /// - `dX`: "X" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
+    /// - `dY`: "Y" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
+    ///
+    /// # Examples
+    /// use rastro::data::*;
+    ///
+    /// ```rust
+    /// use rastro::data::*;
+    ///
+    /// // Load Standard EOP
+    /// let eop_extrapolation = EOPExtrapolation::Hold;
+    /// let eop_interpolation = true;
+    /// let eop_type = EOPType::StandardBulletinA;
+    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    ///
+    /// // Get EOP for 36 hours before the end of the table
+    /// let (dx, dy) = eop.get_dxdy(eop.mjd_last_dxdy as f64 - 1.5);
+    /// ```
+    pub fn get_dxdy(&self, mjd: f64) -> (f64, f64) {
+        // Check if time is beyond bounds of data table
+        if mjd < self.mjd_last_dxdy as f64 {
+            if self.interpolate == true {
+                // Get Time points
+                let t1:f64 = mjd.floor();
+                let t2:f64 = mjd.floor() + 1.0;
+
+                // Get Values
+                let dx1:f64 = self.data[&(mjd.floor() as u32)].3.unwrap();
+                let dx2:f64 = self.data[&(mjd.floor() as u32 + 1)].3.unwrap();
+
+                let dy1:f64 = self.data[&(mjd.floor() as u32)].4.unwrap();
+                let dy2:f64 = self.data[&(mjd.floor() as u32 + 1)].4.unwrap();
+
+                // Interpolate
+                (
+                    (dx2 - dx1) / (t2 - t1) * (mjd - t1) + dx1,
+                    (dy2 - dy1) / (t2 - t1) * (mjd - t1) + dy1
+                )
+            } else {
+                // Prior value
+                (self.data[&(mjd.floor() as u32)].3.unwrap(), self.data[&(mjd.floor() as u32)].4.unwrap())
+            }
+        } else {
+            match self.extrapolate {
+                EOPExtrapolation::Zero => {
+                    (0.0, 0.0)
+                },
+                EOPExtrapolation::Hold => {
+                    // dX,dY are guaranteed to be present through `mjd_last_dxdy`
+                    (self.data[&self.mjd_last_dxdy].3.unwrap(), self.data[&self.mjd_last_dxdy].4.unwrap())
+                },
+                EOPExtrapolation::Error => {
+                    panic!("Attempted dX,dY beyond end of loaded EOP data. Accessed: {}, Max \
+                    MJD: {}", mjd, self.mjd_last_dxdy)
+                }
+            }
+        }
+    }
+
+    /// Get length of day offset set for specified date.
+    ///
+    /// Function will return the LOD offset for the given date.
+    /// Function is guaranteed to return a value. If the request value is beyond the end of the
+    /// loaded Earth orientation data set the behavior is specified by the `extrapolate` setting of
+    /// the underlying `EarthOrientationData` object. The possible behaviors for the returned
+    /// data are:
+    /// - `Zero`: Returned values will be `0.0` where data is not available
+    /// - `Hold`: Will return the last available returned value when data is not available
+    /// - `Error`: Function call will panic and terminate the program
+    ///
+    /// If the date is in between data points, which typically are at integer day intervals, the
+    /// function will linearly interpolate between adjacent data points if `interpolate` was set
+    /// to `true` for the `EarthOrientationData` object or will return the value from the most
+    /// recent data point if `false`.
+    ///
+    /// # Arguments
+    /// - `mjd`: Modified Julian date to get Earth orientation parameters for
+    ///
+    /// # Returns
+    /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI.Units: (seconds)
+    ///
+    /// # Examples
+    /// use rastro::data::*;
+    ///
+    /// ```rust
+    /// use rastro::data::*;
+    ///
+    /// // Load Standard EOP
+    /// let eop_extrapolation = EOPExtrapolation::Hold;
+    /// let eop_interpolation = true;
+    /// let eop_type = EOPType::StandardBulletinA;
+    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    ///
+    /// // Get EOP for 36 hours before the end of the table
+    /// let lod = eop.get_lod(eop.mjd_last_lod as f64 - 1.5);
+    /// ```
+    pub fn get_lod(&self, mjd: f64) -> f64 {
+        // Check if time is beyond bounds of data table
+        if mjd < self.mjd_last_lod as f64 {
+            if self.interpolate == true {
+                // Get Time points
+                let t1:f64 = mjd.floor();
+                let t2:f64 = mjd.floor() + 1.0;
+
+                // Get Values
+                let y1:f64 = self.data[&(mjd.floor() as u32)].5.unwrap();
+                let y2:f64 = self.data[&(mjd.floor() as u32 + 1)].5.unwrap();
+
+                // Interpolate
+                (y2 - y1) / (t2 - t1) * (mjd - t1) + y1
+            } else {
+                // Prior value
+                self.data[&(mjd.floor() as u32)].5.unwrap()
+            }
+        } else {
+            match self.extrapolate {
+                EOPExtrapolation::Zero => {
+                    0.0
+                },
+                EOPExtrapolation::Hold => {
+                    // LOD is guaranteed to be present through `mjd_last_lod`
+                    self.data[&self.mjd_last_lod].5.unwrap()
+                },
+                EOPExtrapolation::Error => {
+                    panic!("Attempted LOD beyond end of loaded EOP data. Accessed: {}, Max \
+                    MJD: {}", mjd, self.mjd_last_lod)
+                }
+            }
+        }
+    }
+
+    /// Get Earth orientation parameter set for specified date.
+    ///
+    /// Function will return the full set of Earth orientation parameters for the given date.
+    /// Function is guaranteed to provide the full set of Earth Orientation parameters according
+    /// to the behavior specified by the `extrapolate` setting of the underlying
+    /// `EarthOrientationData` object. The possible behaviors for the returned data are:
+    /// - `Zero`: Returned values will be `0.0` where data is not available
+    /// - `Hold`: Will return the last available returned value when data is not available
+    /// - `Error`: Function call will panic and terminate the program
+    ///
+    /// Note, if the type is `Hold` for an StandardBulletinB file which does not contain LOD data
+    /// a value of `0.0` for LOD will be returned instead.
+    ///
+    /// If the date is in between data points, which typically are at integer day intervals, the
+    /// function will linearly interpolate between adjacent data points if `interpolate` was set
+    /// to `true` for the `EarthOrientationData` object or will return the value from the most
+    /// recent data point if `false`.
+    ///
+    /// # Arguments
+    /// - `mjd`: Modified Julian date to get Earth orientation parameters for
+    ///
+    /// # Returns
+    /// - `pm_x`: x-component of polar motion correction. Units: (radians)
+    /// - `pm_y`: y-component of polar motion correction. Units: (radians)
+    /// - `ut1_utc`: Offset of UT1 time scale from UTC time scale. Units: (seconds)
+    /// - `dX`: "X" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
+    /// - `dY`: "Y" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
+    /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI.Units: (seconds)
+    ///
+    /// # Examples
+    /// ```rust
+    /// use rastro::data::*;
+    ///
+    /// // Load Standard EOP
+    /// let eop_extrapolation = EOPExtrapolation::Hold;
+    /// let eop_interpolation = true;
+    /// let eop_type = EOPType::StandardBulletinA;
+    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    ///
+    /// // Get EOP for 36 hours before the end of the table
+    /// let eop_params = eop.get_eop(eop.mjd_max as f64 - 1.5);
+    /// ```
+    #[allow(non_snake_case)]
+    pub fn get_eop(&self, mjd: f64) -> (f64, f64, f64, f64, f64, f64) {
+        let (pm_x, pm_y) = self.get_pm(mjd);
+        let ut1_utc = self.get_ut1_utc(mjd);
+        let (dX, dY) = self.get_dxdy(mjd);
+        let lod = self.get_lod(mjd);
+        (pm_x, pm_y, ut1_utc, dX, dY, lod)
+    }
 }
 
-// impl Default for EarthOrientationData {
-//     fn default() -> Self { EarthOrientationData::from_default_standard_eop() }
+impl Default for EarthOrientationData {
+    /// Initialize default Earth orientation parameter data.
+    ///
+    /// Loads Standard Bulletin A data with extrapolation set to `EOPExtrapolation::Zero` and
+    /// interpolation enabled. Loads from package-included default.
+    fn default() -> Self { EarthOrientationData::from_default_standard
+(EOPExtrapolation::Zero, true, EOPType::StandardBulletinA) }
+}
+
+// /// Download latest C04 Earth orientation parameters.
+// ///
+// /// Will retrieve the latest Earth orientation parameters and save them to the
+// ///
+// /// # Arguments
+// /// - `filepath`: Path of desired output file
+// /// - `create_dir`: Create any missing parent directories in output filepath
+// pub fn download_c04_eop_file(filepath: &str, create_dir: bool) {
+//
 // }
 
 #[cfg(test)]
@@ -511,8 +955,8 @@ mod tests {
     fn test_parse_c04_line() {
         let good_str = "2021  11  23  59541   0.129614   0.247350  -0.1067281  -0.0005456   0\
         .000265  -0.000031   0.000026   0.000019  0.0000079  0.0000069    0.000055    0.000044";
-        assert_eq!((59541, 0.129614*AS2RAD, 0.247350*AS2RAD, -0.1067281,
-                    Some(0.000265*AS2RAD),  Some(-0.000031*AS2RAD), Some(-0.0005456)),
+        assert_eq!((59541, 0.129614 * AS2RAD, 0.247350 * AS2RAD, -0.1067281,
+                    Some(0.000265 * AS2RAD), Some(-0.000031 * AS2RAD), Some(-0.0005456)),
                    parse_c04_line(good_str).unwrap());
 
         let bad_str = "2021  11  23  59541   0.abc614   0.247350  -0.1067281  -0.0005456   0\
@@ -526,8 +970,8 @@ mod tests {
         let filepath = Path::new(&manifest_dir).join("test_assets")
             .join("iau2000A_c04_14.txt");
         let eop_return = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(),
-                                                       EOPExtrapolation::Hold,
-                                                      true);
+                                                             EOPExtrapolation::Hold,
+                                                             true);
         assert_eq!(eop_return.is_err(), false);
 
         let eop = eop_return.unwrap();
@@ -557,23 +1001,23 @@ mod tests {
     fn test_parse_standard_eop_line_bulletin_a() {
         // Test good parse
         let good_str = "741231 42412.00 I -0.043558 0.029749  0.265338 0.028736  I-0.2891063 0.0002710  2.9374 0.1916  P    -0.259    0.199    -0.869    0.300  -.039000   .281000  -.2908000   -16.159    -1.585";
-        assert_eq!((42412, -0.043558*AS2RAD, 0.265338*AS2RAD, -0.2891063,
-                    Some(-0.259*AS2RAD),  Some(-0.869*AS2RAD), Some(2.9374)),
+        assert_eq!((42412, -0.043558 * AS2RAD, 0.265338 * AS2RAD, -0.2891063,
+                    Some(-0.259 * AS2RAD), Some(-0.869 * AS2RAD), Some(2.9374)),
                    parse_standard_eop_line(good_str, EOPType::StandardBulletinA).unwrap());
 
         // Test prediction w/o LOD data
         let no_lod_str = "22 224 59634.00 P  0.012311 0.006394  0.360715 0.008161  P-0.1074307 0\
         .0063266                 P     0.195    0.128     0.056    0.160                                                     ";
-        assert_eq!((59634, 0.012311*AS2RAD, 0.360715*AS2RAD, -0.1074307,
-                    Some(0.195*AS2RAD),  Some(0.056*AS2RAD), None),
+        assert_eq!((59634, 0.012311 * AS2RAD, 0.360715 * AS2RAD, -0.1074307,
+                    Some(0.195 * AS2RAD), Some(0.056 * AS2RAD), None),
                    parse_standard_eop_line(no_lod_str, EOPType::StandardBulletinA).unwrap());
 
 
         // Test prediction without LOD, dX, dY
         let min_str = "22 327 59665.00 P  0.028851 0.008032  0.417221 0.010886  P-0.1127678 0\
         .0087497                                                                                                             ";
-        assert_eq!((59665, 0.028851*AS2RAD, 0.417221*AS2RAD, -0.1127678,
-                    None,  None, None),
+        assert_eq!((59665, 0.028851 * AS2RAD, 0.417221 * AS2RAD, -0.1127678,
+                    None, None, None),
                    parse_standard_eop_line(min_str, EOPType::StandardBulletinA).unwrap());
 
 
@@ -584,8 +1028,8 @@ mod tests {
         assert_eq!(parse_standard_eop_line(bad_str, EOPType::StandardBulletinA).is_err(), true);
 
         // Test parsing wrong type
-        assert_ne!((42413, -0.043802*AS2RAD, 0.265903*AS2RAD, 0.7078620,
-                    Some(-0.267*AS2RAD),  Some(-0.880*AS2RAD), Some(3.1173)),
+        assert_ne!((42413, -0.043802 * AS2RAD, 0.265903 * AS2RAD, 0.7078620,
+                    Some(-0.267 * AS2RAD), Some(-0.880 * AS2RAD), Some(3.1173)),
                    parse_standard_eop_line(good_str, EOPType::StandardBulletinB).unwrap());
     }
 
@@ -593,8 +1037,8 @@ mod tests {
     fn test_parse_standard_eop_line_bulletin_b() {
         // Test good parse
         let good_str = "741231 42412.00 I -0.043558 0.029749  0.265338 0.028736  I-0.2891063 0.0002710  2.9374 0.1916  P    -0.259    0.199    -0.869    0.300  -.039000   .281000  -.2908000   -16.159    -1.585";
-        assert_eq!((42412, -0.039000*AS2RAD, 0.281000*AS2RAD, -0.2908000,
-                    Some(-16.159*AS2RAD),  Some(-1.585*AS2RAD), Some(0.0)),
+        assert_eq!((42412, -0.039000 * AS2RAD, 0.281000 * AS2RAD, -0.2908000,
+                    Some(-16.159 * AS2RAD), Some(-1.585 * AS2RAD), Some(0.0)),
                    parse_standard_eop_line(good_str, EOPType::StandardBulletinB).unwrap());
 
         // Test bad parse
@@ -604,8 +1048,8 @@ mod tests {
         assert_eq!(parse_standard_eop_line(bad_str, EOPType::StandardBulletinB).is_err(), true);
 
         // Test parsing wrong type
-        assert_ne!((42412, -0.039000*AS2RAD, 0.281000*AS2RAD, -0.2908000,
-                    Some(-16.159*AS2RAD),  Some(-1.585*AS2RAD), Some(0.0)),
+        assert_ne!((42412, -0.039000 * AS2RAD, 0.281000 * AS2RAD, -0.2908000,
+                    Some(-16.159 * AS2RAD), Some(-1.585 * AS2RAD), Some(0.0)),
                    parse_standard_eop_line(good_str, EOPType::StandardBulletinA).unwrap());
     }
 
@@ -615,8 +1059,8 @@ mod tests {
         let filepath = Path::new(&manifest_dir).join("test_assets")
             .join("iau2000A_finals_ab.txt");
         let eop_return = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
-                                                             EOPExtrapolation::Hold,
-                                                             true, EOPType::StandardBulletinA);
+                                                                  EOPExtrapolation::Hold,
+                                                                  true, EOPType::StandardBulletinA);
         assert_eq!(eop_return.is_err(), false);
 
         let eop = eop_return.unwrap();
@@ -683,5 +1127,182 @@ mod tests {
         assert_eq!(eop.eop_type, EOPType::StandardBulletinB);
         assert_eq!(eop.extrapolate, EOPExtrapolation::Hold);
         assert_eq!(eop.interpolate, true);
+    }
+
+    #[test]
+    fn test_get_ut1_utc() {
+        let eop_extrapolation = EOPExtrapolation::Hold;
+        let eop_interpolation = true;
+        let eop_type = EOPType::StandardBulletinA;
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir).join("test_assets")
+            .join("iau2000A_finals_ab.txt");
+        let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+                                                                  eop_extrapolation,
+                                                                  eop_interpolation, eop_type).unwrap();
+
+        // Test getting exact point in table
+        let ut1_utc = eop.get_ut1_utc(59569.0);
+        assert_eq!(ut1_utc, -0.1079838);
+
+        // Test interpolating within table
+        let ut1_utc = eop.get_ut1_utc(59569.5);
+        assert_eq!(ut1_utc, (-0.1079838 + -0.1075832)/2.0);
+
+        // Test extrapolation hold
+        let ut1_utc = eop.get_ut1_utc(59950.0);
+        assert_eq!(ut1_utc, -0.0278563);
+
+        // Test extrapolation zero
+        let eop_extrapolation = EOPExtrapolation::Zero;
+        let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+                                                          eop_extrapolation,
+                                                          eop_interpolation, eop_type).unwrap();
+
+        let ut1_utc = eop.get_ut1_utc(59950.0);
+        assert_eq!(ut1_utc, -0.0);
+    }
+
+
+    #[test]
+    fn test_get_pm_xy() {
+        let eop_extrapolation = EOPExtrapolation::Hold;
+        let eop_interpolation = true;
+        let eop_type = EOPType::StandardBulletinA;
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir).join("test_assets")
+            .join("iau2000A_finals_ab.txt");
+        let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+                                                                  eop_extrapolation,
+                                                                  eop_interpolation, eop_type).unwrap();
+
+        // Test getting exact point in table
+        let (pm_x, pm_y) = eop.get_pm(59569.0);
+        assert_eq!(pm_x, 0.075367*AS2RAD);
+        assert_eq!(pm_y, 0.263430*AS2RAD);
+
+        // Test interpolating within table
+        let (pm_x, pm_y) = eop.get_pm(59569.5);
+        assert_eq!(pm_x, (0.075367*AS2RAD + 0.073151*AS2RAD)/2.0);
+        assert_eq!(pm_y, (0.263430*AS2RAD + 0.264294*AS2RAD)/2.0);
+
+        // Test extrapolation hold
+        let (pm_x, pm_y) = eop.get_pm(59950.0);
+        assert_eq!(pm_x, 0.096178*AS2RAD);
+        assert_eq!(pm_y, 0.252770*AS2RAD);
+
+        // Test extrapolation zero
+        let eop_extrapolation = EOPExtrapolation::Zero;
+        let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+                                                           eop_extrapolation,
+                                                           eop_interpolation, eop_type).unwrap();
+
+        let (pm_x, pm_y) = eop.get_pm(59950.0);
+        assert_eq!(pm_x, 0.0);
+        assert_eq!(pm_y, 0.0);
+    }
+
+    #[test]
+    #[allow(non_snake_case)]
+    fn test_get_dxdy() {
+        let eop_extrapolation = EOPExtrapolation::Hold;
+        let eop_interpolation = true;
+        let eop_type = EOPType::StandardBulletinA;
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir).join("test_assets")
+            .join("iau2000A_finals_ab.txt");
+        let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+                                                                  eop_extrapolation,
+                                                                  eop_interpolation, eop_type).unwrap();
+
+
+        // Test getting exact point in table
+        let (dX, dY) = eop.get_dxdy(59569.0);
+        assert_eq!(dX, 0.088*AS2RAD);
+        assert_eq!(dY, 0.057*AS2RAD);
+
+        // Test interpolating within table
+        let (dX, dY) = eop.get_dxdy(59569.5);
+        assert_eq!(dX, (0.088*AS2RAD + 0.086*AS2RAD)/2.0);
+        assert_eq!(dY, (0.057*AS2RAD + 0.058*AS2RAD)/2.0);
+
+        // Test extrapolation hold
+        let (dX, dY) = eop.get_dxdy(59950.0);
+        assert_eq!(dX, 0.283*AS2RAD);
+        assert_eq!(dY, 0.104*AS2RAD);
+
+        // Test extrapolation zero
+        let eop_extrapolation = EOPExtrapolation::Zero;
+        let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+                                                           eop_extrapolation,
+                                                           eop_interpolation, eop_type).unwrap();
+
+        let (dX, dY) = eop.get_dxdy(59950.0);
+        assert_eq!(dX, 0.0);
+        assert_eq!(dY, 0.0);
+    }
+
+
+    #[test]
+    fn test_get_lod() {
+        let eop_extrapolation = EOPExtrapolation::Hold;
+        let eop_interpolation = true;
+        let eop_type = EOPType::StandardBulletinA;
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir).join("test_assets")
+            .join("iau2000A_finals_ab.txt");
+        let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+                                                                  eop_extrapolation,
+                                                                  eop_interpolation, eop_type).unwrap();
+
+        // Test getting exact point in table
+        let lod = eop.get_lod(59569.0);
+        assert_eq!(lod, -0.4288);
+
+        // Test interpolating within table
+        let lod = eop.get_lod(59569.5);
+        assert_eq!(lod, (-0.4288 + -0.3405)/2.0);
+
+        // Test extrapolation hold
+        let lod = eop.get_lod(59950.0);
+        assert_eq!(lod, -0.3405);
+
+        // Test extrapolation zero
+        let eop_extrapolation = EOPExtrapolation::Zero;
+        let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+                                                           eop_extrapolation,
+                                                           eop_interpolation, eop_type).unwrap();
+
+        let lod = eop.get_lod(59950.0);
+        assert_eq!(lod, 0.0);
+    }
+
+    #[test]
+    #[ignore]
+    fn test_eop_extrapolation_error() {
+        let eop_extrapolation = EOPExtrapolation::Error;
+        let eop_interpolation = true;
+        let eop_type = EOPType::StandardBulletinA;
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir).join("test_assets")
+            .join("iau2000A_finals_ab.txt");
+        let eop = EarthOrientationData::from_standard_file(filepath.to_str().unwrap(),
+                                                           eop_extrapolation,
+                                                           eop_interpolation, eop_type).unwrap();
+
+        let result = std::panic::catch_unwind(|| eop.get_ut1_utc(59950.0));
+        assert!(result.is_err());
+
+        // Polar Motion
+        let result = std::panic::catch_unwind(|| eop.get_pm(59950.0));
+        assert!(result.is_err());
+
+        // dX, dY
+        let result = std::panic::catch_unwind(|| eop.get_dxdy(59950.0));
+        assert!(result.is_err());
+
+        // LOD
+        let result = std::panic::catch_unwind(|| eop.get_lod(59950.0));
+        assert!(result.is_err());
     }
 }
