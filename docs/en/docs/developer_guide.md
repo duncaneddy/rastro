@@ -145,14 +145,15 @@ additional steps required to setup a new module.
 6. Update `setup.py` to also build a Rust Extension for the module
 7. Write a PyO3 wrapper to call Rust functionality from python
 8. Add the function to the package `__init__.py` in rastro_python
-9. Write tests of the Python functionality
-10. Create a documentation page in the User guide section
-11. Write example script in Rust and add it to the documentation
-12. Write example script in Python and add it to the documentation
-13. Write figure in Python and add it to the documentation
+9. Add module to the `setup.py` script Rust extension to ensure the module is properly built.
+10. Write tests of the Python functionality
+11. Create a documentation page in the User guide section
+12. Write example script in Rust and add it to the documentation
+13. Write example script in Python and add it to the documentation
+14. Write figure in Python and add it to the documentation
     1. Can be a Matplotlib figure
     2. Can be a dynamic Plotly figure
-14. Update `CHANGELOG.md` with summary of change
+15. Update `CHANGELOG.md` with summary of change
 
 
 [^1]: Steps taken from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install)

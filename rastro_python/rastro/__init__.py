@@ -1,4 +1,4 @@
-from rastro_python.constants import (
+from rastro.constants import (
     DEG2RAD,
     RAD2DEG,
     AS2RAD,
@@ -36,7 +36,7 @@ from rastro_python.constants import (
     GM_PLUTO,
 )
 
-from rastro_python.orbits import (
+from rastro.orbits import (
     orbital_period,
     orbital_period_general,
     mean_motion,
@@ -58,6 +58,6 @@ from rastro_python.orbits import (
     anomaly_mean_to_true,
 )
 
-from rastro_python.eop import (
+from rastro.eop import (
     EarthOrientationData
 )

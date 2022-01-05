@@ -5,6 +5,13 @@ use rastro::eop as eop;
 #[pyclass]
 struct EarthOrientationData {
     robj: eop::EarthOrientationData,
+
+    #[getter]
+    fn eop_type(&self) -> String {
+        match self.robj.eop_type {
+
+        }
+    }
 }
 
 #[pymethods]
@@ -15,11 +22,25 @@ impl EarthOrientationData {
     // fn new(c: i32, d: &str) -> Self {
     // }
 
-    // #[staticmethod]
-    // #[text_signature = "(e, f)"]
-    // fn from_c04_file(e: i32, f: i32) -> i32 {
-    //     e + f
-    // }
+    #[staticmethod]
+    #[pyo3(text_signature = "(filepath, extrapolate, interpolate)")]
+    fn from_c04_file(filepath: &str, extrapolate: &str, interpolate: bool) ->
+                                                                  PyResult<EarthOrientationData> {
+        let eop_extrapolate = match extrapolate.as_ref() {
+            "Zero" => eop::EOPExtrapolation::Zero,
+            "Hold" => eop::EOPExtrapolation::Hold,
+            "Error" => eop::EOPExtrapolation::Error,
+            _ => return Err(PyRuntimeError::new_err(format!("Unknown extrapolation type '{}'. Must \
+            be 'Zero', 'Hold', or 'Error'", extrapolate)))
+        };
+
+        match eop::EarthOrientationData::from_c04_file(filepath.as_ref(), eop_extrapolate,
+                                                       interpolate) {
+            Ok(eop_obj) => Ok(EarthOrientationData{robj:eop_obj}),
+            _ => Err(PyRuntimeError::new_err(format!("Error loading file as C04 EOP data: {}",
+                                                     filepath.as_ref() as &str)))
+        }
+    }
 
     #[staticmethod]
     #[pyo3(text_signature = "(extrapolate, interpolate)")]
@@ -43,11 +64,30 @@ impl EarthOrientationData {
     //     e + f
     // }
 
-    // #[staticmethod]
-    // #[text_signature = "(e, f)"]
-    // fn from_default_standard(e: i32, f: i32) -> i32 {
-    //     e + f
-    // }
+    #[staticmethod]
+    #[pyo3(text_signature = "(extrapolate, interpolate, type)")]
+    fn from_default_standard(extrapolate: &str, interpolate: bool, eop_type: &str) ->
+                                                                    PyResult<EarthOrientationData> {
+        let eop_extrapolate = match extrapolate.as_ref() {
+            "Zero" => eop::EOPExtrapolation::Zero,
+            "Hold" => eop::EOPExtrapolation::Hold,
+            "Error" => eop::EOPExtrapolation::Error,
+            _ => return Err(PyRuntimeError::new_err(format!("Unknown extrapolation type '{}'. Must \
+            be 'Zero', 'Hold', or 'Error'", extrapolate)))
+        };
+
+        let eop_type = match eop_type.as_ref() {
+            "A" => eop::EOPType::StandardBulletinA,
+            "B" => eop::EOPType::StandardBulletinB,
+            _ => return Err(PyRuntimeError::new_err(format!("Unknown EOP type '{}'. Must \
+                be 'A' or 'B'", eop_type)))
+        };
+
+            let eop_obj = eop::EarthOrientationData::from_default_standard(eop_extrapolate,
+                                                                           interpolate, eop_type);
+
+            Ok(EarthOrientationData{robj:eop_obj})
+        }
 }
 
 #[pyproto]

@@ -21,9 +21,9 @@ if __name__ == "__main__":
         ],
         packages=["rastro"],
         rust_extensions=[
-            RustExtension("rastro_python.constants"),
-            RustExtension("rastro_python.orbits"),
-            RustExtension("rastro_python.eop")
+            RustExtension("rastro.constants", debug=False),
+            RustExtension("rastro.orbits", debug=False),
+            RustExtension("rastro.eop", debug=False),
         ],
         include_package_data=True,
         zip_safe=False,
