@@ -401,8 +401,43 @@ impl EarthOrientationData {
     }
 }
 
+/// Download latest C04 Earth orientation parameter file.
+///
+///
+/// Will attempt to download the latest parameter file to the specified location. Creating any
+/// missing directories as required.
+///
+/// Download source: [https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt](https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt)
+///
+/// Args:
+///     filepath (`str`): Path of desired output file
+#[pyfunction]
+#[pyo3(text_signature = "(filepath)")]
+fn download_c04_eop_file(filepath: &str) -> PyResult<()> {
+    eop::download_c04_eop_file(filepath);
+    Ok(())
+}
+
+/// Download latest standard Earth orientation parameter file.
+///
+/// Will attempt to download the latest parameter file to the specified location. Creating any
+/// missing directories as required.
+///
+/// Download source: [https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt](https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW.IAU2000A224.txt)
+///
+/// Args:
+///     filepath (`str`): Path of desired output file
+#[pyfunction]
+#[pyo3(text_signature = "(filepath)")]
+fn download_standard_eop_file(filepath: &str) -> PyResult<()> {
+    eop::download_standard_eop_file(filepath);
+    Ok(())
+}
+
 #[pymodule]
 pub fn eop(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<EarthOrientationData>()?;
+    module.add_function(wrap_pyfunction!(download_c04_eop_file, module)?)?;
+    module.add_function(wrap_pyfunction!(download_standard_eop_file, module)?)?;
     Ok(())
 }

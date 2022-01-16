@@ -70,7 +70,7 @@ nav:
   - User Guide:
       - user_guide/index.md
       - user_guide/constants.md
-      - Data [WIP]:
+      - Data:
         - user_guide/data/index.md
         - user_guide/data/eop.md
       - Time [WIP]:

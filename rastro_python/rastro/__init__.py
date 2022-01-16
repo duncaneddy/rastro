@@ -59,5 +59,5 @@ from rastro.orbits import (
 )
 
 from rastro.eop import (
-    EarthOrientationData
+    EarthOrientationData,
 )

@@ -63,22 +63,170 @@ precession-nutation models widely in use today: IAU 1980 nutation theory and
 the IAU2006/2000A precession-nutation model. The ITRF 2014 realization is 
 the most recent realization and preferred in most cases.
 
-For data products there are two primary distinctions: rapid products and 
+For data products there are two primary distinctions: standard products and 
 long term products.
-Rapid products, which are produced daily, to provide a daily estimate of the 
+Standard products, which are produced daily, to provide a daily estimate of the 
 past Earth orientation along with forward-looking predictions available for 
 use in planning. Long term data products are only available for past days, 
 and are produced less frequently, but provider higher accurate estimates of 
 Earth orientation. 
 
-For most purposes the rapid products provide sufficient accuracy along with 
+For most purposes the standard products provide sufficient accuracy along with 
 the benefit of having fairly accurate forward-looking predictions. Therefore, 
-RAstro defaults to using rapid Earth Orientation data products wherever 
-possible. Unless otherwise stated or specified, RAstro uses IERS rapid 
+RAstro defaults to using standard Earth Orientation data products wherever 
+possible. Unless otherwise stated or specified, RAstro uses IERS standard 
 product generated with respect to IAU 2006/2000A precession-nutation model and 
 consistent with ITRF2014.
 
-[//]: # (## Earth Orientation Parameters)
+## Earth Orientation Parameters
+
+Rastro provides the `EarthOrientationData` object to handle loading, storing, and 
+providing Earth orientation data for use. The package also includes default data files 
+for ease of use that are sufficient for most purposes.
+
+### Loading Data Data Sets
+
+Earth orientation data is loaded by creating an instance of an `EarthOrientationData` object with
+from the desired data source. There are four methods that can be used: `from_default_standard`, 
+`from_c04_file`, `from_default_standard`,  and `from_standard_file`. The `from_default_standard` 
+and `from_c04_file` methods will load long-term IERS C04 products and 
+expect to be passed such as an input. Similarly, `from_default_standard`  and 
+`from_standard_file` can be used to load either Bulletin A or Bulletin B data from the IERS 
+standard file product format.
+
+When creating any new Earth Orientation data instance there are two parameters that are set at 
+loading time which will determine how the EOP instances handles data returns for certain cases.
+The first parameter is the `extrapolate` parameter, which can have a value of `Zero`, `Hold`, or 
+`Error`. This value will determine how requests for data points beyond the end of the loaded 
+data are handled. The possible behaviors are
+- `Zero`: Returned values will be `0.0` where data is not available
+- `Hold`: Will return the last available returned value when data is not available
+- `Error`: Data access attempts where data is not present will panic and terminate the program
+
+The second parameter the the `interpolate` setting. When `interpolate` is set to true and data 
+requests made for a point that wasn't explicitly loaded as part of the input data set will be 
+linearly interpolated to the desired time. When set to `false`, the function call will return 
+the last value prior to the requested data.
+
+Below is an example of loading C04 data
+
+=== "Rust"
+
+    ``` rust
+    --8<-- "../examples/eop_c04_loading.rs"
+    ```
+
+=== "Python"
+
+    ``` python
+    --8<-- "../examples/eop_c04_loading.py"
+    ```
+
+The process for loading standard data is similar. However, when loading standard files there is one 
+other parameter which comes into play, the Earth Orientation Type. 
+This type setting determines whether the Bulletin A or Bulletin B data is loaded into the object 
+when parsing the file. In rust
+
+=== "Rust"
+
+    ``` rust
+    --8<-- "../examples/eop_standard_loading.rs"
+    ```
+
+=== "Python"
+
+    ``` python
+    --8<-- "../examples/eop_standard_loading.py"
+    ```
+
+!!! note
+
+    For applications where the time is in the future it is recommended to use standard EOP data 
+    as standard files contain predictions for approximately 1 year into the future and will 
+    increase accuracy of analysis by accounting for Earth orientation corrections.
+
+    For analysis for scenarios in the past it is recommended to use the final C04 products as they
+    contain the highest accress estimates of Earth orientation data.
+
+### Accessing Earth Orientation Data
+
+Most of the time the data stored by the Earth orientation object is not used directly, instead 
+the object is passed to others that will make the appropraite access calls.
+
+If your application calls for accessing The `EarthOrientationData` object provides a number of 
+methods for accessing different Earth orientation Parameters stored by the object.
+
+=== "Rust"
+
+    ``` rust
+    --8<-- "../examples/eop_data_access.rs"
+    ```
+
+=== "Python"
+
+    ``` python
+    --8<-- "../examples/eop_data_access.py"
+    ```
+
+One example of using the Earth orientation data directly is plotting the evolution of the difference
+between the UT1 and UTC timescales. The discontinuous jumps are when leap seconds were introduced.
+
+--8<-- "./docs/figures/fig_ut1_utc_evolution.html"
+
+??? "Plot Source"
+
+    ``` python title="fig_ut1_utc_evolution.py"
+    --8<-- "../figures/fig_ut1_utc_evolution.py"
+    ```
+
+### Downloading updated Earth Orientation Data
+
+The final functionality that Rastro provides is the ability to download new Earth orientation 
+parameter data files.
+
+The functions `download_c04_eop_file` and `download_standard_eop_file` can be used to downloaded 
+the latest product files from IERS servers and store them locally at the specified filepath. The 
+download functions will attempt to create the necessary directory structure if required.
+
+=== "Rust"
+
+    ``` rust
+    use rastro::eop::{download_c04_eop_file, download_standard_eop_file};
+
+    fn main() {
+        // Download latest C04 final product file
+        download_c04_eop_file("./c04_file.txt").unwrap();
+    
+        // Download latest standard product file
+        download_standard_eop_file("./standard_file.txt").unwrap();
+    }
+    ```
+
+=== "Python"
+
+    ``` python
+    import rastro
+
+    if __name__ == '__main__':
+        # // Download latest C04 final product file
+        rastro.eop.download_c04_eop_file("./c04_file_py.txt")
+    
+        # // Download latest standard product file
+        rastro.eop.download_standard_eop_file("./standard_file_py.txt")
+    ```
+
+If using the RAstro CLI, product files can be download with
+
+```bash
+rastro eop download --product final final_c04_eop_file.txt
+```
+
+or 
+
+```bash
+rastro eop download --product standard standard_eop_file.txt
+```
+
 
 [^1]: A barycenter is the center of mass of two or more bodies. The solar 
 system barycenter is the center of mass of the entire solar system. Due to 
@@ -89,4 +237,4 @@ Sun's outer radius.
 equations of motion of an Earth satellite, with respect to the 
 GCRS will contain a relativistic Coriolis force due to geodesic precession 
 not present in the ICRS. 
-[^3]: Now frequently GNSS
+[^3]: Now frequently GNSS receivers

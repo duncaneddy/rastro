@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup,find_packages
 from setuptools_rust import RustExtension
 
 from os import path
@@ -13,18 +13,28 @@ if __name__ == "__main__":
     setup(
         name="rastro",
         version="0.0.0", # Do NOT edit. Will be updated for release by CI pipeline
+        # packages=["rastro"],
+        packages=find_packages(),
+        install_requires=[
+            'typer>=0.4.0,<1.0.0',
+            'rich>=11.0.0,<12.0.0'
+        ],
         classifiers=[
             "License :: OSI Approved :: MIT License",
             "Intended Audience :: Developers",
             "Programming Language :: Python",
             "Programming Language :: Rust",
         ],
-        packages=["rastro"],
         rust_extensions=[
             RustExtension("rastro.constants", debug=False),
             RustExtension("rastro.orbits", debug=False),
             RustExtension("rastro.eop", debug=False),
         ],
+        entry_points={
+            'console_scripts': [
+                'rastro = rastro.cli.__main__:main'
+            ]
+        },
         include_package_data=True,
         zip_safe=False,
         long_description=long_description,

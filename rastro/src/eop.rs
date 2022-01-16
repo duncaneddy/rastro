@@ -1,9 +1,14 @@
 use std::fmt;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::str::FromStr;
 use std::io::{BufReader, Read};
 use std::io::prelude::*;
 use std::collections::HashMap;
+
+use std::fs;
+use std::io::Write;
+use std::path::Path;
+use ureq;
 use crate::constants::AS2RAD;
 
 // Package EOP data as part of crate
@@ -935,16 +940,67 @@ impl Default for EarthOrientationData {
 (EOPExtrapolation::Zero, true, EOPType::StandardBulletinA) }
 }
 
-// /// Download latest C04 Earth orientation parameters.
-// ///
-// /// Will retrieve the latest Earth orientation parameters and save them to the
-// ///
-// /// # Arguments
-// /// - `filepath`: Path of desired output file
-// /// - `create_dir`: Create any missing parent directories in output filepath
-// pub fn download_c04_eop_file(filepath: &str, create_dir: bool) {
-//
-// }
+/// Download latest C04 Earth orientation parameter file.
+///
+///
+/// Will attempt to download the latest parameter file to the specified location. Creating any
+/// missing directories as required.
+///
+/// Download source: [https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt](https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt)
+///
+/// # Arguments
+/// - `filepath`: Path of desired output file
+pub fn download_c04_eop_file(filepath: &str) -> Result<(), &str> {
+    // Create parent directory
+    let filepath = Path::new(filepath);
+    let parent_dir = filepath.parent().expect("Failed to identify parent directory.");
+
+    fs::create_dir_all(parent_dir).expect(&*format!("Failed to create directory {}",
+                                                    parent_dir.display()));
+
+    let body = ureq::get("https://datacenter.iers.org/data/latestVersion/224_EOP_C04_14.62-NOW\
+    .IAU2000A224.txt").call().expect("Download Request fialed").into_string().expect("Failed to \
+    parse response into string");
+
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .open(filepath).expect(&*format!("Failed to create file: {}", filepath.display()));
+    writeln!(&mut file, "{}", body).unwrap();
+
+    Ok(())
+}
+
+/// Download latest standard Earth orientation parameter file.
+///
+/// Will attempt to download the latest parameter file to the specified location. Creating any
+/// missing directories as required.
+///
+/// Download source: [https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt](https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt)
+///
+/// # Arguments
+/// - `filepath`: Path of desired output file
+pub fn download_standard_eop_file(filepath: &str) -> Result<(), &str> {
+    // Create parent directory
+    let filepath = Path::new(filepath);
+    let parent_dir = filepath.parent().expect("Failed to identify parent directory.");
+
+    fs::create_dir_all(parent_dir).expect(&*format!("Failed to create directory {}",
+                                                    parent_dir.display()));
+
+    let body = ureq::get("https://datacenter.iers.org/data/latestVersion/9_FINALS.ALL_IAU2000_V2013_019.txt")
+        .call().expect("Download Request fialed").into_string().expect("Failed to \
+    parse response into string");
+
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .open(filepath).expect(&*format!("Failed to create file: {}", filepath.display()));
+    writeln!(&mut file, "{}", body).unwrap();
+
+    Ok(())
+}
+
 
 #[cfg(test)]
 mod tests {

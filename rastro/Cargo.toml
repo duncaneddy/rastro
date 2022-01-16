@@ -18,8 +18,10 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rsofa = {version = "^0.4.5"}
-nalgebra = {version = "^0.29.0"}
+rsofa = "0.4.5"
+nalgebra = "0.30.1"
+reqwest = {version="0.11.9", features = ["blocking"]}
+ureq = "2.4.0"
 
 [dev-dependencies]
-approx = "^0.5.0"
+approx = "0.5.0"
