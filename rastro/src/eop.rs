@@ -820,7 +820,8 @@ impl EarthOrientationData {
     /// - `mjd`: Modified Julian date to get Earth orientation parameters for
     ///
     /// # Returns
-    /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI.Units: (seconds)
+    /// - `lod`: Difference between length of astronomically determined solar day and 86400 second
+    ///     TAI day. Units: (seconds)
     ///
     /// # Examples
     /// use rastro::eop::*;
@@ -899,7 +900,8 @@ impl EarthOrientationData {
     /// - `ut1_utc`: Offset of UT1 time scale from UTC time scale. Units: (seconds)
     /// - `dX`: "X" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
     /// - `dY`: "Y" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
-    /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI.Units: (seconds)
+    /// - `lod`: Difference between length of astronomically determined solar day and 86400 second
+    ///    TAI day. Units: (seconds)
     ///
     /// # Examples
     /// ```rust
@@ -1064,7 +1066,7 @@ mod tests {
         assert_eq!(eop_return.is_err(), false);
 
         let eop = eop_return.unwrap();
-        assert_ne!(eop.data.len(), 0);
+        assert_eq!(eop.data.len(), 18261);
         assert_eq!(eop.mjd_min, 41684);
         assert_eq!(eop.mjd_max, 59944);
         assert_eq!(eop.eop_type, EOPType::StandardBulletinA);
@@ -1160,7 +1162,7 @@ mod tests {
                                                           eop_interpolation, eop_type).unwrap();
 
         let ut1_utc = eop.get_ut1_utc(59950.0);
-        assert_eq!(ut1_utc, -0.0);
+        assert_eq!(ut1_utc, 0.0);
     }
 
 
