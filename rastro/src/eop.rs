@@ -598,8 +598,6 @@ impl EarthOrientationData {
     /// - `ut1_utc`: Offset of UT1 time scale from UTC time scale. Units: (seconds)
     ///
     /// # Examples
-    /// use rastro::eop::*;
-    ///
     /// ```rust
     /// use rastro::eop::*;
     ///
@@ -671,8 +669,6 @@ impl EarthOrientationData {
     /// - `pm_y`: y-component of polar motion correction. Units: (radians)
     ///
     /// # Examples
-    /// use rastro::eop::*;
-    ///
     /// ```rust
     /// use rastro::eop::*;
     ///
@@ -750,8 +746,6 @@ impl EarthOrientationData {
     /// - `dY`: "Y" component of Celestial Intermediate Pole (CIP) offset. Units: (radians)
     ///
     /// # Examples
-    /// use rastro::eop::*;
-    ///
     /// ```rust
     /// use rastro::eop::*;
     ///
@@ -829,8 +823,6 @@ impl EarthOrientationData {
     ///     TAI day. Units: (seconds)
     ///
     /// # Examples
-    /// use rastro::eop::*;
-    ///
     /// ```rust
     /// use rastro::eop::*;
     ///
