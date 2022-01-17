@@ -1,0 +1,1340 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="RAstro astrodynamics - high performance, easy to learn, and fast to code, ready for production">
+      
+      
+        <meta name="author" content="Duncan Eddy">
+      
+      
+        <link rel="canonical" href="https://github.com/duncaneddy/rastro/user_guide/orbits/properties/">
+      
+      <link rel="icon" href="../../../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.7">
+    
+    
+      
+        <title>Orbital Properties - RAstro</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.cd566b2a.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="black">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#orbital-properties" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="RAstro" class="md-header__button md-logo" aria-label="RAstro" data-md-component="logo">
+      
+  <img src="../../../img/icon.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            RAstro
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Orbital Properties
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="orange" data-md-color-accent="black"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="orange" data-md-color-accent="black"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/duncaneddy/rastro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="RAstro" class="md-nav__button md-logo" aria-label="RAstro" data-md-component="logo">
+      
+  <img src="../../../img/icon.svg" alt="logo">
+
+    </a>
+    RAstro
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/duncaneddy/rastro" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        RAstro
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../installation/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          User Guide
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="User Guide" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          User Guide
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../constants/" class="md-nav__link">
+        Constants
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Data
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Data" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Data
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../data/" class="md-nav__link">
+        Intro
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../data/eop/" class="md-nav__link">
+        Earth Orientation Data
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4">
+          Time [WIP]
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Time [WIP]" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_4">
+          <span class="md-nav__icon md-icon"></span>
+          Time [WIP]
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../time/" class="md-nav__link">
+        Intro
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../time/epoch/" class="md-nav__link">
+        Epoch [WIP]
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_5">
+          Orbits
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Orbits" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          Orbits
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Intro
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Orbital Properties
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Orbital Properties
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#periapsis-properties" class="md-nav__link">
+    Periapsis Properties
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apoapsis-properties" class="md-nav__link">
+    Apoapsis Properties
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mean-motion-and-semi-major-axis" class="md-nav__link">
+    Mean Motion and Semi-major Axis
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orbital-period" class="md-nav__link">
+    Orbital Period
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sun-synchronous-inclination" class="md-nav__link">
+    Sun-Synchronous Inclination
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../anomalies/" class="md-nav__link">
+        True, Eccentric, and Mean Anomaly
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_2" type="checkbox" id="__nav_4_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_2">
+          Orbits
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Orbits" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          Orbits
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/orbits/" class="md-nav__link">
+        Intro
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/orbits/two_body_problem/" class="md-nav__link">
+        The Two-Body Problem [WIP]
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/orbits/orbital_elements/" class="md-nav__link">
+        Orbital Elements [WIP]
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Python API Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Python API Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Python API Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../python_api/" class="md-nav__link">
+        Intro
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../python_api/constants/" class="md-nav__link">
+        Constants API [WIP]
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../python_api/orbits/" class="md-nav__link">
+        Orbits API
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../developer_guide/" class="md-nav__link">
+        Developer Guide
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../roadmap/" class="md-nav__link">
+        Roadmap
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#periapsis-properties" class="md-nav__link">
+    Periapsis Properties
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apoapsis-properties" class="md-nav__link">
+    Apoapsis Properties
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mean-motion-and-semi-major-axis" class="md-nav__link">
+    Mean Motion and Semi-major Axis
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orbital-period" class="md-nav__link">
+    Orbital Period
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sun-synchronous-inclination" class="md-nav__link">
+    Sun-Synchronous Inclination
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+<h1 id="orbital-properties">Orbital Properties<a class="headerlink" href="#orbital-properties" title="Permanent link">&para;</a></h1>
+<p>The <code>orbits</code> module also provides functions to help derive useful properties
+of an orbit.</p>
+<h2 id="periapsis-properties">Periapsis Properties<a class="headerlink" href="#periapsis-properties" title="Permanent link">&para;</a></h2>
+<p>Two common properties of interest are the distance and velocity of an object at the periapsis of 
+its orbit. The periapsis will be the point of the closest approach as well as the point of 
+greatest speed throughout the orbit.</p>
+<details class="info">
+<summary>Info</summary>
+<p>The word <em><strong>periapsis</strong></em> is formed by combination of the Greek words "<em>peri-</em>", meaning around, 
+about and "<em>apsis</em>"
+meaning "arch or vault". An apsis is the farthest or nearest point in the orbit of a 
+planetary body about its primary body. </p>
+<p>Thereforce <em>periapsis</em> of an orbit is the point of closest approach of the orbiting body with 
+respect to its central body. The suffix can be modified to indicate the point of 
+closest approach to a specific celestical body. The <em>perigee</em> is the point of cloest approach to
+an object orbiting Earth. The <em>perihelion</em> is the point of closest approach to the Sun.</p>
+</details>
+<p>The periapsis velocity is given by <code>periapsis_velocity</code> or, for an Earth-orbiting object, the 
+function <code>perigee_velocity</code> can be used. <code>perigee_velocity</code> simplified the call by supplying the 
+gravitational parameter of Earth to the function call. Periapsis velocity is calculated by
+$$
+v_{p} = \sqrt{\frac{\mu}{a}}\sqrt{\frac{1+e}{1-e}}
+$$
+where <span class="arithmatex">\(\mu\)</span> is the gravitational constant of the central body, <span class="arithmatex">\(a\)</span> is the semi-major axis of the 
+orbit, and <span class="arithmatex">\(e\)</span> is the eccentricity.</p>
+<p>Another useful parameter of the periapsis is the distance of the object to the central body. 
+Equation (2-75) from Vallado<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>
+$$
+r_p = \frac{a(1-e^2)}{1+e} = a(1-e)
+$$</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Rust</label><label for="__tabbed_1_2">Python</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">use</span><span class="w"> </span><span class="n">rastro</span>::<span class="n">constants</span>::<span class="p">{</span><span class="n">R_EARTH</span><span class="p">,</span><span class="w"> </span><span class="n">GM_EARTH</span><span class="p">};</span><span class="w"></span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">use</span><span class="w"> </span><span class="n">rastro</span>::<span class="n">orbits</span>::<span class="p">{</span><span class="n">periapsis_velocity</span><span class="p">,</span><span class="w"> </span><span class="n">perigee_velocity</span><span class="p">,</span><span class="w"> </span><span class="n">periapsis_distance</span><span class="p">};</span><span class="w"></span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R_EARTH</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">500.0e3</span><span class="p">;</span><span class="w"></span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span><span class="p">;</span><span class="w"></span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="c1">// Compute periapsis velocity</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">periapsis_velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">periapsis_velocity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">GM_EARTH</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Periapsis velocity: {:.3}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">periapsis_velocity</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="c1">// Periapsis velocity: 7689.119</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="c1">// Compute as a perigee velocity</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">perigee_velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">perigee_velocity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Perigee velocity:   {:.3}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">perigee_velocity</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="fm">assert_eq!</span><span class="p">(</span><span class="n">periapsis_velocity</span><span class="p">,</span><span class="w"> </span><span class="n">perigee_velocity</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">    </span><span class="c1">// Perigee velocity:   7689.119</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="c1">// Compute periapsis distance</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">periapsis_distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">periapsis_distance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Periapsis distance: {:.3}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">periapsis_distance</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="c1">// Periapsis distance: 6809354.937</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span> <span class="nn">rastro</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">a</span> <span class="o">=</span> <span class="n">rastro</span><span class="o">.</span><span class="n">R_EARTH</span> <span class="o">+</span> <span class="mf">500.0e3</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">e</span> <span class="o">=</span> <span class="mf">0.01</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="c1"># Compute periapsis velocity</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">periapsis_velocity</span> <span class="o">=</span> <span class="n">rastro</span><span class="o">.</span><span class="n">periapsis_velocity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">rastro</span><span class="o">.</span><span class="n">GM_EARTH</span><span class="p">)</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Periapsis velocity: </span><span class="si">{</span><span class="n">periapsis_velocity</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="c1"># Periapsis velocity: 7689.119</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="c1"># Compute as a perigee velocity</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">perigee_velocity</span> <span class="o">=</span> <span class="n">rastro</span><span class="o">.</span><span class="n">perigee_velocity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Perigee velocity:   </span><span class="si">{</span><span class="n">perigee_velocity</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="k">assert</span> <span class="n">periapsis_velocity</span> <span class="o">==</span> <span class="n">perigee_velocity</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="c1"># Perigee velocity:   7689.119</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="c1"># Compute periapsis distance</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="n">periapsis_distance</span> <span class="o">=</span> <span class="n">rastro</span><span class="o">.</span><span class="n">periapsis_distance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Periapsis distance: </span><span class="si">{</span><span class="n">periapsis_distance</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>    <span class="c1"># Periapsis distance: 6809354.937</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="apoapsis-properties">Apoapsis Properties<a class="headerlink" href="#apoapsis-properties" title="Permanent link">&para;</a></h2>
+<p>The distance and velocity of an object at the apoapsis of an orbit. The apoapsis is the 
+furthest point from the central body. It is also the point of lowest speed throughout the orbit.</p>
+<details class="info">
+<summary>Info</summary>
+<p>The word <em><strong>apoapsis</strong></em> is formed by combination of the Greek words "<em>apo-</em>", meaning away from,
+separate, or apart from and the word "<em>apsis</em>".</p>
+<p>Thereforce <em>apoapsis</em> of an orbit is the farthest point of an orbiting body with 
+respect to its central body. The suffix can be modified to indicate the farthest point
+with respect to a specific primary celestical body. The <em>apogee</em> is furthest point away for 
+an object orbiting Earth. The <em>aphelion</em> is the furthest away from an object orbiting the Sun.</p>
+</details>
+<p>The apoapsis velocity is given by <code>apoapsis_velocity</code> or, for an Earth-orbiting object, the
+function <code>apoapsis_velocity</code> can be used. Apoapsis velocity is given by
+$$
+v_{a} = \sqrt{\frac{\mu}{a}}\sqrt{\frac{1-e}{1+e}}
+$$
+The distance of the object to the central body is given by
+$$
+r_a = \frac{a(1-e^2)}{1+e} = a(1+e)
+$$</p>
+<details class="warning" open="open">
+<summary>Warning</summary>
+<p>The apoapsis position and velocity are valid for elliptic and circular orbits. For parabolic 
+and hyperbolic orbits these two quantities are undefined.</p>
+</details>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Rust</label><label for="__tabbed_2_2">Python</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">use</span><span class="w"> </span><span class="n">rastro</span>::<span class="n">constants</span>::<span class="p">{</span><span class="n">R_EARTH</span><span class="p">,</span><span class="w"> </span><span class="n">GM_EARTH</span><span class="p">};</span><span class="w"></span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">use</span><span class="w"> </span><span class="n">rastro</span>::<span class="n">orbits</span>::<span class="p">{</span><span class="n">apoapsis_velocity</span><span class="p">,</span><span class="w"> </span><span class="n">apogee_velocity</span><span class="p">,</span><span class="w"> </span><span class="n">apoapsis_distance</span><span class="p">};</span><span class="w"></span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R_EARTH</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">500.0e3</span><span class="p">;</span><span class="w"></span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span><span class="p">;</span><span class="w"></span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="c1">// Compute periapsis velocity</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">apoapsis_velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">apoapsis_velocity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">GM_EARTH</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Apoapsis velocity: {:.3}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">apoapsis_velocity</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="c1">// Apoapsis velocity: 7536.859</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="c1">// Compute as a perigee velocity</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">apogee_velocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">apogee_velocity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Apogee velocity:   {:.3}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">apogee_velocity</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="fm">assert_eq!</span><span class="p">(</span><span class="n">apoapsis_velocity</span><span class="p">,</span><span class="w"> </span><span class="n">apogee_velocity</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="c1">// Apogee velocity:   7536.859</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">    </span><span class="c1">// Compute periapsis distance</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">apoapsis_distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">apoapsis_distance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Apoapsis distance: {:.3}&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">apoapsis_distance</span><span class="p">);</span><span class="w"></span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">    </span><span class="c1">// Apoapsis distance: 6946917.663</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span> <span class="nn">rastro</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">a</span> <span class="o">=</span> <span class="n">rastro</span><span class="o">.</span><span class="n">R_EARTH</span> <span class="o">+</span> <span class="mf">500.0e3</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">e</span> <span class="o">=</span> <span class="mf">0.01</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="c1"># Compute periapsis velocity</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">apoapsis_velocity</span> <span class="o">=</span> <span class="n">rastro</span><span class="o">.</span><span class="n">apoapsis_velocity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">rastro</span><span class="o">.</span><span class="n">GM_EARTH</span><span class="p">)</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Apoapsis velocity: </span><span class="si">{</span><span class="n">apoapsis_velocity</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="c1"># Apoapsis velocity: 7536.859</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="c1"># Compute as a apogee velocity</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="n">apogee_velocity</span> <span class="o">=</span> <span class="n">rastro</span><span class="o">.</span><span class="n">apogee_velocity</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Apogee velocity:   </span><span class="si">{</span><span class="n">apogee_velocity</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="k">assert</span> <span class="n">apoapsis_velocity</span> <span class="o">==</span> <span class="n">apogee_velocity</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    <span class="c1"># Perigee velocity:   7536.859</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="c1"># Compute apoapsis distance</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>    <span class="n">apoapsis_distance</span> <span class="o">=</span> <span class="n">rastro</span><span class="o">.</span><span class="n">apoapsis_distance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Apoapsis distance: </span><span class="si">{</span><span class="n">apoapsis_distance</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>    <span class="c1"># Periapsis distance: 6946917.663</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="mean-motion-and-semi-major-axis">Mean Motion and Semi-major Axis<a class="headerlink" href="#mean-motion-and-semi-major-axis" title="Permanent link">&para;</a></h2>
+<p>A satellite's average angular rate over one orbit is it's <em>mean motion</em> <span class="arithmatex">\(n\)</span>, which can be 
+calculated 
+from the semi-major axis <span class="arithmatex">\(a\)</span> and central body's gravitational parameter <span class="arithmatex">\(\mu\)</span>
+$$
+n = \sqrt{\frac{\mu}{a^3}}
+$$
+<code>mean_motion</code> will calculate the mean motion of an object for an Earth-orbiting object while, 
+<code>mean_motion_general</code> can calculate it for any arbitrary body when provided the graviational 
+parameter of that body.</p>
+<p>Since for some orbital data exchange formats, an object's orbit is characterized in terms of 
+its mean motion instead of semi-major axis, RAstro provides <code>semimajor_axis</code> and 
+<code>semimajor_axis_general</code> to invert above equation and recover the semi-major axis
+$$
+a = \sqrt[3]{\frac{\mu}{n^2}}
+$$</p>
+<h2 id="orbital-period">Orbital Period<a class="headerlink" href="#orbital-period" title="Permanent link">&para;</a></h2>
+<p>The orbital period <span class="arithmatex">\(T\)</span> of a satellite is the time it takes for an orbit to progress through a full 
+revolution. It is given by
+$$
+T = 2\pi\sqrt{\frac{a^3}{\mu}}
+$$
+<code>orbital_period</code> will return the orbital period for an Earth-orbiting object and 
+<code>orbital_period_general</code> will do the same for any arbitrary body for which the gravitational 
+constant is known.</p>
+<p>The plot below shows how, for a circular orbit, as the semi-major axis increases, the orbital 
+period increases while the speed decreases.</p>
+<div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script>                <div id="44a0580e-f064-4263-917d-e7925c931d0c" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("44a0580e-f064-4263-917d-e7925c931d0c")) {                    Plotly.newPlot(                        "44a0580e-f064-4263-917d-e7925c931d0c",                        [{"name":"Velocity","x":[0.0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5,8.0,8.5,9.0,9.5,10.0,10.5,11.0,11.5,12.0,12.5,13.0,13.5,14.0,14.5,15.0,15.5,16.0,16.5,17.0,17.5,18.0,18.5,19.0,19.5,20.0,20.5,21.0,21.5,22.0,22.5,23.0,23.5,24.0,24.5,25.0,25.5,26.0,26.5,27.0,27.5,28.0,28.5,29.0,29.5,30.0,30.5,31.0,31.5,32.0,32.5,33.0,33.5,34.0,34.5,35.0,35.5,36.0,36.5,37.0,37.5,38.0,38.5,39.0,39.5,40.0,40.5],"y":[7.905366149846075,7.6126085577333535,7.350138975519189,7.11307098154114,6.897555076738159,6.700511912151467,6.51944487481085,6.352305561264379,6.197395359626334,6.05329221800902,5.9187953199989,5.792882712205382,5.674678446418713,5.563426810335494,5.458471907670383,5.359241322945918,5.265232939165408,5.176004213531791,5.091163387276424,5.010362230434446,4.933290014535334,4.859668474927301,4.789247576262445,4.721801934070767,4.657127775575195,4.595040346272023,4.53537168701253,4.477968720613591,4.4226915983171455,4.369412265397452,4.3180132123980295,4.2683863842595855,4.220432224275506,4.174058833613334,4.129181230247544,4.085720693699701,4.043604184085914,4.002763825713955,3.9631364469216153,3.9246631690578493,3.887289038522376,3.8509626966323154,3.8156360828044082,3.7812641671510097,3.747804709105993,3.715218039138079,3.6834668609863552,3.652516072176074,3.622332600850781,3.5928852571962935,3.5641445979390074,3.536082802580233,3.508673560183888,3.481891965670283,3.455714424686846,3.430118566229894,3.405083162281939,3.3805880538084434,3.356614082527682,3.3331430279289105,3.3101575490683053,3.2876411307201665,3.2655780335034037,3.2439532476410635,3.22275245004423,3.2019619644414714,3.1815687243016786,3.161560238321894,3.141924558273035,3.1226502490154666,3.103726360513461,3.0851424016929543,3.0668883160008096,3.048954458536235,3.0313315746362246,3.0140107798070073,2.996983540902651,2.9802416584602502,2.9637772501086235,2.9475827349742723,2.931650819014516,2.9159744812133566],"type":"scatter","xaxis":"x","yaxis":"y"},{"name":"Orbital Period","x":[0.0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5,8.0,8.5,9.0,9.5,10.0,10.5,11.0,11.5,12.0,12.5,13.0,13.5,14.0,14.5,15.0,15.5,16.0,16.5,17.0,17.5,18.0,18.5,19.0,19.5,20.0,20.5,21.0,21.5,22.0,22.5,23.0,23.5,24.0,24.5,25.0,25.5,26.0,26.5,27.0,27.5,28.0,28.5,29.0,29.5,30.0,30.5,31.0,31.5,32.0,32.5,33.0,33.5,34.0,34.5,35.0,35.5,36.0,36.5,37.0,37.5,38.0,38.5,39.0,39.5,40.0,40.5],"y":[1.408150823958183,1.5769381011189687,1.7519773643030474,1.9330527941124622,2.1199694962784617,2.3125503231300617,2.5106333327275436,2.714069730006096,2.9227221783485375,3.136463400046462,3.355175005033325,3.578746502131957,3.8070744577954168,4.040061775200132,4.27761707241659,4.519654142806883,4.766091484174537,5.01685188579671,5.271862064498419,5.531052342524957,5.794356361235053,6.061710825650102,6.3330552757108975,6.608331880755254,6.887485254270738,7.170462286420904,7.4572119922108,7.747685373462462,8.041835293026251,8.339616359867582,8.64098482384923,8.945898479182002,9.25431657564667,9.566199736800892,9.881509884480021,10.200210168982434,10.522264904400647,10.847639508620583,11.17630044756448,11.508215183299102,11.84335212567149,12.181680587169723,12.523170740737338,12.867793580297562,13.21552088376742,13.566325178363526,13.920179708020019,14.27705840275624,14.63693584984658,14.999787266658483,15.365588475036477,15.734315877120888,16.10594643249962,16.480457636599894,16.857827500234734,17.238034530226216,17.621057711033384,18.00687648731915,18.395470747395105,18.786820807488358,19.180907396778593,19.57771164315757,19.977215059666737,20.37939953157215,20.784247304038548,21.191740970367455,21.60186346076644,22.01459803161927,22.42992825522831,22.847838010003105,23.268311471070227,23.691333101281558,24.116887642599508,24.54496010783905,24.975535772747843,25.408600168406803,25.84413907393471,26.2821385094813,26.72258472949444,27.16546421624762,27.610763673615136,28.058470021082726],"type":"scatter","xaxis":"x","yaxis":"y2"}],                        {"template":{"data":{"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"#E5ECF6","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"bgcolor":"#E5ECF6","radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"bgcolor":"#E5ECF6","caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,0.94],"showgrid":true,"gridwidth":1,"gridcolor":"LightGrey","range":[0,40],"showline":true,"linewidth":2,"linecolor":"Grey","title":{"text":"Satellite Altitude [1000 km]"},"tickmode":"linear","tick0":0,"dtick":1},"yaxis":{"anchor":"x","domain":[0.0,1.0],"showgrid":true,"gridwidth":1,"gridcolor":"LightGrey","range":[0,10],"showline":true,"linewidth":2,"linecolor":"Grey","title":{"text":"Velocity [km/s]"},"tickmode":"linear","tick0":0,"dtick":1},"yaxis2":{"anchor":"x","overlaying":"y","side":"right","showgrid":false,"gridwidth":1,"gridcolor":"LightGrey","range":[0,30],"showline":true,"linewidth":2,"linecolor":"Grey","title":{"text":"Orbital Period [hours]"},"tickmode":"linear","tick0":0,"dtick":5},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(0,0,0,0)"},                        {"responsive": true}                    )                };                            </script>        </div>
+
+<details>
+<summary>Plot Source</summary>
+<div class="highlight"><span class="filename">fig_orbital_period.py</span><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Generate plot of eccentric anomaly versus true anomaly for a range of eccentricies.</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># Highlights the effect of eccentricity on the difference of the two.</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="kn">import</span> <span class="nn">os</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="kn">import</span> <span class="nn">pathlib</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="kn">import</span> <span class="nn">plotly.io</span> <span class="k">as</span> <span class="nn">pio</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="kn">from</span>   <span class="nn">plotly.subplots</span> <span class="kn">import</span> <span class="n">make_subplots</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="kn">import</span> <span class="nn">rastro</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="c1">## Define Constants</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="n">OUTDIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;RASTRO_FIGURE_OUTPUT_DIR&quot;</span><span class="p">)</span> <span class="c1"># Build Environment Variable</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="n">OUTFILE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">OUTDIR</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">SCRIPT_NAME</span><span class="si">}</span><span class="s2">.html&quot;</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="c1">## Create figure</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">make_subplots</span><span class="p">(</span><span class="n">specs</span><span class="o">=</span><span class="p">[[{</span><span class="s2">&quot;secondary_y&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}]])</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">paper_bgcolor</span><span class="o">=</span><span class="s1">&#39;rgba(0,0,0,0)&#39;</span><span class="p">,</span> <span class="n">plot_bgcolor</span><span class="o">=</span><span class="s1">&#39;rgba(0,0,0,0)&#39;</span><span class="p">))</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    <span class="n">showgrid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gridwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gridcolor</span><span class="o">=</span><span class="s1">&#39;LightGrey&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>    <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;Grey&#39;</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="p">)</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>    <span class="n">showgrid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gridwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gridcolor</span><span class="o">=</span><span class="s1">&#39;LightGrey&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>    <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;Grey&#39;</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="p">)</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>    <span class="n">showgrid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="p">)</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>    <span class="n">tickmode</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">tick0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtick</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title_text</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Satellite Altitude [1000 km]&quot;</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="p">)</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a>    <span class="n">tickmode</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">tick0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtick</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title_text</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Velocity [km/s]&quot;</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="p">)</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>    <span class="n">tickmode</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">tick0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtick</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">title_text</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Orbital Period [hours]&quot;</span><span class="p">,</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span>
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a><span class="p">)</span>
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a><span class="c1">## Generate and plot data</span>
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a>
+<a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a><span class="c1"># Generate range of true anomalies from 0 to 41,000 km altitude in 1,000 km increments</span>
+<a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="n">alt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">41000</span><span class="o">*</span><span class="mf">1e3</span><span class="p">,</span> <span class="mi">500</span><span class="o">*</span><span class="mf">1e3</span><span class="p">)</span>
+<a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a>
+<a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a><span class="c1"># Compute velocity over altitude</span>
+<a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a><span class="n">vp</span> <span class="o">=</span> <span class="p">[</span><span class="n">rastro</span><span class="o">.</span><span class="n">perigee_velocity</span><span class="p">(</span><span class="n">rastro</span><span class="o">.</span><span class="n">R_EARTH</span> <span class="o">+</span> <span class="n">a</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="mf">1e3</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alt</span><span class="p">]</span>
+<a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a><span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">alt</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">vp</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Velocity&quot;</span><span class="p">),</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a>
+<a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a>
+<a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a><span class="c1"># Compute orbital period over altitude</span>
+<a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a><span class="n">period</span> <span class="o">=</span> <span class="p">[</span><span class="n">rastro</span><span class="o">.</span><span class="n">orbital_period</span><span class="p">(</span><span class="n">rastro</span><span class="o">.</span><span class="n">R_EARTH</span> <span class="o">+</span> <span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="mi">3600</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alt</span><span class="p">]</span>
+<a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a><span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">alt</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">period</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Orbital Period&quot;</span><span class="p">),</span> <span class="n">secondary_y</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a>
+<a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a><span class="n">pio</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">OUTFILE</span><span class="p">,</span> <span class="n">include_plotlyjs</span><span class="o">=</span><span class="s1">&#39;cdn&#39;</span><span class="p">,</span> <span class="n">full_html</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auto_play</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+</details>
+<h2 id="sun-synchronous-inclination">Sun-Synchronous Inclination<a class="headerlink" href="#sun-synchronous-inclination" title="Permanent link">&para;</a></h2>
+<p>A <em><strong>Sun-syncrhonous</strong></em> orbit is one whose nodal precession rate matches the average rate of the 
+Earth's rotation about the Sun. That is, it is an orbit where the right ascension of the 
+ascending node changes at the same rate as the Sun moves relative to the Earth. Sun-synchronous 
+orbits are often highly relevant an useful for optical Earth observation 
+satellites that desire to have consistent illumination conditions. A Sun-synchronous orbit is 
+guaranteed to cross the equator at the same local time (e.g. 2pm) at each crossing event.</p>
+<p>Due to Earth's oblateness known as the <span class="arithmatex">\(J_2\)</span> zonal harmonic, frequently referred as simply <span class="arithmatex">\(J_2\)</span>,
+there is a constant, secular drift of the right ascension of all Earth orbiting objects. Since 
+the <span class="arithmatex">\(J_2\)</span> harmonic is the second largest after that of point-mass gravity, it is a dominant 
+effect on the orbit</p>
+<div class="arithmatex">\[
+\dot{\Omega} = -\frac{3nR^2_EJ_2}{2a^2(1-e^2)^2}
+\]</div>
+<p>when combined with the required nodal precession rate for sun synchronicity</p>
+<div class="arithmatex">\[
+\dot{\Omega} = \frac{360 \; \text{deg}}{1 \; \text{year}}\frac{1 \; \text{year}}{365.2421897 \; 
+\text{day}} = 0.98564736 \frac{\text{deg}}{\text{day}}
+\]</div>
+<p>can be rearranged to solve for the inclination as a function of semi-major axis and eccentricity</p>
+<div class="arithmatex">\[
+i = \arccos{\Big(-\frac{2a^{\frac{7}{2}}\dot{\Omega}_{ss}(1-e^2)^2}{3R^2_EJ_2\sqrt{\mu}}\Big)}
+\]</div>
+<p>The function <code>sun_syncrhonous_inclination</code> calculates this inclination.</p>
+<p>The figure below shows how the inclination required to maintain a sun-synchronous orbit varies 
+with altitude. Rocket launches to Sun-synchronous orbits will commonly have a fixed altitude 
+(around 500 to 1000 kilometers for many Earth observation missions) and zero eccentricity. The 
+launch provider will select the inclination the rocket is then determined by the above equation 
+to provide the desired effect.</p>
+<div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script>                <div id="d1e5d1a4-c22a-45a5-80df-6e418244a643" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("d1e5d1a4-c22a-45a5-80df-6e418244a643")) {                    Plotly.newPlot(                        "d1e5d1a4-c22a-45a5-80df-6e418244a643",                        [{"name":"e = 0.0","x":[300.0,301.0,302.0,303.0,304.0,305.0,306.0,307.0,308.0,309.0,310.0,311.0,312.0,313.0,314.0,315.0,316.0,317.0,318.0,319.0,320.0,321.0,322.0,323.0,324.0,325.0,326.0,327.0,328.0,329.0,330.0,331.0,332.0,333.0,334.0,335.0,336.0,337.0,338.0,339.0,340.0,341.0,342.0,343.0,344.0,345.0,346.0,347.0,348.0,349.0,350.0,351.0,352.0,353.0,354.0,355.0,356.0,357.0,358.0,359.0,360.0,361.0,362.0,363.0,364.0,365.0,366.0,367.0,368.0,369.0,370.0,371.0,372.0,373.0,374.0,375.0,376.0,377.0,378.0,379.0,380.0,381.0,382.0,383.0,384.0,385.0,386.0,387.0,388.0,389.0,390.0,391.0,392.0,393.0,394.0,395.0,396.0,397.0,398.0,399.0,400.0,401.0,402.0,403.0,404.0,405.0,406.0,407.0,408.0,409.0,410.0,411.0,412.0,413.0,414.0,415.0,416.0,417.0,418.0,419.0,420.0,421.0,422.0,423.0,424.0,425.0,426.0,427.0,428.0,429.0,430.0,431.0,432.0,433.0,434.0,435.0,436.0,437.0,438.0,439.0,440.0,441.0,442.0,443.0,444.0,445.0,446.0,447.0,448.0,449.0,450.0,451.0,452.0,453.0,454.0,455.0,456.0,457.0,458.0,459.0,460.0,461.0,462.0,463.0,464.0,465.0,466.0,467.0,468.0,469.0,470.0,471.0,472.0,473.0,474.0,475.0,476.0,477.0,478.0,479.0,480.0,481.0,482.0,483.0,484.0,485.0,486.0,487.0,488.0,489.0,490.0,491.0,492.0,493.0,494.0,495.0,496.0,497.0,498.0,499.0,500.0,501.0,502.0,503.0,504.0,505.0,506.0,507.0,508.0,509.0,510.0,511.0,512.0,513.0,514.0,515.0,516.0,517.0,518.0,519.0,520.0,521.0,522.0,523.0,524.0,525.0,526.0,527.0,528.0,529.0,530.0,531.0,532.0,533.0,534.0,535.0,536.0,537.0,538.0,539.0,540.0,541.0,542.0,543.0,544.0,545.0,546.0,547.0,548.0,549.0,550.0,551.0,552.0,553.0,554.0,555.0,556.0,557.0,558.0,559.0,560.0,561.0,562.0,563.0,564.0,565.0,566.0,567.0,568.0,569.0,570.0,571.0,572.0,573.0,574.0,575.0,576.0,577.0,578.0,579.0,580.0,581.0,582.0,583.0,584.0,585.0,586.0,587.0,588.0,589.0,590.0,591.0,592.0,593.0,594.0,595.0,596.0,597.0,598.0,599.0,600.0,601.0,602.0,603.0,604.0,605.0,606.0,607.0,608.0,609.0,610.0,611.0,612.0,613.0,614.0,615.0,616.0,617.0,618.0,619.0,620.0,621.0,622.0,623.0,624.0,625.0,626.0,627.0,628.0,629.0,630.0,631.0,632.0,633.0,634.0,635.0,636.0,637.0,638.0,639.0,640.0,641.0,642.0,643.0,644.0,645.0,646.0,647.0,648.0,649.0,650.0,651.0,652.0,653.0,654.0,655.0,656.0,657.0,658.0,659.0,660.0,661.0,662.0,663.0,664.0,665.0,666.0,667.0,668.0,669.0,670.0,671.0,672.0,673.0,674.0,675.0,676.0,677.0,678.0,679.0,680.0,681.0,682.0,683.0,684.0,685.0,686.0,687.0,688.0,689.0,690.0,691.0,692.0,693.0,694.0,695.0,696.0,697.0,698.0,699.0,700.0,701.0,702.0,703.0,704.0,705.0,706.0,707.0,708.0,709.0,710.0,711.0,712.0,713.0,714.0,715.0,716.0,717.0,718.0,719.0,720.0,721.0,722.0,723.0,724.0,725.0,726.0,727.0,728.0,729.0,730.0,731.0,732.0,733.0,734.0,735.0,736.0,737.0,738.0,739.0,740.0,741.0,742.0,743.0,744.0,745.0,746.0,747.0,748.0,749.0,750.0,751.0,752.0,753.0,754.0,755.0,756.0,757.0,758.0,759.0,760.0,761.0,762.0,763.0,764.0,765.0,766.0,767.0,768.0,769.0,770.0,771.0,772.0,773.0,774.0,775.0,776.0,777.0,778.0,779.0,780.0,781.0,782.0,783.0,784.0,785.0,786.0,787.0,788.0,789.0,790.0,791.0,792.0,793.0,794.0,795.0,796.0,797.0,798.0,799.0,800.0,801.0,802.0,803.0,804.0,805.0,806.0,807.0,808.0,809.0,810.0,811.0,812.0,813.0,814.0,815.0,816.0,817.0,818.0,819.0,820.0,821.0,822.0,823.0,824.0,825.0,826.0,827.0,828.0,829.0,830.0,831.0,832.0,833.0,834.0,835.0,836.0,837.0,838.0,839.0,840.0,841.0,842.0,843.0,844.0,845.0,846.0,847.0,848.0,849.0,850.0,851.0,852.0,853.0,854.0,855.0,856.0,857.0,858.0,859.0,860.0,861.0,862.0,863.0,864.0,865.0,866.0,867.0,868.0,869.0,870.0,871.0,872.0,873.0,874.0,875.0,876.0,877.0,878.0,879.0,880.0,881.0,882.0,883.0,884.0,885.0,886.0,887.0,888.0,889.0,890.0,891.0,892.0,893.0,894.0,895.0,896.0,897.0,898.0,899.0,900.0,901.0,902.0,903.0,904.0,905.0,906.0,907.0,908.0,909.0,910.0,911.0,912.0,913.0,914.0,915.0,916.0,917.0,918.0,919.0,920.0,921.0,922.0,923.0,924.0,925.0,926.0,927.0,928.0,929.0,930.0,931.0,932.0,933.0,934.0,935.0,936.0,937.0,938.0,939.0,940.0,941.0,942.0,943.0,944.0,945.0,946.0,947.0,948.0,949.0,950.0,951.0,952.0,953.0,954.0,955.0,956.0,957.0,958.0,959.0,960.0,961.0,962.0,963.0,964.0,965.0,966.0,967.0,968.0,969.0,970.0,971.0,972.0,973.0,974.0,975.0,976.0,977.0,978.0,979.0,980.0,981.0,982.0,983.0,984.0,985.0,986.0,987.0,988.0,989.0,990.0,991.0,992.0,993.0,994.0,995.0,996.0,997.0,998.0,999.0],"y":[96.6719551511595,96.67546847337854,96.67898313610834,96.68249913968636,96.68601648445019,96.68953517073751,96.69305519888603,96.69657656923356,96.70009928211796,96.70362333787715,96.70714873684922,96.71067547937223,96.71420356578433,96.71773299642376,96.72126377162887,96.72479589173801,96.72832935708968,96.73186416802238,96.73540032487475,96.73893782798542,96.74247667769322,96.74601687433692,96.74955841825545,96.75310130978778,96.756645549273,96.76019113705017,96.76373807345854,96.76728635883737,96.77083599352599,96.77438697786388,96.7779393121905,96.7814929968454,96.78504803216826,96.78860441849879,96.79216215617679,96.79572124554214,96.79928168693478,96.80284348069472,96.80640662716205,96.80997112667694,96.8135369795797,96.81710418621053,96.82067274690992,96.8242426620183,96.82781393187625,96.83138655682433,96.83496053720329,96.83853587335386,96.84211256561693,96.84569061433339,96.84927001984423,96.85285078249056,96.8564329026135,96.86001638055428,96.86360121665419,96.8671874112546,96.87077496469699,96.87436387732286,96.87795414947382,96.88154578149157,96.88513877371781,96.88873312649443,96.8923288401633,96.89592591506641,96.89952435154584,96.90312414994368,96.9067253106022,96.91032783386362,96.91393172007035,96.91753696956484,96.92114358268955,96.92475155978713,96.92836090120022,96.93197160727158,96.93558367834405,96.93919711476049,96.94281191686392,96.94642808499735,96.95004561950394,96.9536645207269,96.95728478900949,96.96090642469512,96.96452942812718,96.96815379964922,96.9717795396048,96.97540664833762,96.97903512619143,96.98266497351005,96.98629619063739,96.9899287779174,96.99356273569417,96.99719806431183,97.00083476411461,97.00447283544678,97.00811227865272,97.01175309407687,97.01539528206375,97.01903884295798,97.02268377710423,97.02633008484727,97.02997776653197,97.0336268225032,97.03727725310596,97.04092905868535,97.04458223958649,97.04823679615463,97.05189272873507,97.05555003767321,97.0592087233145,97.0628687860045,97.06653022608883,97.07019304391318,97.07385723982335,97.07752281416519,97.08118976728466,97.08485809952774,97.08852781124054,97.09219890276927,97.09587137446016,97.09954522665952,97.1032204597138,97.10689707396949,97.11057506977316,97.11425444747147,97.11793520741114,97.12161734993897,97.12530087540188,97.1289857841468,97.13267207652086,97.13635975287112,97.14004881354481,97.14373925888923,97.14743108925175,97.15112430497982,97.15481890642096,97.1585148939228,97.16221226783301,97.16591102849938,97.16961117626975,97.17331271149207,97.17701563451435,97.18071994568467,97.18442564535121,97.18813273386226,97.19184121156609,97.19555107881115,97.19926233594596,97.20297498331907,97.20668902127917,97.21040445017498,97.21412127035529,97.21783948216905,97.22155908596523,97.2252800820929,97.2290024709012,97.23272625273935,97.2364514279567,97.24017799690259,97.24390595992651,97.24763531737803,97.25136606960677,97.25509821696245,97.25883175979489,97.26256669845392,97.26630303328957,97.27004076465187,97.27377989289089,97.27752041835691,97.28126234140018,97.28500566237108,97.28875038162009,97.29249649949773,97.2962440163546,97.29999293254147,97.30374324840906,97.30749496430828,97.31124808059006,97.31500259760543,97.31875851570551,97.32251583524152,97.32627455656471,97.33003468002649,97.33379620597826,97.3375591347716,97.34132346675808,97.34508920228943,97.34885634171741,97.3526248853939,97.35639483367083,97.36016618690029,97.36393894543431,97.36771310962514,97.37148867982503,97.37526565638639,97.37904403966164,97.38282383000333,97.38660502776406,97.39038763329654,97.39417164695355,97.397957069088,97.40174390005278,97.40553214020096,97.40932178988567,97.4131128494601,97.41690531927755,97.42069919969137,97.42449449105509,97.42829119372216,97.43208930804629,97.43588883438115,97.43968977308054,97.44349212449835,97.44729588898858,97.45110106690524,97.45490765860248,97.45871566443454,97.46252508475568,97.46633591992037,97.47014817028301,97.47396183619823,97.47777691802067,97.481593416105,97.4854113308061,97.4892306624789,97.49305141147833,97.4968735781595,97.50069716287756,97.50452216598778,97.50834858784548,97.51217642880607,97.5160056892251,97.51983636945812,97.52366846986082,97.527501990789,97.53133693259846,97.53517329564517,97.53901108028512,97.54285028687448,97.5466909157694,97.5505329673262,97.55437644190121,97.55822133985093,97.56206766153186,97.56591540730068,97.56976457751406,97.57361517252886,97.57746719270193,97.58132063839027,97.58517550995094,97.5890318077411,97.59288953211798,97.5967486834389,97.60060926206133,97.60447126834272,97.60833470264066,97.61219956531288,97.6160658567171,97.61993357721121,97.6238027271531,97.62767330690087,97.63154531681258,97.63541875724646,97.63929362856082,97.64316993111402,97.64704766526454,97.65092683137092,97.65480742979186,97.65868946088605,97.66257292501233,97.66645782252961,97.6703441537969,97.6742319191733,97.67812111901794,97.68201175369013,97.68590382354925,97.68979732895473,97.69369227026607,97.69758864784292,97.701486462045,97.70538571323209,97.70928640176415,97.71318852800107,97.71709209230295,97.72099709502999,97.72490353654241,97.72881141720059,97.73272073736489,97.73663149739586,97.74054369765413,97.7444573385004,97.74837242029542,97.75228894340012,97.75620690817541,97.76012631498243,97.76404716418224,97.76796945613617,97.77189319120549,97.77581836975163,97.77974499213612,97.78367305872057,97.78760256986664,97.79153352593613,97.79546592729095,97.79939977429301,97.80333506730439,97.80727180668723,97.8112099928038,97.8151496260164,97.81909070668746,97.82303323517952,97.82697721185512,97.83092263707704,97.83486951120798,97.83881783461088,97.8427676076487,97.84671883068448,97.85067150408139,97.85462562820268,97.85858120341167,97.8625382300718,97.86649670854663,97.87045663919972,97.87441802239478,97.87838085849563,97.88234514786616,97.88631089087036,97.89027808787229,97.89424673923612,97.89821684532612,97.90218840650662,97.90616142314211,97.91013589559711,97.91411182423624,97.91808920942422,97.92206805152591,97.92604835090617,97.93003010793005,97.93401332296263,97.9379979963691,97.94198412851473,97.94597171976493,97.94996077048515,97.95395128104096,97.95794325179803,97.9619366831221,97.96593157537903,97.96992792893475,97.97392574415531,97.9779250214068,97.98192576105549,97.9859279634677,97.98993162900982,97.99393675804833,97.9979433509499,98.00195140808117,98.00596092980894,98.00997191650008,98.01398436852163,98.01799828624058,98.02201367002417,98.02603052023963,98.03004883725433,98.03406862143574,98.03808987315135,98.04211259276887,98.04613678065601,98.05016243718059,98.05418956271059,98.058218157614,98.06224822225893,98.06627975701362,98.07031276224639,98.07434723832563,98.07838318561984,98.08242060449764,98.08645949532773,98.09049985847889,98.09454169432003,98.0985850032201,98.1026297855482,98.10667604167351,98.11072377196533,98.11477297679298,98.11882365652596,98.12287581153383,98.12692944218625,98.13098454885298,98.13504113190389,98.13909919170891,98.14315872863808,98.14721974306157,98.15128223534964,98.1553462058726,98.15941165500091,98.16347858310507,98.16754699055573,98.17161687772366,98.17568824497965,98.17976109269466,98.18383542123966,98.18791123098582,98.19198852230434,98.19606729556655,98.20014755114387,98.20422928940779,98.20831251072995,98.21239721548204,98.2164834040359,98.2205710767634,98.22466023403659,98.22875087622754,98.23284300370848,98.2369366168517,98.24103171602961,98.24512830161471,98.24922637397961,98.253325933497,98.25742698053965,98.2615295154805,98.26563353869255,98.26973905054889,98.2738460514227,98.2779545416873,98.28206452171604,98.28617599188247,98.29028895256018,98.29440340412282,98.29851934694425,98.3026367813983,98.30675570785903,98.3108761267005,98.31499803829692,98.31912144302257,98.32324634125185,98.32737273335927,98.33150061971945,98.33563000070703,98.33976087669687,98.34389324806384,98.34802711518293,98.35216247842929,98.35629933817808,98.36043769480463,98.36457754868432,98.36871890019269,98.37286174970535,98.37700609759798,98.38115194424638,98.38529929002654,98.38944813531441,98.39359848048613,98.39775032591791,98.40190367198612,98.40605851906709,98.41021486753743,98.41437271777373,98.41853207015274,98.42269292505125,98.42685528284625,98.43101914391475,98.43518450863388,98.43935137738092,98.44351975053318,98.44768962846813,98.45186101156331,98.45603390019639,98.46020829474512,98.46438419558733,98.46856160310104,98.47274051766429,98.47692093965523,98.48110286945217,98.4852863074335,98.48947125397763,98.49365770946324,98.49784567426894,98.50203514877357,98.50622613335602,98.51041862839527,98.51461263427046,98.51880815136077,98.52300518004552,98.52720372070415,98.53140377371616,98.53560533946121,98.539808418319,98.54401301066935,98.54821911689224,98.55242673736772,98.55663587247594,98.56084652259712,98.56505868811166,98.56927236940001,98.57348756684274,98.57770428082056,98.58192251171421,98.58614225990462,98.59036352577276,98.59458630969975,98.59881061206674,98.60303643325511,98.60726377364627,98.61149263362171,98.6157230135631,98.61995491385214,98.62418833487068,98.62842327700069,98.63265974062423,98.63689772612345,98.64113723388061,98.64537826427811,98.6496208176984,98.65386489452409,98.65811049513789,98.6623576199226,98.66660626926111,98.67085644353644,98.67510814313174,98.67936136843024,98.68361611981526,98.68787239767025,98.69213020237879,98.69638953432454,98.70065039389127,98.70491278146282,98.70917669742323,98.71344214215658,98.71770911604708,98.72197761947903,98.72624765283685,98.73051921650507,98.73479231086834,98.7390669363114,98.74334309321911,98.74762078197641,98.75190000296843,98.75618075658029,98.76046304319732,98.76474686320489,98.76903221698853,98.77331910493388,98.77760752742661,98.7818974848526,98.78618897759779,98.79048200604826,98.79477657059012,98.7990726716097,98.80337030949337,98.80766948462761,98.81197019739905,98.81627244819438,98.82057623740047,98.82488156540423,98.82918843259269,98.83349683935305,98.83780678607256,98.8421182731386,98.84643130093863,98.85074586986033,98.85506198029134,98.85937963261952,98.86369882723281,98.86801956451923,98.87234184486694,98.87666566866422,98.88099103629946,98.88531794816114,98.88964640463787,98.89397640611838,98.89830795299146,98.90264104564608,98.90697568447128,98.91131186985625,98.91564960219023,98.91998888186261,98.92432970926292,98.92867208478079,98.93301600880586,98.93736148172806,98.9417085039373,98.94605707582366,98.9504071977773,98.95475887018853,98.95911209344773,98.96346686794546,98.9678231940723,98.97218107221902,98.9765405027765,98.98090148613566,98.98526402268762,98.98962811282358,98.99399375693484,98.99836095541282,99.0027297086491,99.00710001703528,99.01147188096319,99.01584530082465,99.02022027701169,99.02459680991643,99.02897489993109,99.033354547448,99.03773575285965,99.04211851655856,99.04650283893746,99.05088872038915,99.05527616130651,99.05966516208262,99.0640557231106,99.06844784478372,99.07284152749534,99.077236771639,99.08163357760827,99.08603194579689,99.09043187659869,99.09483337040764,99.09923642761783,99.10364104862342,99.10804723381872,99.11245498359817,99.11686429835632,99.1212751784878,99.12568762438738,99.13010163644996,99.13451721507057,99.13893436064431,99.1433530735664,99.14777335423224,99.15219520303727,99.1566186203771,99.16104360664745,99.16547016224413,99.1698982875631,99.17432798300038,99.1787592489522,99.18319208581487,99.18762649398475,99.19206247385841,99.19650002583249,99.20093915030377,99.20537984766916,99.20982211832563,99.21426596267032,99.21871138110048,99.22315837401345,99.22760694180677,99.23205708487801,99.23650880362487,99.24096209844521,99.245416969737,99.24987341789829,99.2543314433273,99.25879104642237,99.26325222758189,99.26771498720446,99.27217932568873,99.27664524343348,99.28111274083768,99.28558181830033,99.29005247622061,99.29452471499779,99.29899853503123,99.30347393672054,99.30795092046526,99.31242948666522,99.31690963572026,99.32139136803039,99.32587468399576,99.33035958401662,99.33484606849328,99.33933413782626,99.34382379241616,99.34831503266375,99.35280785896985,99.35730227173542,99.36179827136156,99.36629585824952,99.37079503280061,99.3752957954163,99.37979814649815,99.3843020864479,99.38880761566737,99.39331473455852,99.3978234435234,99.4023337429642,99.4068456332833,99.41135911488306,99.41587418816611,99.42039085353508,99.42490911139285,99.4294289621423,99.43395040618651,99.43847344392867,99.44299807577207,99.44752430212013,99.45205212337645,99.45658153994464,99.46111255222857,99.46564516063209,99.47017936555933,99.47471516741442],"type":"scatter"},{"name":"e = 0.1","x":[300.0,301.0,302.0,303.0,304.0,305.0,306.0,307.0,308.0,309.0,310.0,311.0,312.0,313.0,314.0,315.0,316.0,317.0,318.0,319.0,320.0,321.0,322.0,323.0,324.0,325.0,326.0,327.0,328.0,329.0,330.0,331.0,332.0,333.0,334.0,335.0,336.0,337.0,338.0,339.0,340.0,341.0,342.0,343.0,344.0,345.0,346.0,347.0,348.0,349.0,350.0,351.0,352.0,353.0,354.0,355.0,356.0,357.0,358.0,359.0,360.0,361.0,362.0,363.0,364.0,365.0,366.0,367.0,368.0,369.0,370.0,371.0,372.0,373.0,374.0,375.0,376.0,377.0,378.0,379.0,380.0,381.0,382.0,383.0,384.0,385.0,386.0,387.0,388.0,389.0,390.0,391.0,392.0,393.0,394.0,395.0,396.0,397.0,398.0,399.0,400.0,401.0,402.0,403.0,404.0,405.0,406.0,407.0,408.0,409.0,410.0,411.0,412.0,413.0,414.0,415.0,416.0,417.0,418.0,419.0,420.0,421.0,422.0,423.0,424.0,425.0,426.0,427.0,428.0,429.0,430.0,431.0,432.0,433.0,434.0,435.0,436.0,437.0,438.0,439.0,440.0,441.0,442.0,443.0,444.0,445.0,446.0,447.0,448.0,449.0,450.0,451.0,452.0,453.0,454.0,455.0,456.0,457.0,458.0,459.0,460.0,461.0,462.0,463.0,464.0,465.0,466.0,467.0,468.0,469.0,470.0,471.0,472.0,473.0,474.0,475.0,476.0,477.0,478.0,479.0,480.0,481.0,482.0,483.0,484.0,485.0,486.0,487.0,488.0,489.0,490.0,491.0,492.0,493.0,494.0,495.0,496.0,497.0,498.0,499.0,500.0,501.0,502.0,503.0,504.0,505.0,506.0,507.0,508.0,509.0,510.0,511.0,512.0,513.0,514.0,515.0,516.0,517.0,518.0,519.0,520.0,521.0,522.0,523.0,524.0,525.0,526.0,527.0,528.0,529.0,530.0,531.0,532.0,533.0,534.0,535.0,536.0,537.0,538.0,539.0,540.0,541.0,542.0,543.0,544.0,545.0,546.0,547.0,548.0,549.0,550.0,551.0,552.0,553.0,554.0,555.0,556.0,557.0,558.0,559.0,560.0,561.0,562.0,563.0,564.0,565.0,566.0,567.0,568.0,569.0,570.0,571.0,572.0,573.0,574.0,575.0,576.0,577.0,578.0,579.0,580.0,581.0,582.0,583.0,584.0,585.0,586.0,587.0,588.0,589.0,590.0,591.0,592.0,593.0,594.0,595.0,596.0,597.0,598.0,599.0,600.0,601.0,602.0,603.0,604.0,605.0,606.0,607.0,608.0,609.0,610.0,611.0,612.0,613.0,614.0,615.0,616.0,617.0,618.0,619.0,620.0,621.0,622.0,623.0,624.0,625.0,626.0,627.0,628.0,629.0,630.0,631.0,632.0,633.0,634.0,635.0,636.0,637.0,638.0,639.0,640.0,641.0,642.0,643.0,644.0,645.0,646.0,647.0,648.0,649.0,650.0,651.0,652.0,653.0,654.0,655.0,656.0,657.0,658.0,659.0,660.0,661.0,662.0,663.0,664.0,665.0,666.0,667.0,668.0,669.0,670.0,671.0,672.0,673.0,674.0,675.0,676.0,677.0,678.0,679.0,680.0,681.0,682.0,683.0,684.0,685.0,686.0,687.0,688.0,689.0,690.0,691.0,692.0,693.0,694.0,695.0,696.0,697.0,698.0,699.0,700.0,701.0,702.0,703.0,704.0,705.0,706.0,707.0,708.0,709.0,710.0,711.0,712.0,713.0,714.0,715.0,716.0,717.0,718.0,719.0,720.0,721.0,722.0,723.0,724.0,725.0,726.0,727.0,728.0,729.0,730.0,731.0,732.0,733.0,734.0,735.0,736.0,737.0,738.0,739.0,740.0,741.0,742.0,743.0,744.0,745.0,746.0,747.0,748.0,749.0,750.0,751.0,752.0,753.0,754.0,755.0,756.0,757.0,758.0,759.0,760.0,761.0,762.0,763.0,764.0,765.0,766.0,767.0,768.0,769.0,770.0,771.0,772.0,773.0,774.0,775.0,776.0,777.0,778.0,779.0,780.0,781.0,782.0,783.0,784.0,785.0,786.0,787.0,788.0,789.0,790.0,791.0,792.0,793.0,794.0,795.0,796.0,797.0,798.0,799.0,800.0,801.0,802.0,803.0,804.0,805.0,806.0,807.0,808.0,809.0,810.0,811.0,812.0,813.0,814.0,815.0,816.0,817.0,818.0,819.0,820.0,821.0,822.0,823.0,824.0,825.0,826.0,827.0,828.0,829.0,830.0,831.0,832.0,833.0,834.0,835.0,836.0,837.0,838.0,839.0,840.0,841.0,842.0,843.0,844.0,845.0,846.0,847.0,848.0,849.0,850.0,851.0,852.0,853.0,854.0,855.0,856.0,857.0,858.0,859.0,860.0,861.0,862.0,863.0,864.0,865.0,866.0,867.0,868.0,869.0,870.0,871.0,872.0,873.0,874.0,875.0,876.0,877.0,878.0,879.0,880.0,881.0,882.0,883.0,884.0,885.0,886.0,887.0,888.0,889.0,890.0,891.0,892.0,893.0,894.0,895.0,896.0,897.0,898.0,899.0,900.0,901.0,902.0,903.0,904.0,905.0,906.0,907.0,908.0,909.0,910.0,911.0,912.0,913.0,914.0,915.0,916.0,917.0,918.0,919.0,920.0,921.0,922.0,923.0,924.0,925.0,926.0,927.0,928.0,929.0,930.0,931.0,932.0,933.0,934.0,935.0,936.0,937.0,938.0,939.0,940.0,941.0,942.0,943.0,944.0,945.0,946.0,947.0,948.0,949.0,950.0,951.0,952.0,953.0,954.0,955.0,956.0,957.0,958.0,959.0,960.0,961.0,962.0,963.0,964.0,965.0,966.0,967.0,968.0,969.0,970.0,971.0,972.0,973.0,974.0,975.0,976.0,977.0,978.0,979.0,980.0,981.0,982.0,983.0,984.0,985.0,986.0,987.0,988.0,989.0,990.0,991.0,992.0,993.0,994.0,995.0,996.0,997.0,998.0,999.0],"y":[96.53859787370169,96.54204035237011,96.545484143532,96.54892924751636,96.5523756646523,96.555823395269,96.55927243969573,96.56272279826176,96.5661744712965,96.56962745912939,96.57308176208997,96.5765373805078,96.57999431471256,96.583452565034,96.5869121318019,96.59037301534613,96.59383521599663,96.59729873408344,96.60076356993662,96.6042297238863,96.60769719626273,96.61116598739622,96.61463609761711,96.61810752725584,96.62158027664292,96.6250543461089,96.62852973598443,96.63200644660026,96.63548447828715,96.63896383137595,96.6424445061976,96.6459265030831,96.64940982236354,96.65289446437,96.65638042943374,96.65986771788604,96.66335633005825,96.66684626628178,96.67033752688813,96.67383011220886,96.67732402257565,96.68081925832017,96.6843158197742,96.68781370726961,96.6913129211383,96.69481346171229,96.69831532932365,96.7018185243045,96.70532304698705,96.70882889770358,96.71233607678644,96.7158445845681,96.719354421381,96.72286558755772,96.72637808343093,96.72989190933332,96.73340706559766,96.73692355255686,96.74044137054379,96.74396051989147,96.747481000933,96.75100281400151,96.75452595943018,96.75805043755237,96.76157624870139,96.76510339321068,96.76863187141379,96.77216168364426,96.77569283023574,96.77922531152198,96.78275912783677,96.78629427951397,96.78983076688755,96.79336859029151,96.79690775005993,96.800448246527,96.80399008002695,96.80753325089405,96.81107775946273,96.81462360606746,96.8181707910427,96.82171931472311,96.82526917744333,96.82882037953816,96.83237292134237,96.83592680319087,96.83948202541866,96.84303858836076,96.84659649235225,96.85015573772839,96.85371632482439,96.85727825397562,96.86084152551749,96.86440613978552,96.86797209711517,96.87153939784217,96.87510804230217,96.87867803083101,96.8822493637645,96.88582204143856,96.88939606418926,96.89297143235262,96.89654814626482,96.9001262062621,96.90370561268072,96.9072863658571,96.9108684661277,96.91445191382901,96.91803670929762,96.92162285287027,96.92521034488368,96.92879918567466,96.93238937558014,96.93598091493706,96.93957380408251,96.94316804335358,96.94676363308753,96.95036057362158,96.9539588652931,96.95755850843953,96.96115950339835,96.96476185050716,96.9683655501036,96.97197060252542,96.97557700811042,96.97918476719646,96.9827938801215,96.98640434722358,96.99001616884084,96.99362934531142,96.99724387697357,97.00085976416567,97.00447700722611,97.0080956064934,97.01171556230607,97.01533687500279,97.01895954492225,97.02258357240325,97.02620895778468,97.02983570140547,97.03346380360463,97.03709326472128,97.0407240850946,97.04435626506383,97.04798980496827,97.0516247051474,97.05526096594063,97.05889858768757,97.06253757072781,97.06617791540108,97.06981962204719,97.073462691006,97.07710712261746,97.08075291722157,97.08440007515843,97.08804859676822,97.09169848239122,97.09534973236772,97.09900234703818,97.10265632674302,97.10631167182287,97.10996838261832,97.11362645947011,97.11728590271903,97.12094671270596,97.12460888977186,97.12827243425777,97.13193734650474,97.13560362685404,97.13927127564686,97.14294029322458,97.14661067992864,97.15028243610048,97.15395556208175,97.15763005821404,97.16130592483913,97.16498316229878,97.16866177093496,97.17234175108956,97.17602310310467,97.17970582732244,97.18338992408502,97.18707539373473,97.1907622366139,97.19445045306503,97.19814004343061,97.20183100805323,97.2055233472756,97.20921706144043,97.21291215089062,97.21660861596904,97.2203064570187,97.22400567438268,97.22770626840413,97.23140823942629,97.23511158779247,97.2388163138461,97.2425224179306,97.24622990038958,97.2499387615666,97.25364900180544,97.25736062144985,97.26107362084373,97.26478800033105,97.2685037602558,97.27222090096213,97.27593942279418,97.27965932609631,97.28338061121279,97.28710327848812,97.29082732826677,97.29455276089337,97.29827957671259,97.30200777606916,97.30573735930795,97.30946832677387,97.31320067881191,97.31693441576715,97.32066953798477,97.32440604581,97.32814393958814,97.33188321966465,97.33562388638498,97.3393659400947,97.34310938113946,97.34685420986499,97.3506004266171,97.35434803174168,97.35809702558471,97.36184740849225,97.36559918081045,97.36935234288548,97.37310689506367,97.37686283769142,97.3806201711152,97.3843788956815,97.38813901173697,97.39190051962836,97.39566341970244,97.39942771230608,97.40319339778624,97.40696047648996,97.41072894876437,97.41449881495664,97.41827007541409,97.4220427304841,97.42581678051407,97.4295922258516,97.43336906684425,97.43714730383977,97.44092693718589,97.44470796723051,97.44849039432161,97.45227421880718,97.4560594410353,97.45984606135423,97.46363408011224,97.46742349765769,97.471214314339,97.47500653050473,97.47880014650352,97.482595162684,97.48639157939503,97.49018939698541,97.49398861580411,97.4977892362002,97.50159125852277,97.505394683121,97.50919951034419,97.51300574054173,97.51681337406305,97.52062241125769,97.52443285247527,97.52824469806552,97.5320579483782,97.53587260376321,97.53968866457048,97.54350613115008,97.54732500385212,97.55114528302683,97.5549669690245,97.55879006219553,97.56261456289035,97.5664404714595,97.57026778825367,97.57409651362359,97.57792664792002,97.58175819149388,97.58559114469612,97.58942550787783,97.59326128139016,97.59709846558432,97.60093706081166,97.60477706742356,97.60861848577153,97.61246131620713,97.61630555908204,97.62015121474798,97.62399828355679,97.62784676586041,97.63169666201084,97.63554797236017,97.63940069726057,97.64325483706429,97.64711039212374,97.65096736279129,97.65482574941949,97.65868555236095,97.66254677196837,97.6664094085945,97.67027346259228,97.67413893431458,97.6780058241145,97.68187413234517,97.68574385935979,97.68961500551165,97.69348757115415,97.69736155664077,97.70123696232511,97.70511378856075,97.7089920357015,97.71287170410112,97.71675279411359,97.72063530609287,97.72451924039306,97.72840459736834,97.73229137737296,97.73617958076129,97.74006920788776,97.74396025910691,97.74785273477333,97.75174663524176,97.75564196086698,97.75953871200383,97.76343688900735,97.76733649223253,97.77123752203457,97.77513997876865,97.77904386279013,97.7829491744544,97.786855914117,97.79076408213345,97.79467367885947,97.79858470465084,97.80249715986338,97.80641104485305,97.81032635997587,97.81424310558798,97.81816128204557,97.82208088970496,97.82600192892254,97.82992440005475,97.83384830345821,97.83777363948953,97.8417004085055,97.84562861086293,97.84955824691876,97.85348931703,97.85742182155376,97.8613557608472,97.86529113526767,97.86922794517251,97.87316619091916,97.87710587286524,97.88104699136834,97.88498954678623,97.88893353947672,97.89287896979774,97.89682583810726,97.90077414476346,97.90472389012446,97.90867507454855,97.9126276983941,97.9165817620196,97.92053726578358,97.92449421004468,97.92845259516164,97.93241242149331,97.9363736893986,97.94033639923646,97.94430055136606,97.94826614614655,97.95223318393724,97.95620166509748,97.96017158998676,97.96414295896464,97.96811577239073,97.9720900306248,97.97606573402669,97.9800428829563,97.9840214777737,97.9880015188389,97.9919830065122,97.99596594115386,97.99995032312424,98.00393615278385,98.00792343049326,98.0119121566131,98.01590233150417,98.01989395552731,98.02388702904345,98.0278815524136,98.03187752599894,98.03587495016065,98.03987382526007,98.04387415165858,98.04787592971768,98.05187915979899,98.0558838422642,98.05988997747504,98.06389756579343,98.06790660758132,98.07191710320078,98.07592905301394,98.07994245738305,98.08395731667049,98.08797363123867,98.09199140145012,98.09601062766744,98.10003131025337,98.10405344957074,98.10807704598243,98.11210209985144,98.1161286115409,98.12015658141394,98.12418600983389,98.12821689716412,98.13224924376809,98.13628305000938,98.14031831625162,98.14435504285862,98.14839323019422,98.15243287862232,98.15647398850703,98.16051656021246,98.16456059410282,98.16860609054244,98.1726530498958,98.17670147252736,98.18075135880176,98.18480270908371,98.18885552373801,98.19290980312958,98.19696554762342,98.20102275758457,98.2050814333783,98.20914157536981,98.21320318392455,98.21726625940796,98.22133080218568,98.2253968126233,98.22946429108661,98.2335332379415,98.23760365355392,98.24167553828993,98.24574889251568,98.2498237165974,98.25390001090148,98.25797777579433,98.26205701164251,98.26613771881267,98.2702198976715,98.27430354858589,98.27838867192274,98.28247526804908,98.28656333733205,98.2906528801389,98.29474389683688,98.29883638779344,98.30293035337614,98.30702579395253,98.31112270989037,98.31522110155744,98.31932096932168,98.32342231355108,98.32752513461372,98.33162943287786,98.33573520871177,98.33984246248383,98.34395119456259,98.34806140531661,98.35217309511461,98.35628626432535,98.36040091331776,98.36451704246082,98.36863465212363,98.3727537426754,98.37687431448536,98.38099636792295,98.38511990335766,98.38924492115908,98.39337142169686,98.39749940534082,98.40162887246082,98.4057598234269,98.4098922586091,98.41402617837763,98.41816158310279,98.42229847315492,98.42643684890454,98.43057671072224,98.43471805897872,98.43886089404472,98.44300521629117,98.44715102608905,98.45129832380945,98.45544710982355,98.45959738450266,98.46374914821816,98.46790240134155,98.4720571442444,98.47621337729844,98.48037110087546,98.48453031534731,98.48869102108607,98.49285321846378,98.49701690785265,98.501182089625,98.50534876415324,98.50951693180986,98.51368659296745,98.51785774799876,98.52203039727658,98.52620454117384,98.53038018006355,98.53455731431879,98.53873594431285,98.54291607041901,98.54709769301068,98.55128081246146,98.5554654291449,98.55965154343478,98.5638391557049,98.56802826632924,98.57221887568181,98.57641098413679,98.58060459206837,98.58479969985098,98.588996307859,98.59319441646703,98.59739402604973,98.60159513698186,98.60579774963827,98.61000186439394,98.61420748162396,98.6184146017035,98.62262322500784,98.62683335191237,98.63104498279257,98.63525811802408,98.63947275798256,98.6436889030438,98.64790655358374,98.65212570997839,98.65634637260385,98.66056854183634,98.6647922180522,98.66901740162788,98.6732440929399,98.67747229236487,98.68170200027956,98.68593321706085,98.69016594308566,98.69440017873107,98.69863592437424,98.70287318039244,98.70711194716306,98.71135222506355,98.71559401447155,98.71983731576474,98.72408212932089,98.72832845551795,98.7325762947339,98.73682564734688,98.74107651373511,98.74532889427691,98.74958278935074,98.75383819933514,98.75809512460874,98.76235356555033,98.76661352253875,98.77087499595298,98.77513798617211,98.7794024935753,98.78366851854186,98.78793606145119,98.7922051226828,98.79647570261629,98.80074780163142,98.80502142010796,98.80929655842587,98.81357321696518,98.81785139610612,98.82213109622886,98.8264123177138,98.83069506094141,98.8349793262923,98.83926511414711,98.84355242488672,98.84784125889196,98.85213161654387,98.8564234982236,98.86071690431237,98.86501183519151,98.86930829124249,98.87360627284687,98.87790578038631,98.88220681424258,98.88650937479758,98.89081346243333,98.89511907753189,98.89942622047552,98.90373489164652,98.90804509142731,98.91235682020046,98.9166700783486,98.92098486625454,98.9253011843011,98.92961903287132,98.93393841234823,98.93825932311508,98.94258176555518,98.94690574005192,98.95123124698887,98.95555828674968,98.95988685971807,98.96421696627793,98.96854860681326,98.97288178170811,98.9772164913467,98.98155273611331,98.98589051639242,98.9902298325685,98.99457068502625,98.99891307415041,99.00325700032582,99.00760246393747,99.01194946537046,99.01629800500999,99.02064808324138,99.02499970045005,99.02935285702154,99.03370755334147,99.03806378979567,99.04242156676996,99.04678088465035,99.05114174382291,99.0555041446739,99.0598680875896,99.06423357295648,99.06860060116107,99.07296917259005,99.0773392876302,99.08171094666838,99.0860841500916,99.09045889828701,99.0948351916418,99.09921303054334,99.1035924153791,99.1079733465366,99.11235582440354,99.11673984936776,99.12112542181713,99.12551254213969,99.12990121072356,99.13429142795702,99.13868319422843,99.1430765099263,99.1474713754392,99.15186779115581,99.15626575746501,99.16066527475571,99.16506634341701,99.16946896383803,99.17387313640806,99.17827886151655,99.18268613955296,99.18709497090695,99.19150535596829,99.1959172951268,99.20033078877249,99.20474583729543,99.20916244108585,99.21358060053406,99.21800031603054,99.22242158796578,99.22684441673051,99.2312688027155,99.23569474631168,99.24012224791005,99.24455130790176,99.24898192667806,99.25341410463031,99.25784784215003,99.2622831396288,99.26671999745838,99.27115841603057,99.27559839573738,99.28003993697082,99.28448304012313],"type":"scatter"},{"name":"e = 0.3","x":[300.0,301.0,302.0,303.0,304.0,305.0,306.0,307.0,308.0,309.0,310.0,311.0,312.0,313.0,314.0,315.0,316.0,317.0,318.0,319.0,320.0,321.0,322.0,323.0,324.0,325.0,326.0,327.0,328.0,329.0,330.0,331.0,332.0,333.0,334.0,335.0,336.0,337.0,338.0,339.0,340.0,341.0,342.0,343.0,344.0,345.0,346.0,347.0,348.0,349.0,350.0,351.0,352.0,353.0,354.0,355.0,356.0,357.0,358.0,359.0,360.0,361.0,362.0,363.0,364.0,365.0,366.0,367.0,368.0,369.0,370.0,371.0,372.0,373.0,374.0,375.0,376.0,377.0,378.0,379.0,380.0,381.0,382.0,383.0,384.0,385.0,386.0,387.0,388.0,389.0,390.0,391.0,392.0,393.0,394.0,395.0,396.0,397.0,398.0,399.0,400.0,401.0,402.0,403.0,404.0,405.0,406.0,407.0,408.0,409.0,410.0,411.0,412.0,413.0,414.0,415.0,416.0,417.0,418.0,419.0,420.0,421.0,422.0,423.0,424.0,425.0,426.0,427.0,428.0,429.0,430.0,431.0,432.0,433.0,434.0,435.0,436.0,437.0,438.0,439.0,440.0,441.0,442.0,443.0,444.0,445.0,446.0,447.0,448.0,449.0,450.0,451.0,452.0,453.0,454.0,455.0,456.0,457.0,458.0,459.0,460.0,461.0,462.0,463.0,464.0,465.0,466.0,467.0,468.0,469.0,470.0,471.0,472.0,473.0,474.0,475.0,476.0,477.0,478.0,479.0,480.0,481.0,482.0,483.0,484.0,485.0,486.0,487.0,488.0,489.0,490.0,491.0,492.0,493.0,494.0,495.0,496.0,497.0,498.0,499.0,500.0,501.0,502.0,503.0,504.0,505.0,506.0,507.0,508.0,509.0,510.0,511.0,512.0,513.0,514.0,515.0,516.0,517.0,518.0,519.0,520.0,521.0,522.0,523.0,524.0,525.0,526.0,527.0,528.0,529.0,530.0,531.0,532.0,533.0,534.0,535.0,536.0,537.0,538.0,539.0,540.0,541.0,542.0,543.0,544.0,545.0,546.0,547.0,548.0,549.0,550.0,551.0,552.0,553.0,554.0,555.0,556.0,557.0,558.0,559.0,560.0,561.0,562.0,563.0,564.0,565.0,566.0,567.0,568.0,569.0,570.0,571.0,572.0,573.0,574.0,575.0,576.0,577.0,578.0,579.0,580.0,581.0,582.0,583.0,584.0,585.0,586.0,587.0,588.0,589.0,590.0,591.0,592.0,593.0,594.0,595.0,596.0,597.0,598.0,599.0,600.0,601.0,602.0,603.0,604.0,605.0,606.0,607.0,608.0,609.0,610.0,611.0,612.0,613.0,614.0,615.0,616.0,617.0,618.0,619.0,620.0,621.0,622.0,623.0,624.0,625.0,626.0,627.0,628.0,629.0,630.0,631.0,632.0,633.0,634.0,635.0,636.0,637.0,638.0,639.0,640.0,641.0,642.0,643.0,644.0,645.0,646.0,647.0,648.0,649.0,650.0,651.0,652.0,653.0,654.0,655.0,656.0,657.0,658.0,659.0,660.0,661.0,662.0,663.0,664.0,665.0,666.0,667.0,668.0,669.0,670.0,671.0,672.0,673.0,674.0,675.0,676.0,677.0,678.0,679.0,680.0,681.0,682.0,683.0,684.0,685.0,686.0,687.0,688.0,689.0,690.0,691.0,692.0,693.0,694.0,695.0,696.0,697.0,698.0,699.0,700.0,701.0,702.0,703.0,704.0,705.0,706.0,707.0,708.0,709.0,710.0,711.0,712.0,713.0,714.0,715.0,716.0,717.0,718.0,719.0,720.0,721.0,722.0,723.0,724.0,725.0,726.0,727.0,728.0,729.0,730.0,731.0,732.0,733.0,734.0,735.0,736.0,737.0,738.0,739.0,740.0,741.0,742.0,743.0,744.0,745.0,746.0,747.0,748.0,749.0,750.0,751.0,752.0,753.0,754.0,755.0,756.0,757.0,758.0,759.0,760.0,761.0,762.0,763.0,764.0,765.0,766.0,767.0,768.0,769.0,770.0,771.0,772.0,773.0,774.0,775.0,776.0,777.0,778.0,779.0,780.0,781.0,782.0,783.0,784.0,785.0,786.0,787.0,788.0,789.0,790.0,791.0,792.0,793.0,794.0,795.0,796.0,797.0,798.0,799.0,800.0,801.0,802.0,803.0,804.0,805.0,806.0,807.0,808.0,809.0,810.0,811.0,812.0,813.0,814.0,815.0,816.0,817.0,818.0,819.0,820.0,821.0,822.0,823.0,824.0,825.0,826.0,827.0,828.0,829.0,830.0,831.0,832.0,833.0,834.0,835.0,836.0,837.0,838.0,839.0,840.0,841.0,842.0,843.0,844.0,845.0,846.0,847.0,848.0,849.0,850.0,851.0,852.0,853.0,854.0,855.0,856.0,857.0,858.0,859.0,860.0,861.0,862.0,863.0,864.0,865.0,866.0,867.0,868.0,869.0,870.0,871.0,872.0,873.0,874.0,875.0,876.0,877.0,878.0,879.0,880.0,881.0,882.0,883.0,884.0,885.0,886.0,887.0,888.0,889.0,890.0,891.0,892.0,893.0,894.0,895.0,896.0,897.0,898.0,899.0,900.0,901.0,902.0,903.0,904.0,905.0,906.0,907.0,908.0,909.0,910.0,911.0,912.0,913.0,914.0,915.0,916.0,917.0,918.0,919.0,920.0,921.0,922.0,923.0,924.0,925.0,926.0,927.0,928.0,929.0,930.0,931.0,932.0,933.0,934.0,935.0,936.0,937.0,938.0,939.0,940.0,941.0,942.0,943.0,944.0,945.0,946.0,947.0,948.0,949.0,950.0,951.0,952.0,953.0,954.0,955.0,956.0,957.0,958.0,959.0,960.0,961.0,962.0,963.0,964.0,965.0,966.0,967.0,968.0,969.0,970.0,971.0,972.0,973.0,974.0,975.0,976.0,977.0,978.0,979.0,980.0,981.0,982.0,983.0,984.0,985.0,986.0,987.0,988.0,989.0,990.0,991.0,992.0,993.0,994.0,995.0,996.0,997.0,998.0,999.0],"y":[95.52110833099823,95.52401147465606,95.52691571939812,95.52982106549213,95.5327275132059,95.53563506280729,95.53854371456421,95.54145346874456,95.54436432561637,95.54727628544768,95.55018934850652,95.55310351506107,95.55601878537952,95.55893515973001,95.56185263838091,95.5647712216005,95.56769090965712,95.5706117028192,95.57353360135521,95.57645660553364,95.57938071562303,95.58230593189202,95.58523225460922,95.58815968404338,95.59108822046316,95.5940178641374,95.59694861533492,95.59988047432462,95.60281344137539,95.60574751675625,95.60868270073621,95.61161899358436,95.61455639556979,95.61749490696167,95.62043452802924,95.62337525904172,95.62631710026848,95.62926005197882,95.63220411444219,95.63514928792799,95.63809557270575,95.64104296904505,95.64399147721542,95.64694109748655,95.64989183012811,95.65284367540984,95.65579663360155,95.65875070497303,95.66170588979419,95.66466218833499,95.66761960086534,95.67057812765532,95.67353776897498,95.67649852509444,95.67946039628389,95.68242338281352,95.68538748495361,95.68835270297447,95.69131903714649,95.69428648774002,95.69725505502556,95.70022473927364,95.70319554075476,95.70616745973956,95.70914049649869,95.71211465130284,95.71508992442274,95.71806631612921,95.7210438266931,95.7240224563853,95.72700220547677,95.72998307423843,95.7329650629414,95.73594817185675,95.73893240125555,95.74191775140909,95.74490422258852,95.74789181506516,95.75088052911036,95.75387036499545,95.75686132299188,95.75985340337114,95.76284660640476,95.76584093236428,95.76883638152137,95.77183295414768,95.77483065051494,95.77782947089489,95.78082941555941,95.7838304847803,95.78683267882954,95.78983599797905,95.79284044250088,95.79584601266707,95.79885270874976,95.8018605310211,95.80486947975331,95.80787955521865,95.81089075768942,95.81390308743799,95.81691654473678,95.81993112985826,95.8229468430749,95.8259636846593,95.82898165488405,95.83200075402182,95.8350209823453,95.83804234012726,95.8410648276405,95.8440884451579,95.8471131929523,95.85013907129674,95.85316608046419,95.8561942207277,95.85922349236039,95.8622538956354,95.86528543082594,95.8683180982053,95.87135189804671,95.87438683062358,95.87742289620931,95.88046009507734,95.8834984275012,95.88653789375444,95.88957849411062,95.89262022884346,95.89566309822663,95.89870710253389,95.90175224203905,95.90479851701598,95.90784592773855,95.91089447448076,95.9139441575166,95.91699497712013,95.92004693356544,95.92310002712671,95.92615425807816,95.92920962669402,95.93226613324862,95.93532377801631,95.93838256127151,95.94144248328868,95.94450354434237,95.94756574470708,95.95062908465745,95.95369356446815,95.9567591844139,95.95982594476946,95.96289384580966,95.96596288780934,95.96903307104344,95.97210439578696,95.97517686231487,95.97825047090227,95.98132522182426,95.98440111535606,95.98747815177286,95.99055633134995,95.99363565436266,95.99671612108637,95.9997977317965,96.00288048676855,96.00596438627804,96.00904943060054,96.01213562001173,96.01522295478726,96.01831143520289,96.0214010615344,96.02449183405764,96.02758375304849,96.03067681878292,96.03377103153689,96.03686639158649,96.03996289920781,96.04306055467697,96.0461593582702,96.04925931026376,96.05236041093397,96.05546266055715,96.05856605940973,96.06167060776819,96.06477630590902,96.0678831541088,96.07099115264414,96.07410030179172,96.07721060182826,96.08032205303056,96.08343465567539,96.08654841003967,96.08966331640033,96.09277937503435,96.09589658621874,96.09901495023067,96.10213446734717,96.10525513784552,96.10837696200292,96.11149994009669,96.11462407240415,96.11774935920275,96.12087580076992,96.12400339738316,96.12713214932006,96.13026205685819,96.13339312027524,96.13652533984896,96.13965871585707,96.1427932485774,96.14592893828785,96.14906578526634,96.15220378979087,96.15534295213945,96.15848327259019,96.16162475142121,96.16476738891073,96.16791118533696,96.17105614097825,96.1742022561129,96.17734953101939,96.1804979659761,96.18364756126158,96.18679831715443,96.18995023393317,96.1931033118766,96.19625755126336,96.19941295237227,96.20256951548214,96.20572724087187,96.20888612882038,96.21204617960672,96.21520739350986,96.21836977080893,96.22153331178312,96.22469801671161,96.22786388587365,96.23103091954859,96.23419911801577,96.23736848155461,96.2405390104446,96.24371070496527,96.2468835653962,96.25005759201704,96.2532327851075,96.25640914494728,96.2595866718162,96.26276536599413,96.26594522776094,96.26912625739665,96.27230845518123,96.27549182139478,96.27867635631739,96.2818620602293,96.28504893341068,96.28823697614185,96.29142618870317,96.29461657137499,96.2978081244378,96.3010008481721,96.30419474285844,96.30738980877744,96.31058604620976,96.31378345543615,96.31698203673739,96.32018179039427,96.32338271668773,96.32658481589866,96.32978808830812,96.3329925341971,96.33619815384677,96.33940494753824,96.34261291555276,96.3458220581716,96.34903237567607,96.35224386834757,96.35545653646753,96.35867038031745,96.36188540017885,96.36510159633339,96.36831896906267,96.37153751864845,96.37475724537245,96.37797814951654,96.3812002313626,96.3844234911925,96.3876479292883,96.39087354593205,96.39410034140582,96.39732831599176,96.40055746997207,96.40378780362909,96.40701931724507,96.41025201110243,96.4134858854836,96.41672094067104,96.41995717694735,96.4231945945951,96.42643319389695,96.42967297513563,96.43291393859388,96.43615608455458,96.43939941330056,96.4426439251148,96.44588962028024,96.44913649907998,96.45238456179712,96.45563380871481,96.45888424011628,96.46213585628479,96.46538865750368,96.46864264405637,96.47189781622626,96.47515417429686,96.47841171855174,96.48167044927452,96.48493036674887,96.4881914712585,96.4914537630872,96.49471724251883,96.49798190983726,96.50124776532647,96.50451480927045,96.50778304195326,96.51105246365907,96.51432307467202,96.51759487527636,96.52086786575639,96.52414204639643,96.52741741748095,96.53069397929438,96.53397173212124,96.53725067624612,96.54053081195367,96.54381213952854,96.54709465925555,96.55037837141947,96.55366327630516,96.55694937419754,96.56023666538164,96.56352515014244,96.56681482876509,96.5701057015347,96.57339776873648,96.57669103065574,96.57998548757779,96.583281139788,96.58657798757181,96.58987603121476,96.59317527100238,96.59647570722026,96.59977734015413,96.60308017008967,96.60638419731268,96.60968942210906,96.61299584476463,96.6163034655654,96.61961228479741,96.6229223027467,96.62623351969944,96.62954593594182,96.63285955176006,96.63617436744052,96.63949038326953,96.64280759953357,96.64612601651906,96.64944563451262,96.65276645380078,96.65608847467027,96.65941169740776,96.66273612230006,96.66606174963401,96.66938857969647,96.67271661277447,96.67604584915495,96.67937628912502,96.6827079329718,96.6860407809825,96.68937483344435,96.69271009064467,96.69604655287081,96.69938422041024,96.7027230935504,96.70606317257887,96.70940445778324,96.71274694945116,96.71609064787037,96.71943555332867,96.72278166611386,96.72612898651387,96.72947751481664,96.73282725131021,96.73617819628267,96.73953035002212,96.74288371281678,96.7462382849549,96.74959406672481,96.75295105841488,96.75630926031356,96.75966867270932,96.76302929589075,96.76639113014642,96.76975417576504,96.77311843303534,96.77648390224613,96.77985058368624,96.7832184776446,96.78658758441019,96.78995790427203,96.7933294375192,96.79670218444092,96.80007614532636,96.8034513204648,96.80682771014557,96.81020531465809,96.81358413429182,96.81696416933625,96.82034542008097,96.82372788681565,96.82711156982994,96.83049646941363,96.83388258585654,96.83726991944856,96.84065847047961,96.84404823923971,96.84743922601889,96.85083143110734,96.85422485479518,96.85761949737271,96.86101535913019,96.86441244035801,96.86781074134662,96.87121026238648,96.87461100376815,96.87801296578228,96.88141614871947,96.8848205528705,96.88822617852618,96.89163302597734,96.89504109551491,96.8984503874299,96.9018609020133,96.90527263955624,96.9086856003499,96.91209978468547,96.91551519285427,96.91893182514764,96.922349681857,96.9257687632738,96.92918906968957,96.93261060139596,96.9360333586846,96.93945734184722,96.94288255117556,96.94630898696151,96.94973664949696,96.95316553907391,96.95659565598434,96.96002700052037,96.96345957297416,96.96689337363793,96.97032840280396,96.97376466076456,96.97720214781218,96.98064086423928,96.98408081033834,96.98752198640203,96.99096439272296,96.99440802959383,96.99785289730747,97.00129899615669,97.0047463264344,97.00819488843358,97.01164468244724,97.01509570876848,97.0185479676905,97.02200145950644,97.02545618450968,97.02891214299348,97.03236933525127,97.03582776157656,97.03928742226284,97.04274831760375,97.04621044789292,97.04967381342408,97.05313841449103,97.0566042513876,97.06007132440774,97.0635396338454,97.06700917999466,97.07047996314957,97.07395198360433,97.07742524165317,97.08089973759039,97.08437547171035,97.08785244430744,97.09133065567622,97.0948101061112,97.09829079590696,97.10177272535824,97.10525589475976,97.10874030440633,97.11222595459279,97.11571284561415,97.11920097776533,97.12269035134143,97.1261809666376,97.12967282394901,97.13316592357089,97.13666026579861,97.14015585092753,97.14365267925311,97.14715075107085,97.15065006667635,97.15415062636522,97.15765243043322,97.16115547917609,97.16465977288966,97.16816531186987,97.17167209641265,97.17518012681404,97.17868940337017,97.18219992637715,97.18571169613125,97.18922471292875,97.192738977066,97.19625448883944,97.19977124854553,97.20328925648084,97.20680851294199,97.21032901822568,97.21385077262862,97.21737377644764,97.22089802997965,97.22442353352157,97.22795028737039,97.23147829182324,97.23500754717722,97.23853805372954,97.2420698117775,97.24560282161843,97.24913708354971,97.25267259786884,97.25620936487336,97.25974738486084,97.26328665812899,97.26682718497551,97.27036896569824,97.273912000595,97.27745628996378,97.28100183410254,97.28454863330934,97.28809668788233,97.29164599811972,97.29519656431977,97.29874838678079,97.3023014658012,97.30585580167944,97.30941139471409,97.31296824520369,97.31652635344696,97.32008571974258,97.32364634438937,97.32720822768623,97.33077136993205,97.33433577142584,97.33790143246667,97.34146835335368,97.34503653438604,97.34860597586304,97.352176678084,97.35574864134836,97.35932186595556,97.36289635220514,97.3664721003967,97.37004911082991,97.37362738380453,97.37720691962033,97.38078771857722,97.38436978097512,97.38795310711404,97.39153769729407,97.39512355181535,97.39871067097806,97.40229905508252,97.40588870442907,97.40947961931815,97.41307180005019,97.41666524692575,97.42025996024547,97.42385594031006,97.42745318742024,97.43105170187684,97.43465148398076,97.43825253403298,97.44185485233449,97.44545843918641,97.44906329488991,97.4526694197462,97.45627681405662,97.45988547812252,97.46349541224534,97.4671066167266,97.47071909186785,97.47433283797078,97.47794785533708,97.48156414426855,97.485181705067,97.48880053803441,97.49242064347274,97.49604202168406,97.4996646729705,97.50328859763425,97.50691379597758,97.51054026830283,97.51416801491244,97.51779703610882,97.52142733219455,97.52505890347229,97.52869175024463,97.5323258728144,97.5359612714844,97.5395979465575,97.5432358983367,97.54687512712502,97.55051563322557,97.5541574169415,97.55780047857607,97.5614448184326,97.56509043681446,97.56873733402509,97.57238551036805,97.5760349661469,97.5796857016653,97.58333771722705,97.58699101313586,97.59064558969565,97.59430144721037,97.59795858598403,97.60161700632071,97.60527670852458,97.60893769289984,97.61259995975082,97.61626350938185,97.61992834209741,97.62359445820198,97.62726185800018,97.63093054179662,97.63460050989602,97.63827176260321,97.64194430022302,97.64561812306042,97.64929323142039,97.65296962560801,97.65664730592844,97.66032627268692,97.66400652618871,97.66768806673919,97.67137089464377,97.675055010208,97.67874041373742,97.68242710553768,97.68611508591455,97.68980435517379,97.69349491362127,97.6971867615629,97.70087989930474,97.70457432715283,97.70827004541333,97.71196705439247,97.71566535439658,97.71936494573197,97.72306582870513,97.72676800362254,97.73047147079082,97.7341762305166,97.73788228310661,97.74158962886767,97.74529826810665,97.7490082011305,97.75271942824625,97.75643194976097,97.76014576598183,97.76386087721612,97.76757728377106,97.77129498595413,97.77501398407273,97.77873427843441,97.78245586934676,97.78617875711747,97.78990294205428,97.79362842446504,97.79735520465763,97.80108328293998,97.80481265962021,97.80854333500639,97.81227530940671,97.81600858312945,97.81974315648291,97.82347902977557,97.82721620331587,97.83095467741235,97.83469445237368],"type":"scatter"},{"name":"e = 0.5","x":[300.0,301.0,302.0,303.0,304.0,305.0,306.0,307.0,308.0,309.0,310.0,311.0,312.0,313.0,314.0,315.0,316.0,317.0,318.0,319.0,320.0,321.0,322.0,323.0,324.0,325.0,326.0,327.0,328.0,329.0,330.0,331.0,332.0,333.0,334.0,335.0,336.0,337.0,338.0,339.0,340.0,341.0,342.0,343.0,344.0,345.0,346.0,347.0,348.0,349.0,350.0,351.0,352.0,353.0,354.0,355.0,356.0,357.0,358.0,359.0,360.0,361.0,362.0,363.0,364.0,365.0,366.0,367.0,368.0,369.0,370.0,371.0,372.0,373.0,374.0,375.0,376.0,377.0,378.0,379.0,380.0,381.0,382.0,383.0,384.0,385.0,386.0,387.0,388.0,389.0,390.0,391.0,392.0,393.0,394.0,395.0,396.0,397.0,398.0,399.0,400.0,401.0,402.0,403.0,404.0,405.0,406.0,407.0,408.0,409.0,410.0,411.0,412.0,413.0,414.0,415.0,416.0,417.0,418.0,419.0,420.0,421.0,422.0,423.0,424.0,425.0,426.0,427.0,428.0,429.0,430.0,431.0,432.0,433.0,434.0,435.0,436.0,437.0,438.0,439.0,440.0,441.0,442.0,443.0,444.0,445.0,446.0,447.0,448.0,449.0,450.0,451.0,452.0,453.0,454.0,455.0,456.0,457.0,458.0,459.0,460.0,461.0,462.0,463.0,464.0,465.0,466.0,467.0,468.0,469.0,470.0,471.0,472.0,473.0,474.0,475.0,476.0,477.0,478.0,479.0,480.0,481.0,482.0,483.0,484.0,485.0,486.0,487.0,488.0,489.0,490.0,491.0,492.0,493.0,494.0,495.0,496.0,497.0,498.0,499.0,500.0,501.0,502.0,503.0,504.0,505.0,506.0,507.0,508.0,509.0,510.0,511.0,512.0,513.0,514.0,515.0,516.0,517.0,518.0,519.0,520.0,521.0,522.0,523.0,524.0,525.0,526.0,527.0,528.0,529.0,530.0,531.0,532.0,533.0,534.0,535.0,536.0,537.0,538.0,539.0,540.0,541.0,542.0,543.0,544.0,545.0,546.0,547.0,548.0,549.0,550.0,551.0,552.0,553.0,554.0,555.0,556.0,557.0,558.0,559.0,560.0,561.0,562.0,563.0,564.0,565.0,566.0,567.0,568.0,569.0,570.0,571.0,572.0,573.0,574.0,575.0,576.0,577.0,578.0,579.0,580.0,581.0,582.0,583.0,584.0,585.0,586.0,587.0,588.0,589.0,590.0,591.0,592.0,593.0,594.0,595.0,596.0,597.0,598.0,599.0,600.0,601.0,602.0,603.0,604.0,605.0,606.0,607.0,608.0,609.0,610.0,611.0,612.0,613.0,614.0,615.0,616.0,617.0,618.0,619.0,620.0,621.0,622.0,623.0,624.0,625.0,626.0,627.0,628.0,629.0,630.0,631.0,632.0,633.0,634.0,635.0,636.0,637.0,638.0,639.0,640.0,641.0,642.0,643.0,644.0,645.0,646.0,647.0,648.0,649.0,650.0,651.0,652.0,653.0,654.0,655.0,656.0,657.0,658.0,659.0,660.0,661.0,662.0,663.0,664.0,665.0,666.0,667.0,668.0,669.0,670.0,671.0,672.0,673.0,674.0,675.0,676.0,677.0,678.0,679.0,680.0,681.0,682.0,683.0,684.0,685.0,686.0,687.0,688.0,689.0,690.0,691.0,692.0,693.0,694.0,695.0,696.0,697.0,698.0,699.0,700.0,701.0,702.0,703.0,704.0,705.0,706.0,707.0,708.0,709.0,710.0,711.0,712.0,713.0,714.0,715.0,716.0,717.0,718.0,719.0,720.0,721.0,722.0,723.0,724.0,725.0,726.0,727.0,728.0,729.0,730.0,731.0,732.0,733.0,734.0,735.0,736.0,737.0,738.0,739.0,740.0,741.0,742.0,743.0,744.0,745.0,746.0,747.0,748.0,749.0,750.0,751.0,752.0,753.0,754.0,755.0,756.0,757.0,758.0,759.0,760.0,761.0,762.0,763.0,764.0,765.0,766.0,767.0,768.0,769.0,770.0,771.0,772.0,773.0,774.0,775.0,776.0,777.0,778.0,779.0,780.0,781.0,782.0,783.0,784.0,785.0,786.0,787.0,788.0,789.0,790.0,791.0,792.0,793.0,794.0,795.0,796.0,797.0,798.0,799.0,800.0,801.0,802.0,803.0,804.0,805.0,806.0,807.0,808.0,809.0,810.0,811.0,812.0,813.0,814.0,815.0,816.0,817.0,818.0,819.0,820.0,821.0,822.0,823.0,824.0,825.0,826.0,827.0,828.0,829.0,830.0,831.0,832.0,833.0,834.0,835.0,836.0,837.0,838.0,839.0,840.0,841.0,842.0,843.0,844.0,845.0,846.0,847.0,848.0,849.0,850.0,851.0,852.0,853.0,854.0,855.0,856.0,857.0,858.0,859.0,860.0,861.0,862.0,863.0,864.0,865.0,866.0,867.0,868.0,869.0,870.0,871.0,872.0,873.0,874.0,875.0,876.0,877.0,878.0,879.0,880.0,881.0,882.0,883.0,884.0,885.0,886.0,887.0,888.0,889.0,890.0,891.0,892.0,893.0,894.0,895.0,896.0,897.0,898.0,899.0,900.0,901.0,902.0,903.0,904.0,905.0,906.0,907.0,908.0,909.0,910.0,911.0,912.0,913.0,914.0,915.0,916.0,917.0,918.0,919.0,920.0,921.0,922.0,923.0,924.0,925.0,926.0,927.0,928.0,929.0,930.0,931.0,932.0,933.0,934.0,935.0,936.0,937.0,938.0,939.0,940.0,941.0,942.0,943.0,944.0,945.0,946.0,947.0,948.0,949.0,950.0,951.0,952.0,953.0,954.0,955.0,956.0,957.0,958.0,959.0,960.0,961.0,962.0,963.0,964.0,965.0,966.0,967.0,968.0,969.0,970.0,971.0,972.0,973.0,974.0,975.0,976.0,977.0,978.0,979.0,980.0,981.0,982.0,983.0,984.0,985.0,986.0,987.0,988.0,989.0,990.0,991.0,992.0,993.0,994.0,995.0,996.0,997.0,998.0,999.0],"y":[93.74716944558587,93.74913650593602,93.75110430712228,93.7530728493173,93.75504213269384,93.75701215742468,93.75898292368255,93.76095443164031,93.76292668147072,93.76489967334665,93.76687340744094,93.76884788392651,93.77082310297624,93.77279906476305,93.7747757694599,93.77675321723974,93.77873140827556,93.7807103427404,93.78269002080725,93.7846704426492,93.78665160843931,93.78863351835065,93.79061617255635,93.79259957122956,93.79458371454342,93.79656860267113,93.79855423578587,93.80054061406088,93.80252773766938,93.80451560678466,93.80650422157997,93.80849358222864,93.81048368890401,93.81247454177942,93.81446614102822,93.81645848682383,93.81845157933965,93.82044541874912,93.82244000522566,93.82443533894282,93.82643142007403,93.82842824879285,93.8304258252728,93.83242414968745,93.83442322221039,93.83642304301522,93.83842361227555,93.84042493016507,93.8424269968574,93.84442981252627,93.84643337734538,93.84843769148846,93.85044275512925,93.85244856844155,93.85445513159915,93.85646244477589,93.85847050814557,93.86047932188207,93.86248888615928,93.86449920115112,93.86651026703149,93.86852208397436,93.87053465215367,93.87254797174344,93.87456204291769,93.87657686585042,93.8785924407157,93.88060876768763,93.88262584694029,93.88464367864779,93.8866622629843,93.88868160012397,93.89070169024097,93.89272253350954,93.89474413010389,93.89676648019827,93.89878958396696,93.90081344158423,93.90283805322444,93.9048634190619,93.90688953927096,93.90891641402601,93.91094404350146,93.91297242787171,93.91500156731125,93.91703146199451,93.919062112096,93.9210935177902,93.92312567925168,93.92515859665498,93.92719227017466,93.92922669998532,93.93126188626162,93.93329782917814,93.93533452890962,93.93737198563066,93.93941019951605,93.94144917074044,93.94348889947864,93.94552938590539,93.94757063019549,93.94961263252377,93.95165539306504,93.9536989119942,93.95574318948609,93.95778822571563,93.95983402085774,93.96188057508739,93.96392788857955,93.96597596150914,93.96802479405127,93.97007438638094,93.97212473867317,93.97417585110308,93.97622772384577,93.97828035707634,93.98033375096996,93.98238790570176,93.98444282144696,93.98649849838077,93.98855493667841,93.99061213651514,93.99267009806623,93.99472882150698,93.99678830701274,93.99884855475882,94.00090956492059,94.00297133767344,94.00503387319279,94.00709717165407,94.00916123323269,94.01122605810417,94.01329164644402,94.01535799842772,94.01742511423082,94.01949299402891,94.02156163799755,94.02363104631237,94.02570121914898,94.02777215668304,94.02984385909024,94.03191632654622,94.03398955922678,94.03606355730761,94.03813832096449,94.04021385037319,94.04229014570953,94.04436720714936,94.04644503486853,94.04852362904285,94.05060298984829,94.05268311746073,94.05476401205615,94.05684567381047,94.05892810289971,94.06101129949985,94.06309526378695,94.06517999593703,94.0672654961262,94.06935176453054,94.07143880132618,94.07352660668924,94.07561518079594,94.07770452382239,94.07979463594485,94.08188551733953,94.08397716818271,94.08606958865066,94.08816277891965,94.09025673916604,94.09235146956615,94.09444697029636,94.09654324153307,94.09864028345265,94.10073809623158,94.1028366800463,94.10493603507328,94.10703616148903,94.10913705947009,94.11123872919298,94.11334117083426,94.11544438457057,94.1175483705785,94.11965312903467,94.12175866011576,94.12386496399844,94.12597204085944,94.12807989087547,94.13018851422328,94.13229791107962,94.13440808162134,94.13651902602521,94.13863074446809,94.14074323712686,94.14285650417837,94.14497054579955,94.14708536216732,94.14920095345865,94.15131731985049,94.15343446151988,94.15555237864382,94.15767107139936,94.15979053996357,94.16191078451354,94.16403180522633,94.16615360227917,94.16827617584916,94.1703995261135,94.17252365324939,94.17464855743405,94.17677423884476,94.17890069765878,94.18102793405335,94.18315594820587,94.18528474029364,94.18741431049402,94.18954465898442,94.19167578594225,94.19380769154492,94.19594037596991,94.1980738393947,94.20020808199675,94.20234310395362,94.20447890544287,94.20661548664204,94.20875284772875,94.21089098888059,94.21302991027522,94.21516961209032,94.21731009450353,94.21945135769259,94.22159340183522,94.22373622710917,94.22587983369222,94.22802422176221,94.23016939149693,94.23231534307419,94.23446207667192,94.23660959246799,94.23875789064031,94.24090697136685,94.24305683482555,94.24520748119438,94.24735891065137,94.24951112337455,94.25166411954194,94.25381789933171,94.25597246292186,94.25812781049058,94.26028394221598,94.26244085827624,94.26459855884957,94.26675704411417,94.26891631424829,94.2710763694302,94.27323720983819,94.27539883565056,94.27756124704561,94.27972444420176,94.28188842729736,94.28405319651081,94.28621875202056,94.28838509400502,94.2905522226427,94.29272013811209,94.29488884059171,94.29705833026009,94.29922860729579,94.30139967187743,94.30357152418361,94.30574416439296,94.30791759268418,94.3100918092359,94.31226681422685,94.31444260783576,94.3166191902414,94.3187965616225,94.32097472215796,94.32315367202649,94.32533341140702,94.32751394047838,94.32969525941947,94.33187736840922,94.33406026762657,94.3362439572505,94.33842843745997,94.34061370843402,94.34279977035168,94.344986623392,94.34717426773406,94.34936270355698,94.35155193103991,94.35374195036196,94.35593276170235,94.35812436524026,94.36031676115492,94.36250994962558,94.36470393083152,94.36689870495204,94.36909427216642,94.37129063265407,94.3734877865943,94.37568573416655,94.37788447555018,94.38008401092469,94.3822843404695,94.38448546436412,94.38668738278807,94.38889009592083,94.39109360394201,94.39329790703117,94.39550300536793,94.39770889913193,94.39991558850278,94.40212307366019,94.40433135478386,94.4065404320535,94.40875030564887,94.41096097574976,94.41317244253594,94.41538470618724,94.41759776688349,94.41981162480457,94.42202628013041,94.42424173304086,94.42645798371592,94.4286750323355,94.43089287907964,94.43311152412831,94.43533096766159,94.43755120985949,94.43977225090214,94.44199409096962,94.44421673024206,94.44644016889966,94.44866440712255,94.45088944509094,94.45311528298508,94.45534192098523,94.45756935927164,94.45979759802465,94.46202663742453,94.46425647765169,94.46648711888646,94.46871856130927,94.4709508051005,94.47318385044063,94.47541769751012,94.47765234648948,94.4798877975592,94.48212405089984,94.48436110669198,94.4865989651162,94.48883762635312,94.49107709058336,94.49331735798758,94.49555842874652,94.49780030304086,94.50004298105132,94.50228646295872,94.50453074894378,94.50677583918734,94.50902173387024,94.51126843317333,94.51351593727749,94.51576424636366,94.51801336061273,94.52026328020568,94.52251400532349,94.52476553614714,94.52701787285771,94.52927101563623,94.53152496466376,94.53377972012143,94.53603528219037,94.53829165105168,94.54054882688663,94.54280680987634,94.5450656002021,94.5473251980451,94.54958560358664,94.55184681700803,94.5541088384906,94.55637166821568,94.55863530636466,94.56089975311893,94.56316500865991,94.56543107316907,94.56769794682783,94.56996562981774,94.5722341223203,94.57450342451708,94.5767735365896,94.5790444587195,94.58131619108839,94.58358873387792,94.58586208726976,94.58813625144556,94.59041122658711,94.59268701287611,94.59496361049433,94.5972410196236,94.5995192404457,94.60179827314249,94.60407811789585,94.60635877488765,94.60864024429982,94.6109225263143,94.61320562111305,94.61548952887809,94.61777424979141,94.62005978403504,94.6223461317911,94.62463329324163,94.6269212685688,94.6292100579547,94.63149966158153,94.63379007963144,94.63608131228672,94.63837335972954,94.64066622214223,94.64295989970702,94.64525439260629,94.64754970102233,94.64984582513753,94.65214276513429,94.65444052119501,94.65673909350214,94.65903848223817,94.66133868758557,94.66363970972684,94.66594154884454,94.66824420512127,94.67054767873958,94.67285196988212,94.6751570787315,94.67746300547043,94.67976975028157,94.68207731334766,94.68438569485143,94.68669489497566,94.68900491390315,94.6913157518167,94.69362740889919,94.69593988533344,94.6982531813024,94.70056729698896,94.7028822325761,94.70519798824675,94.70751456418394,94.70983196057067,94.71215017758999,94.71446921542498,94.71678907425877,94.71910975427444,94.72143125565516,94.7237535785841,94.72607672324449,94.7284006898195,94.73072547849243,94.73305108944653,94.73537752286512,94.73770477893152,94.74003285782909,94.7423617597412,94.74469148485127,94.74702203334272,94.74935340539902,94.75168560120363,94.75401862094006,94.75635246479186,94.75868713294258,94.7610226255758,94.76335894287517,94.76569608502425,94.76803405220673,94.77037284460633,94.77271246240676,94.77505290579172,94.77739417494499,94.77973627005036,94.78207919129166,94.7844229388527,94.7867675129174,94.7891129136696,94.79145914129323,94.79380619597227,94.79615407789065,94.79850278723235,94.80085232418146,94.80320268892197,94.80555388163799,94.80790590251358,94.81025875173289,94.81261242948008,94.8149669359393,94.8173222712948,94.81967843573074,94.82203542943144,94.82439325258113,94.82675190536416,94.82911138796484,94.83147170056752,94.8338328433566,94.83619481651648,94.83855762023164,94.84092125468648,94.84328572006551,94.84565101655326,94.84801714433426,94.85038410359309,94.85275189451434,94.85512051728259,94.85748997208253,94.85986025909884,94.86223137851619,94.86460333051932,94.86697611529294,94.86934973302188,94.87172418389092,94.87409946808489,94.87647558578865,94.87885253718706,94.88123032246504,94.88360894180755,94.88598839539954,94.88836868342595,94.89074980607185,94.89313176352226,94.89551455596224,94.89789818357686,94.90028264655129,94.90266794507062,94.90505407932007,94.9074410494848,94.90982885575005,94.91221749830108,94.91460697732313,94.91699729300154,94.91938844552163,94.92178043506874,94.92417326182827,94.92656692598564,94.92896142772624,94.93135676723558,94.93375294469915,94.9361499603024,94.93854781423094,94.94094650667033,94.94334603780614,94.94574640782398,94.94814761690952,94.95054966524845,94.95295255302646,94.95535628042924,94.9577608476426,94.96016625485231,94.96257250224414,94.96497959000395,94.96738751831761,94.96979628737101,94.97220589735004,94.97461634844066,94.97702764082882,94.97943977470055,94.98185275024184,94.98426656763876,94.98668122707737,94.98909672874376,94.9915130728241,94.99393025950451,94.99634828897118,94.99876716141034,95.00118687700821,95.00360743595105,95.00602883842518,95.00845108461687,95.01087417471247,95.0132981088984,95.01572288736104,95.01814851028676,95.02057497786208,95.02300229027345,95.02543044770741,95.02785945035042,95.0302892983891,95.03271999201004,95.03515153139983,95.03758391674513,95.0400171482326,95.0424512260489,95.0448861503808,95.04732192141506,95.04975853933843,95.05219600433772,95.05463431659976,95.0570734763114,95.05951348365956,95.06195433883111,95.06439604201303,95.06683859339226,95.06928199315581,95.07172624149071,95.07417133858398,95.07661728462273,95.07906407979405,95.08151172428506,95.08396021828293,95.08640956197485,95.08885975554806,95.09131079918974,95.0937626930872,95.09621543742772,95.09866903239865,95.10112347818732,95.1035787749811,95.10603492296744,95.10849192233371,95.11094977326742,95.11340847595602,95.11586803058707,95.11832843734808,95.12078969642664,95.12325180801032,95.12571477228678,95.12817858944368,95.13064325966866,95.13310878314948,95.13557516007381,95.13804239062948,95.14051047500426,95.14297941338596,95.14544920596244,95.14791985292153,95.1503913544512,95.15286371073937,95.15533692197397,95.15781098834297,95.16028591003445,95.16276168723638,95.1652383201369,95.16771580892404,95.17019415378599,95.17267335491084,95.17515341248682,95.1776343267021,95.18011609774496,95.18259872580363,95.1850822110664,95.18756655372162,95.19005175395762,95.19253781196278,95.1950247279255,95.19751250203421,95.20000113447738,95.20249062544352,95.20498097512109,95.20747218369868,95.20996425136487,95.21245717830821,95.21495096471737,95.21744561078101,95.21994111668779,95.22243748262643,95.22493470878567,95.2274327953543,95.2299317425211,95.2324315504749,95.23493221940456,95.23743374949892,95.23993614094697,95.24243939393757,95.24494350865974,95.24744848530247,95.24995432405476,95.25246102510567,95.25496858864427,95.25747701485972,95.25998630394109,95.26249645607757,95.26500747145838,95.26751935027272,95.27003209270981,95.27254569895898,95.27506016920952,95.27757550365075,95.28009170247208,95.28260876586283,95.28512669401248,95.28764548711045,95.29016514534625,95.29268566890936,95.29520705798932,95.29772931277569,95.30025243345807,95.30277642022608,95.30530127326936,95.30782699277762,95.31035357894054,95.31288103194785],"type":"scatter"}],                        {"template":{"data":{"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"heatmapgl":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmapgl"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"#E5ECF6","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"bgcolor":"#E5ECF6","radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"bgcolor":"#E5ECF6","caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","zerolinewidth":2}}},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(0,0,0,0)","xaxis":{"showgrid":true,"gridwidth":1,"gridcolor":"LightGrey","range":[300,1000],"showline":true,"linewidth":2,"linecolor":"Grey","title":{"text":"Satellite Altitude [km]"},"tickmode":"linear","tick0":300,"dtick":100},"yaxis":{"showgrid":true,"gridwidth":1,"gridcolor":"LightGrey","showline":true,"linewidth":2,"linecolor":"Grey","title":{"text":"Inclination [deg]"},"tickmode":"linear"}},                        {"responsive": true}                    )                };                            </script>        </div>
+
+<details>
+<summary>Plot Source</summary>
+<div class="highlight"><span class="filename">fig_sun_synchronous_inclination.py</span><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Generate plot of mean anomaly versus true anomaly for a range of eccentricies.</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># Highlights the effect of eccentricity on the difference of the two.</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="kn">import</span> <span class="nn">os</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="kn">import</span> <span class="nn">pathlib</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="kn">import</span> <span class="nn">plotly.io</span> <span class="k">as</span> <span class="nn">pio</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="kn">import</span> <span class="nn">rastro</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="c1">## Define Constants</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="n">SCRIPT_NAME</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="n">OUTDIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;RASTRO_FIGURE_OUTPUT_DIR&quot;</span><span class="p">)</span> <span class="c1"># Build Environment Variable</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="n">OUTFILE</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">OUTDIR</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">SCRIPT_NAME</span><span class="si">}</span><span class="s2">.html&quot;</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="c1">## Create figure</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">paper_bgcolor</span><span class="o">=</span><span class="s1">&#39;rgba(0,0,0,0)&#39;</span><span class="p">,</span> <span class="n">plot_bgcolor</span><span class="o">=</span><span class="s1">&#39;rgba(0,0,0,0)&#39;</span><span class="p">))</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>    <span class="n">showgrid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gridwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gridcolor</span><span class="o">=</span><span class="s1">&#39;LightGrey&#39;</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>    <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;Grey&#39;</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="p">)</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>    <span class="n">showgrid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gridwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gridcolor</span><span class="o">=</span><span class="s1">&#39;LightGrey&#39;</span><span class="p">,</span> <span class="c1">#range=[0, 360],</span>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>    <span class="n">showline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linecolor</span><span class="o">=</span><span class="s1">&#39;Grey&#39;</span>
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="p">)</span>
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_xaxes</span><span class="p">(</span>
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>    <span class="n">tickmode</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">tick0</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">dtick</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">title_text</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Satellite Altitude [km]&quot;</span>
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="p">)</span>
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="n">fig</span><span class="o">.</span><span class="n">update_yaxes</span><span class="p">(</span>
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a>    <span class="n">tickmode</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">title_text</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Inclination [deg]&quot;</span>
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="p">)</span>
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a>
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="c1">## Generate and plot data</span>
+<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a>
+<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="c1"># Generate range of true anomalies</span>
+<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="n">alt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">300e3</span><span class="p">,</span> <span class="mf">1000e3</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">)</span>
+<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a>
+<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a><span class="c1"># Compute and plot eccentric anomaly for range of true anomalies</span>
+<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a><span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]:</span>
+<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a>    <span class="c1"># Take output mod 360 to wrap from 0 to 2pi</span>
+<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a>    <span class="n">ssi</span> <span class="o">=</span> <span class="p">[</span><span class="n">rastro</span><span class="o">.</span><span class="n">sun_synchronous_inclination</span><span class="p">(</span><span class="n">rastro</span><span class="o">.</span><span class="n">R_EARTH</span> <span class="o">+</span> <span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alt</span><span class="p">]</span>
+<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a>    <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span><span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">alt</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">ssi</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;e = </span><span class="si">{</span><span class="n">e</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a>
+<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a><span class="n">pio</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">OUTFILE</span><span class="p">,</span> <span class="n">include_plotlyjs</span><span class="o">=</span><span class="s1">&#39;cdn&#39;</span><span class="p">,</span> <span class="n">full_html</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">auto_play</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+</details>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>D. Vallado, <em>Fundamentals of Astrodynamics and Applications (4th Ed.)</em>, 2010<br />
+<a href="https://celestrak.com/software/vallado-sw.php">https://celestrak.com/software/vallado-sw.php</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+              
+            </article>
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" data-md-state="hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Intro" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Intro
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../anomalies/" class="md-footer__link md-footer__link--next" aria-label="Next: True, Eccentric, and Mean Anomaly" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              True, Eccentric, and Mean Anomaly
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.22074ed6.min.js"}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.01de222e.min.js"></script>
+      
+        <script src="../../../js/mathjax.js"></script>
+      
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
