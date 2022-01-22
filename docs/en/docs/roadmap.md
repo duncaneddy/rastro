@@ -6,12 +6,11 @@ This page documents the current feature development roadmap for RAstro.
     - [x] Mathematics
     - [x] Time
     - [x] Planetary Constants
-- [ ] Earth Orientation Parameters
-    - [ ] Data Model Structure
-    - [ ] Fetching updated parameters
-    - [ ] Data retrieval
-    - [ ] Management / Versioning with packaging
-    - [ ] Customized of handling of out-of-range EOP requests
+- [x] Earth Orientation Parameters
+    - [x] Data Model Structure
+    - [x] Fetching updated parameters
+    - [x] Data retrieval
+    - [x] Customized of handling of out-of-range EOP requests
 - [ ] Time Management (Epoch)
     - [ ] Epoch Class
         - [ ] Initialization
@@ -21,6 +20,22 @@ This page documents the current feature development roadmap for RAstro.
             - [ ] GPS Elapsed Seconds
             - [ ] GPS Week / Seconds
         - [ ] Fundamental Operations
+          - [ ] Arithmetic Operations
+          - [ ] Logical Comparisons
+        - [ ] Output representations
+          - [ ] Date String
+          - [ ] Caldate String
+          - [ ] Isoformat
+          - [ ] POSIX Seconds
+          - [ ] Day of Year
+          - [ ] Elapsed GPS Seconds
+          - [ ] GPS Day
+          - [ ] GPS Week
+          - [ ] GPS Date
+          - [ ] JD
+          - [ ] MJD
+          - [ ] GMST
+          - [ ] GAST
     - [ ] Epoch Range Iterator
 - [ ] Reference Frames
     - [ ] Precession/Nutation Model
