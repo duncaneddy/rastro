@@ -537,14 +537,33 @@ impl<'a> Epoch<'a> {
         None
     }
 
-//     pub fn from_mjd(mjd: f64) -> Self {
-//
-//     }
-//
-//     pub fn from_jd(jd: f64) -> Self {
-//
-//     }
-//
+    pub fn from_jd(jd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
+        // Get time system offset of JD to TAI
+        let time_system_offset = time_system_offset(jd, 0.0, time_system, TimeSystem::TAI, eop);
+
+        // Add offset to JD and split into days, seconds, and nano-seconds
+        let jd = jd + time_system_offset/86400.0;
+
+        let (days, fdays) = split_f64(jd);
+        let total_seconds = fdays*86400.0;
+        let (seconds, fseconds) = split_f64(total_seconds);
+        let ns = fseconds * 1.0e9;
+
+
+        Epoch {
+            time_system,
+            days: days as u32,
+            seconds: seconds as u32,
+            nanoseconds: ns,
+            nanoseconds_kc: 0.0,
+            eop
+        }
+    }
+
+    pub fn from_mjd(mjd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
+        Epoch::from_jd(mjd + MJD_ZERO, time_system, eop)
+    }
+
 //     pub fn from_gps_weekseconds(week: u32, seconds: f64) -> Self {
 //
 //     }
@@ -879,6 +898,70 @@ mod tests {
         assert_eq!(minute, 22);
         assert_eq!(second, 19.0);
         assert_eq!(nanosecond, 123456789.0);
+        assert_eq!(epc.time_system, TimeSystem::GPS);
+    }
+
+    #[test]
+    fn test_epoch_from_jd() {
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir).join("test_assets")
+            .join("iau2000A_c04_14.txt");
+        let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(),
+                                                      EOPExtrapolation::Hold, true).unwrap();
+
+
+        let epc = Epoch::from_jd(MJD_ZERO + MJD2000, TimeSystem::TAI, &eop);
+        let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
+        assert_eq!(year, 2000);
+        assert_eq!(month, 1);
+        assert_eq!(day, 1);
+        assert_eq!(hour, 12);
+        assert_eq!(minute, 0);
+        assert_eq!(second, 0.0);
+        assert_eq!(nanosecond, 0.0);
+        assert_eq!(epc.time_system, TimeSystem::TAI);
+
+        let epc = Epoch::from_jd(MJD_ZERO + MJD2000, TimeSystem::GPS, &eop);
+        let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime_as_tsys(TimeSystem::TAI);
+        assert_eq!(year, 2000);
+        assert_eq!(month, 1);
+        assert_eq!(day, 1);
+        assert_eq!(hour, 12);
+        assert_eq!(minute, 0);
+        assert_eq!(second, 19.0);
+        assert_eq!(nanosecond, 17643.974853515625); // Rounding error from floating point conversion
+        assert_eq!(epc.time_system, TimeSystem::GPS);
+    }
+
+    #[test]
+    fn test_epoch_from_mjd() {
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir).join("test_assets")
+            .join("iau2000A_c04_14.txt");
+        let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(),
+                                                      EOPExtrapolation::Hold, true).unwrap();
+
+
+        let epc = Epoch::from_mjd(MJD2000, TimeSystem::TAI, &eop);
+        let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
+        assert_eq!(year, 2000);
+        assert_eq!(month, 1);
+        assert_eq!(day, 1);
+        assert_eq!(hour, 12);
+        assert_eq!(minute, 0);
+        assert_eq!(second, 0.0);
+        assert_eq!(nanosecond, 0.0);
+        assert_eq!(epc.time_system, TimeSystem::TAI);
+
+        let epc = Epoch::from_mjd(MJD2000, TimeSystem::GPS, &eop);
+        let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime_as_tsys(TimeSystem::TAI);
+        assert_eq!(year, 2000);
+        assert_eq!(month, 1);
+        assert_eq!(day, 1);
+        assert_eq!(hour, 12);
+        assert_eq!(minute, 0);
+        assert_eq!(second, 19.0);
+        assert_eq!(nanosecond, 17643.974853515625); // Rounding error from floating point conversion
         assert_eq!(epc.time_system, TimeSystem::GPS);
     }
 }
