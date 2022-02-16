@@ -3,6 +3,7 @@ use std::os::raw::{c_char, c_int};
 use std::ffi::CString;
 use std::ops;
 use std::cmp::Ordering;
+use std::f64::consts::PI;
 use regex::Regex;
 use rsofa;
 use crate::constants::{MJD_ZERO, TAI_GPS, GPS_TAI, TAI_TT, TT_TAI, GPS_ZERO};
@@ -772,9 +773,9 @@ impl<'a> Epoch<'a> {
         let mjd = self.mjd_as_tsys(TimeSystem::GPS);
 
         let gps_week = ((mjd - GPS_ZERO)/7.0).floor();
-        let gps_seconds = (mjd - GPS_ZERO - gps_week*7.0);
+        let gps_seconds = mjd - GPS_ZERO - gps_week*7.0;
 
-        (gps_week as u32, gps_seconds)
+        (gps_week as u32, gps_seconds*86400.0)
     }
 
     pub fn gps_seconds(&self) -> f64 {
@@ -799,12 +800,38 @@ impl<'a> Epoch<'a> {
     //     String::from("placeholder")
     // }
 
-    pub fn gast(&self) -> f64 {
-        0.0
+    pub fn gast(&self, as_degrees: bool) -> f64 {
+        let (uta, utb) = self.get_jdfd(TimeSystem::UT1);
+        let (tta, ttb) = self.get_jdfd(TimeSystem::TT);
+
+        let gast;
+
+        unsafe {
+            gast = rsofa::iauGst06a(uta, utb, tta, ttb);
+        }
+
+        if as_degrees {
+            gast * 180.0 / PI
+        } else {
+            gast
+        }
     }
 
-    pub fn gmst(&self) -> f64 {
-        0.0
+    pub fn gmst(&self, as_degrees: bool) -> f64 {
+        let (uta, utb) = self.get_jdfd(TimeSystem::UT1);
+        let (tta, ttb) = self.get_jdfd(TimeSystem::TT);
+
+        let gast;
+
+        unsafe {
+            gast = rsofa::iauGmst06(uta, utb, tta, ttb);
+        }
+
+        if as_degrees {
+            gast * 180.0 / PI
+        } else {
+            gast
+        }
     }
 }
 
@@ -1638,6 +1665,99 @@ mod tests {
     }
 
     #[test]
+    fn test_epoch_to_jd() {
+        let eop = setup_eop();
+
+        let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 0.0, 0.0, TimeSystem::TAI, &eop);
+
+        assert_eq!(epc.jd(), MJD_ZERO + MJD2000);
+
+        let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 0.0, 0.0, TimeSystem::TAI, &eop);
+        assert_eq!(epc.jd_as_tsys(TimeSystem::UTC), MJD_ZERO + MJD2000 - 32.0/86400.0)
+    }
+
+    #[test]
+    fn test_epoch_to_mjd() {
+        let eop = setup_eop();
+
+        let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 0.0, 0.0, TimeSystem::TAI, &eop);
+
+        assert_eq!(epc.mjd(), MJD2000);
+
+        let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 0.0, 0.0, TimeSystem::TAI, &eop);
+        assert_eq!(epc.mjd_as_tsys(TimeSystem::UTC), MJD2000 - 32.0/86400.0)
+    }
+
+    #[test]
+    fn test_gps_date() {
+        let eop = setup_eop();
+
+        let epc = Epoch::from_date(2018, 3, 1, TimeSystem::GPS, &eop);
+        let (gps_week, gps_seconds) = epc.gps_date();
+        assert_eq!(gps_week, 1990);
+        assert_eq!(gps_seconds, 4.0*86400.0);
+
+        let epc = Epoch::from_date(2018, 3, 8, TimeSystem::GPS, &eop);
+        let (gps_week, gps_seconds) = epc.gps_date();
+        assert_eq!(gps_week, 1991);
+        assert_eq!(gps_seconds, 4.0*86400.0);
+
+        let epc = Epoch::from_date(2018, 3, 11, TimeSystem::GPS, &eop);
+        let (gps_week, gps_seconds) = epc.gps_date();
+        assert_eq!(gps_week, 1992);
+        assert_eq!(gps_seconds, 0.0*86400.0);
+
+        let epc = Epoch::from_date(2018, 3, 24, TimeSystem::GPS, &eop);
+        let (gps_week, gps_seconds) = epc.gps_date();
+        assert_eq!(gps_week, 1993);
+        assert_eq!(gps_seconds, 6.0*86400.0);
+    }
+
+    #[test]
+    fn test_gps_seconds() {
+        let eop = setup_eop();
+
+        let epc = Epoch::from_date(1980, 1, 6, TimeSystem::GPS, &eop);
+        assert_eq!(epc.gps_seconds(), 0.0);
+
+        let epc = Epoch::from_datetime(1980, 1, 7, 0, 0, 1.0, 0.0,TimeSystem::GPS, &eop);
+        assert_eq!(epc.gps_seconds(), 86401.0);
+    }
+
+    #[test]
+    fn test_gps_nanoseconds() {
+        let eop = setup_eop();
+
+        let epc = Epoch::from_date(1980, 1, 6, TimeSystem::GPS, &eop);
+        assert_eq!(epc.gps_nanoseconds(), 0.0);
+
+        let epc = Epoch::from_datetime(1980, 1, 7, 0, 0, 1.0, 0.0,TimeSystem::GPS, &eop);
+        assert_eq!(epc.gps_nanoseconds(), 86401.0*1.0e9);
+    }
+
+    #[test]
+    fn test_gmst() {
+        let eop = setup_eop();
+
+        let epc = Epoch::from_date(2000, 1, 1, TimeSystem::UTC, &eop);
+        assert_abs_diff_eq!(epc.gmst(true), 99.969, epsilon=1.0e-3);
+
+        let epc = Epoch::from_date(2000, 1, 1, TimeSystem::UTC, &eop);
+        assert_abs_diff_eq!(epc.gmst(false), 99.969 * PI / 180.0, epsilon=1.0e-3);
+    }
+
+    #[test]
+    fn test_gast() {
+        let eop = setup_eop();
+
+        let epc = Epoch::from_date(2000, 1, 1, TimeSystem::UTC, &eop);
+        assert_abs_diff_eq!(epc.gast(true), 99.965, epsilon=1.0e-3);
+
+        let epc = Epoch::from_date(2000, 1, 1, TimeSystem::UTC, &eop);
+        assert_abs_diff_eq!(epc.gast(false), 99.965 * PI / 180.0, epsilon=1.0e-3);
+    }
+
+    #[test]
     fn test_ops_add_assign() {
         let eop = setup_eop();
 
@@ -1727,17 +1847,6 @@ mod tests {
         assert_eq!(second, 59.0);
         assert_eq!(nanosecond, 0.0);
         assert_eq!(epc.time_system, TimeSystem::TAI);
-    }
-
-    fn test_epoch_to_jd() {
-        let eop = setup_eop();
-
-        let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 0.0, 0.0, TimeSystem::TAI, &eop);
-
-        assert_eq!(epc.jd(), MJD_ZERO + MJD2000);
-
-        let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 0.0, 0.0, TimeSystem::TAI, &eop);
-        assert_eq!(epc.jd_as_tsys(TimeSystem::UTC), MJD_ZERO + MJD2000 - 19.0/86400.0)
     }
 
     #[test]
