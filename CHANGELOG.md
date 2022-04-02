@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   as well at the steps needed to create new modules and features.
 - Added `EarthOrientationData` class with associated traits and methods to load Earth 
   orientation data.
+- Added `Epoch` class with associated traits and methods to represent and handle instants in time
+- Added `EpochRange` an interator that makes creating loops over time ranges easy!
 
 ### Changed
 - Completed [Orbital Properties](https://duncaneddy.github.io/rastro/user_guide/orbits/properties/) user guide section.

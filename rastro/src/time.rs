@@ -9,6 +9,8 @@ use rsofa;
 use crate::constants::{MJD_ZERO, TAI_GPS, GPS_TAI, TAI_TT, TT_TAI, GPS_ZERO};
 use crate::eop::EarthOrientationData;
 
+/// VALID_EPOCH_REGEX defines valid regex expressions that the Epoch
+/// constructor can parse into a valid instant in time.
 const VALID_EPOCH_REGEX: [&str; 5] = [
     r"^(\d{4})\-(\d{2})\-(\d{2})$",
     r"^(\d{4})\-(\d{2})\-(\d{2})[T](\d{2}):(\d{2}):(\d{2})[Z]$",
@@ -377,6 +379,11 @@ pub fn time_system_offset(jd: f64, fd: f64,
     offset
 }
 
+/// Helper function to to rectify any arbitrary input days, seconds, and nanoseconds
+/// to the expected ranges of an Epoch class. The expected ranges are:
+/// - days [0, ∞)
+/// - seconds [0, 86400)
+/// - nanoseconds [0, 1_000_000_000)
 fn align_epoch_data(days:u32, seconds:u32, nanoseconds:f64) -> (u32, u32, f64) {
     let mut d = days;
     let mut s = seconds;
@@ -407,7 +414,32 @@ fn align_epoch_data(days:u32, seconds:u32, nanoseconds:f64) -> (u32, u32, f64) {
     (d, s, ns)
 }
 
-/// Enumeration of different time systems
+/// Enumeration of different time systems.
+///
+/// A time system is a recognized time standard for representing instants in time
+/// along a consistent, continuous scale. Because all current time systems utilize
+/// the same definition of a second, the spacing between instants in time is the
+/// same across all time scales. This leaves the only difference between them being
+/// offsets between them.
+///
+/// The currently supposed time systems are:
+/// - GPS: Global Positioning System. GPS is a time scale used defined by the GPS navigation system control segment.
+///   GPS time was aligned with UTC at system inception (January 6, 1980 0h), but
+///   does not include leap seconds since it is an atomic time scale.
+/// - TAI: Temps Atomique International. TAI is an atomic time scale, which represents
+///   passage of time on Earth's geoid.
+/// - TT: Terrestrial Time. TT is a theoretical time standard primarily used for astronomy.
+///   TT is offset from TAI by a fixed number of seconds at TAI's inception. This number has not
+///   been officially updated, however reprocessing of data from the ensemble of atomic clocks
+///   that define TAI could lead to a difference. For exact applications that require precise corrections
+///   updated yearly BIPM provides these offsets.
+/// - UTC: Universal Coordinated Time. UTC is an atomic time scale steered to remain within
+///   +/- 0.9 seconds of solar time. Since the rotation of the Earth is continuously changing,
+///   UTC periodically incorporates leap seconds to ensure that the difference between
+///   UTC and UT1 remains within the expeccted bounds.
+/// - UT1: Universal Time 1. UT1 is a solar time that is conceptually the mean time at 0 degrees
+///   longitude. UT1 is the same everywhere on Earth simultaneously and represents the rotation of the
+///   Earth with respect to the ICRF inertial reference frame.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TimeSystem {
     GPS,
@@ -429,9 +461,33 @@ impl fmt::Display for TimeSystem {
     }
 }
 
-/// Epoch representing a specific instant in time.
+/// `Epoch` representing a specific instant in time.
+///
+/// The Epoch structure is the primary and preferred mechanism for representing
+/// time in the Rastro library. It is designed to be able to accurately represent,
+/// track, and compare instants in time accurately.
+///
+/// Internally, the Epoch structure stores time in terms of `days`, `seconds`, and
+/// `nanoseconds`. This representation was chosen so that underlying time system
+/// conversions and comparisons can be performed using the IAU SOFA library, which
+/// has an API that operations in days and fractional days. However a day-based representation
+/// does not accurately handle small changes in time (subsecond time) especially when
+/// propagating or adding small values over long periods. Therefore, the Epoch structure
+/// internall stores time in terms of seconds and nanoseconds and converts converts changes to
+/// seconds and days when required. This enables the best of both worlds. Accurate
+/// time representation of small differences and changes in time (nanoseconds) and
+/// validated conversions between time systems.
+///
+/// Internally, the structure
+/// uses [Kahan summation](https://en.wikipedia.org/wiki/Kahan_summation_algorithm) to
+/// accurate handle running sums over long periods of time without losing accuracy to
+/// floating point representation of nanoseconds.
+///
+/// All arithmetic operations (addition, substracion) that the structure supports
+/// use seconds as the default value and return time differences in seconds.
+///
 #[derive(Copy, Clone)]
-struct Epoch<'a> {
+pub struct Epoch<'a> {
     /// Time system used to instantiate the Epoch. The time system will be used to
     /// format the display of results on output
     pub time_system: TimeSystem,
@@ -483,11 +539,71 @@ impl<'a> Epoch<'a> {
     // final object at the end of the operations results in a time representation with values
     // aligned to the above ranges
 
+    /// Create an `Epoch` from a Gregorian calendar date
+    ///
+    /// # Arguments
+    /// - `year`: Gregorian calendar year
+    /// - `month` Gregorian calendar month
+    /// - `day`: Gregorian calendar day
+    /// - `time_system`: Time system the input time specification is given in
+    /// - `eop` Earth orientation data loading structure.
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_date(2022, 4, 1, TimeSystem::GPS, &eop);
+    /// ```
     pub fn from_date(year:u32, month:u8, day:u8, time_system: TimeSystem, eop: &'a EarthOrientationData)
                          -> Self {
         Epoch::from_datetime(year, month, day, 0, 0, 0.0, 0.0, time_system, eop)
     }
 
+    /// Create an `Epoch` from a Gregorian calendar datetime.
+    ///
+    /// # Arguments
+    /// - `year`: Gregorian calendar year
+    /// - `month` Gregorian calendar month
+    /// - `day`: Gregorian calendar day
+    /// - `hour`: Hour of day
+    /// - `minute`: Minute of day
+    /// - `second`: Second of day
+    /// - `nanosecond`: Nanosecond into day
+    /// - `time_system`: Time system the input time specification is given in
+    /// - `eop` Earth orientation data loading structure.
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.4, 5.6, TimeSystem::GPS, &eop);
+    /// ```
     #[allow(temporary_cstring_as_ptr)]
     pub fn from_datetime(year:u32, month:u8, day:u8, hour:u8, minute:u8, second:f64,
                         nanosecond:f64, time_system: TimeSystem, eop: &'a EarthOrientationData)
@@ -543,6 +659,41 @@ impl<'a> Epoch<'a> {
         }
     }
 
+    /// Create an Epoch from a string.
+    ///
+    /// Valid string formats are
+    /// ```text
+    /// "2022-04-01"
+    /// "2022-04-01T01:02:03Z"
+    /// "2022-04-01T01:02:03Z.456Z"
+    /// "20220401T010203Z"
+    /// "2022-04-01 01:02:03 GPS"
+    /// "2022-04-01 01:02:03.456 UTC"
+    /// ```
+    ///
+    /// # Arguments
+    /// - `string`: String encoding instant in time
+    /// - `eop` Earth orientation data loading structure.
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_string("2022-04-01 01:02:03.456 GPS", &eop);
+    /// ```
     pub fn from_string(datestr: &str, eop: &'a EarthOrientationData) -> Option<Self> {
         let year:u32;
         let month:u8;
@@ -603,6 +754,31 @@ impl<'a> Epoch<'a> {
         None
     }
 
+    /// Create an `Epoch` from a Julian date and time system. The time system is needed
+    /// to make the instant unambiguous.
+    ///
+    /// # Arguments
+    /// - `jd`: Julian date as a floating point number
+    /// - `eop` Earth orientation data loading structure.
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// let epc = Epoch::from_jd(2451545.0, TimeSystem::TT, &eop);
+    /// ```
     pub fn from_jd(jd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
         // Get time system offset of JD to TAI
         let time_system_offset = time_system_offset(jd, 0.0, time_system, TimeSystem::TAI, eop);
@@ -626,10 +802,65 @@ impl<'a> Epoch<'a> {
         }
     }
 
+    /// Create an `Epoch` from a Modified Julian date and time system. The time system is needed
+    /// to make the instant unambiguous.
+    ///
+    /// # Arguments
+    /// - `mjd`: Modified Julian date as a floating point number
+    /// - `eop` Earth orientation data loading structure.
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// let epc = Epoch::from_mjd(51545.5, TimeSystem::TT, &eop);
+    /// ```
     pub fn from_mjd(mjd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
         Epoch::from_jd(mjd + MJD_ZERO, time_system, eop)
     }
 
+    /// Create an `Epoch` from a GPS date. The GPS date is encoded as the
+    /// number of weeks since the GPS time system start epoch January 6, 1980 and number of
+    /// seconds into the week. For the purposes seconds are reckond starting from
+    /// 0 at midnight Sunday. The `time_system` of the `Epoch` is set to
+    /// `TimeSystem::GPS` by default for this initialization method.
+    ///
+    /// # Arguments
+    /// - `week`: Modified Julian date as a floating point number
+    /// - `seconds`: Modified Julian date as a floating point number
+    /// - `eop` Earth orientation data loading structure.
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_gps_date(2203, 86400.0*5.0, &eop);
+    /// ```
     pub fn from_gps_date(week: u32, seconds: f64, eop: &'a EarthOrientationData) -> Self {
         // Get time system offset based on days and fractional days using SOFA
         let jd = MJD_ZERO + GPS_ZERO + 7.0*f64::from(week) + (seconds / 86400.0).floor();
@@ -655,6 +886,33 @@ impl<'a> Epoch<'a> {
         }
     }
 
+    /// Create an `Epoch` from the number of elapsed seconds since the GPS
+    /// Epoch January 6, 1980. The `time_system` of the `Epoch` is set to
+    /// `TimeSystem::GPS` by default for this initialization method.
+    ///
+    /// # Arguments
+    /// - `seconds`: Modified Julian date as a floating point number
+    /// - `eop` Earth orientation data loading structure.
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_gps_seconds(2203.0*7.0*86400.0 + 86400.0*5.0, &eop);
+    /// ```
     pub fn from_gps_seconds(gps_seconds: f64, eop: &'a EarthOrientationData) -> Self {
         // Get time system offset based on days and fractional days using SOFA
         let jd = MJD_ZERO + GPS_ZERO + (gps_seconds / 86400.0).floor();
@@ -680,6 +938,33 @@ impl<'a> Epoch<'a> {
         }
     }
 
+    /// Create an `Epoch` from the number of elapsed nanoseconds since the GPS
+    /// Epoch January 6, 1980. The `time_system` of the `Epoch` is set to
+    /// `TimeSystem::GPS` by default for this initialization method.
+    ///
+    /// # Arguments
+    /// - `seconds`: Modified Julian date as a floating point number
+    /// - `eop` Earth orientation data loading structure.
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // January 6, 1980
+    /// let epc = Epoch::from_gps_nanoseconds(0, &eop);
+    /// ```
     pub fn from_gps_nanoseconds(gps_nanoseconds: u64, eop: &'a EarthOrientationData) -> Self {
         let gps_seconds = (gps_nanoseconds / 1_000_000_000) as f64;
         let jd = MJD_ZERO + GPS_ZERO + (gps_seconds / 86400.0).floor();
@@ -710,6 +995,25 @@ impl<'a> Epoch<'a> {
         }
     }
 
+    /// Returns the `Epoch` represented as a Julian date and fractional date.
+    ///
+    /// The IAU SOFA library takes as input two floating-point values in days.
+    /// The expectation is that the first input is in whole days and the second
+    /// in fractional days to maintain resolution of the time format.
+    ///
+    /// The internal `Epoch` time encoding is more accurate than this, but
+    /// we need to convert to the IAU SOFA representation to take advantage of
+    /// the validate time system conversions of the SOFA library. This is a helper
+    /// method that will convert the internal struct representation into the expected
+    /// SOFA format to make calling into the SOFA library easier.
+    ///
+    /// # Arguments
+    /// - `time_system`: Time system the input time specification is given in
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
     fn get_jdfd(&self, time_system:TimeSystem) -> (f64, f64) {
         // Get JD / FD from Epoch
         let jd = self.days as f64;
@@ -721,6 +1025,42 @@ impl<'a> Epoch<'a> {
         (jd, fd)
     }
 
+    /// Convert an `Epoch` into Greorgian calendar date representation of the same
+    /// instant in a specific time system.
+    ///
+    /// Returned value is generated such that there will be no fractional
+    /// seconds provided.
+    ///
+    /// # Arguments
+    /// - `time_system`: Time system the input time specification is given in
+    ///
+    /// # Returns
+    /// - `year`: Gregorian calendar year
+    /// - `month` Gregorian calendar month
+    /// - `day`: Gregorian calendar day
+    /// - `hour`: Hour of day
+    /// - `minute`: Minute of day
+    /// - `second`: Second of day
+    /// - `nanosecond`: Nanosecond into day
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 5.0, TimeSystem::GPS, &eop);
+    ///
+    /// // Date in UTC time system
+    /// let (Y, M, D, h, m, s, ns) = epc.to_datetime_as_tsys(TimeSystem::UTC);
+    /// ```
     #[allow(temporary_cstring_as_ptr)]
     pub fn to_datetime_as_tsys(&self, time_system:TimeSystem) -> (u32, u8, u8, u8, u8, f64, f64) {
         // Get JD / FD from Epoch
@@ -744,31 +1084,188 @@ impl<'a> Epoch<'a> {
         (iy as u32, im as u8, id as u8, ihmsf[0] as u8, ihmsf[1] as u8, ihmsf[2] as f64, ns)
     }
 
+    /// Convert an `Epoch` into Greorgian calendar date representation of the same
+    /// instant in the time system used to initialize the `Epoch`.
     ///
+    /// Returned value is generated such that there will be no fractional
+    /// seconds provided.
+    ///
+    /// # Returns
+    /// - `year`: Gregorian calendar year
+    /// - `month` Gregorian calendar month
+    /// - `day`: Gregorian calendar day
+    /// - `hour`: Hour of day
+    /// - `minute`: Minute of day
+    /// - `second`: Second of day
+    /// - `nanosecond`: Nanosecond into day
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 5.0, TimeSystem::GPS, &eop);
+    ///
+    /// // Date in GPS time scale
+    /// let (Y, M, D, h, m, s, ns) = epc.to_datetime_as_tsys(TimeSystem::GPS);
+    /// ```
     pub fn to_datetime(&self) -> (u32, u8, u8, u8, u8, f64, f64) {
         self.to_datetime_as_tsys(self.time_system)
     }
 
+    /// Convert an `Epoch` into a Julian date representation of the same
+    /// instant in a specific time system.
+    ///
+    /// # Arguments
+    /// - `time_system`: Time system the input time specification is given in
+    ///
+    /// # Returns
+    /// - `jd`: Julian date of Epoch
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS, &eop);
+    ///
+    /// let jd_tai = epc.jd_as_tsys(TimeSystem::TAI);
+    /// let jd_utc = epc.jd_as_tsys(TimeSystem::UTC);
+    /// ```
     pub fn jd_as_tsys(&self, time_system:TimeSystem) -> f64 {
         let (jd, fd) = self.get_jdfd(time_system);
 
         jd + fd
     }
 
+    /// Convert an `Epoch` into a Julian date representation of the same
+    /// instant in the same time system used to initialize the `Epoch`.
+    ///
+    /// # Returns
+    /// - `jd`: Julian date of Epoch
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS, &eop);
+    ///
+    /// let jd = epc.jd();
+    /// ```
     pub fn jd(&self) -> f64 {
         self.jd_as_tsys(self.time_system)
     }
 
+    /// Convert an `Epoch` into a Modified Julian date representation of the same
+    /// instant in a specific time system.
+    ///
+    /// # Arguments
+    /// - `time_system`: Time system the input time specification is given in
+    ///
+    /// # Returns
+    /// - `mjd`: Modified Julian date of Epoch
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS, &eop);
+    ///
+    /// let mjd_tai = epc.mjd_as_tsys(TimeSystem::TAI);
+    /// let mjd_utc = epc.mjd_as_tsys(TimeSystem::UTC);
+    /// ```
     pub fn mjd_as_tsys(&self, time_system:TimeSystem) -> f64 {
         let (jd, fd) = self.get_jdfd(time_system);
 
         (jd - MJD_ZERO) + fd
     }
 
+    /// Convert an `Epoch` into a Modified Julian date representation of the same
+    /// instant in the same time system used to initialize the `Epoch`.
+    ///
+    /// # Returns
+    /// - `mjd`: Modified Julian date of Epoch
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS, &eop);
+    ///
+    /// let mjd = epc.mjd();
+    /// ```
     pub fn mjd(&self) -> f64 {
         self.mjd_as_tsys(self.time_system)
     }
 
+    /// Convert an `Epoch` into a GPS date representation, encoded as GPS weeks
+    /// and GPS seconds-in-week since the GPS time system epoch of 0h January 6, 1980
+    /// The time system of this return format is implied to be GPS by default.
+    ///
+    /// # Returns
+    /// - `gps_week`: Whole GPS weeks elapsed since GPS Epoch
+    /// - `gps_seconds`: Seconds into week. 0 seconds represents Sunday at midnight (0h)
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS, &eop);
+    ///
+    /// let (gps_week, gps_seconds) = epc.gps_date();
+    /// ```
     pub fn gps_date(&self) -> (u32, f64) {
         let mjd = self.mjd_as_tsys(TimeSystem::GPS);
 
@@ -778,28 +1275,201 @@ impl<'a> Epoch<'a> {
         (gps_week as u32, gps_seconds*86400.0)
     }
 
+    /// Convert an `Epoch` into a the number of GPS seconds elapsed since the GPS
+    /// time system epoch of 0h January 6, 1980. The time system of this return
+    /// format is implied to be GPS by default.
+    ///
+    /// # Returns
+    /// - `gps_seconds`: Elapsed GPS seconds. 0 seconds represents GPS epoch of January 6, 1980 0h.
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS, &eop);
+    ///
+    /// let gps_seconds = epc.gps_seconds();
+    /// ```
     pub fn gps_seconds(&self) -> f64 {
         let (jd, fd) = self.get_jdfd(TimeSystem::GPS);
 
         (jd - MJD_ZERO - GPS_ZERO + fd) * 86400.0
     }
 
+    /// Convert an `Epoch` into a the number of GPS nanoseconds elapsed since the GPS
+    /// time system epoch of 0h January 6, 1980. The time system of this return
+    /// format is implied to be GPS by default.
+    ///
+    /// # Returns
+    /// - `gps_nanoseconds`: Elapsed GPS nanoseconds. 0 seconds represents GPS epoch of January 6, 1980 0h.
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS, &eop);
+    ///
+    /// let gps_nanoseconds = epc.gps_nanoseconds();
+    /// ```
     pub fn gps_nanoseconds(&self) -> f64 {
         self.gps_seconds() * 1.0e9
     }
 
-    pub fn iso_string(&self) -> String {
-        String::from("placeholder")
+    /// Convert an `Epoch` into an ISO8061 formatted time string with no
+    /// decimal precision. The time-scale is UTC per the ISO8061 specification.
+    ///
+    /// This method will return strings in the format `2022-04-01T01:02:03Z`.
+    ///
+    /// # Returns
+    /// - `time_string`: ISO8061 formatted time string
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 0.0, TimeSystem::UTC, &eop);
+    ///
+    /// // 2022-04-01T01:02:03Z
+    /// let time_string = epc.isostring();
+    /// ```
+    pub fn isostring(&self) -> String {
+        // Get UTC Date format
+        let (year, month, day, hour, minute, second, nanosecond) = self.to_datetime_as_tsys(TimeSystem::UTC);
+
+        let s = second + nanosecond/1.0e9;
+        String::from(format!("{year:4}-{month:02}-{day:02}T{hour:02}:{minute:02}:{s:02.0}Z"))
     }
 
+    /// Convert an `Epoch` into an ISO8061 formatted time string with specified
+    /// decimal precision. The time-scale is UTC per the ISO8061 specification.
+    ///
+    /// This method will return strings in the format `2022-04-01T01:02:03.456Z`.
+    ///
+    /// # Returns
+    /// - `time_string`: ISO8061 formatted time string with specified decimal precision
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 456000000.0, TimeSystem::UTC, &eop);
+    ///
+    /// // 2022-04-01T01:02:03Z
+    /// let time_string = epc.isostringd(3);
+    /// ```
+    pub fn isostringd(&self, decimals: usize) -> String {
+        // Get UTC Date format
+        let (year, month, day, hour, minute, second, nanosecond) = self.to_datetime_as_tsys(TimeSystem::UTC);
+
+        if decimals == 0 {
+            let s = second + nanosecond/1.0e9;
+            String::from(format!("{year:4}-{month:02}-{day:02}T{hour:02}:{minute:02}:{s:02.0}Z"))
+        } else {
+            let f = nanosecond/1.0e9 * 10.0_f64.powi(decimals as i32);
+            String::from(format!("{:4}-{:02}-{:02}T{:02}:{:02}:{:02}.{:.0}Z", year, month, day, hour, minute, second, f.trunc()))
+        }
+
+    }
+
+    /// Convert an `Epoch` into an format which also includes the time system of
+    /// the Epoch. This is a custom formatted value used for convenience in representing
+    /// times and can be helpful in understanding differences between time systems.
+    /// The format is `YYYY-MM-DD hh:mm:ss.sss TIME_SYSTEM`
+    ///
+    /// This method will return strings in the format `2022-04-01T01:02:03.456Z`.
+    ///
+    /// # Returns
+    /// - `time_string`: ISO8061 formatted time string with specified decimal precision
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 456000000.0, TimeSystem::UTC, &eop);
+    ///
+    /// // 2022-04-01 01:02:03.456 UTC
+    /// let time_string_utc = epc.to_string_as_tsys(TimeSystem::UTC);
+    ///
+    /// // Also represent same instant in GPS
+    /// let time_string_gps = epc.to_string_as_tsys(TimeSystem::GPS);
+    /// ```
     pub fn to_string_as_tsys(&self, time_system:TimeSystem) -> String {
-        String::from("placeholder")
+        let (y,m,d,hh,mm,ss,ns) = self.to_datetime_as_tsys(time_system);
+        String::from(format!("{:4}-{:02}-{:02} {:02}:{:02}:{:06.3} {}", y, m, d, hh, mm, ss + ns/1.0e9, time_system.to_string()))
     }
 
-    // pub fn to_string(&self) -> String {
-    //     String::from("placeholder")
-    // }
 
+    /// Computes the Greenwich Apparent Sidereal Time (GAST) as an angular value
+    /// for the instantaneous time of the `Epoch`. The Greenwich Apparent Sidereal
+    /// Time is the Greenwich Mean Sidereal Time (GMST) corrected for shift in
+    /// the position of the vernal equinox due to nutation.
+    ///
+    /// # Returns
+    /// - `gast`: Greenwich Apparent Sidereal Time. Units: (radians) or (degrees)
+    /// - `as_degrees`: Returns output in (degrees) if `true` or (radians) if `false`
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 456000000.0, TimeSystem::UTC, &eop);
+    ///
+    /// let gast = epc.gast(true);
+    /// ```
     pub fn gast(&self, as_degrees: bool) -> f64 {
         let (uta, utb) = self.get_jdfd(TimeSystem::UT1);
         let (tta, ttb) = self.get_jdfd(TimeSystem::TT);
@@ -817,6 +1487,30 @@ impl<'a> Epoch<'a> {
         }
     }
 
+    /// Computes the Greenwich Mean Sidereal Time (GMST) as an angular value
+    /// for the instantaneous time of the `Epoch`.
+    ///
+    /// # Returns
+    /// - `gast`: Greenwich Apparent Sidereal Time. Units: (radians) or (degrees)
+    /// - `as_degrees`: Returns output in (degrees) if `true` or (radians) if `false`
+    ///
+    /// # Example
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // April 1, 2022
+    /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 456000000.0, TimeSystem::UTC, &eop);
+    ///
+    /// let gmst = epc.gmst(true);
+    /// ```
     pub fn gmst(&self, as_degrees: bool) -> f64 {
         let (uta, utb) = self.get_jdfd(TimeSystem::UT1);
         let (tta, ttb) = self.get_jdfd(TimeSystem::TT);
@@ -1197,7 +1891,14 @@ impl<'a> Ord for Epoch<'a> {
 
 // EpochRange
 
-struct EpochRange<'a> {
+/// `EpochRange` is a custom iterator that enables direct iteration times between
+/// two `Epoch`s. The iteration can either be in the positive (forward) or negative
+/// (backward) direction.
+///
+/// The `EpochRange` iterator will return a new `Epoch` for each iteration it is
+/// called. The iteration is exclusive so the `epoch_end` will not be reached.
+/// The last value will be one whole or partial step from the iterator end.
+pub struct EpochRange<'a> {
     epoch_current: Epoch<'a>,
     epoch_end: Epoch<'a>,
     step: f64,
@@ -1205,8 +1906,43 @@ struct EpochRange<'a> {
 }
 
 impl<'a> EpochRange<'a> {
-    /// Constructor for OneToTen.
-    fn new(epoch_start:Epoch<'a>, epoch_end:Epoch<'a>, step:f64) -> Self {
+    /// Create an `Epoch` from a Julian date and time system. The time system is needed
+    /// to make the instant unambiguous.
+    ///
+    /// # Arguments
+    /// - `jd`: Julian date as a floating point number
+    /// - `eop` Earth orientation data loading structure.
+    ///
+    /// # Returns
+    /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
+    /// specified by the inputs
+    ///
+    /// # Examples
+    /// ```rust
+    /// use std::env;
+    /// use std::path::Path;
+    /// use rastro::eop::*;
+    /// use rastro::time::*;
+    ///
+    /// // Initialize Earth Orientation Parameter data
+    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
+    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    ///
+    /// // Epochs specifying start and end of iteration
+    /// let epcs = Epoch::from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::TAI, &eop);
+    /// let epcf = Epoch::from_datetime(2022, 1, 2, 0, 0, 0.0, 0.0, TimeSystem::TAI, &eop);
+    ///
+    /// // Vector to confirm equivalence of iterator to addition of time
+    /// let mut epc = Epoch::from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::TAI, &eop);
+    ///
+    /// // Use `EpochRange` iterator to generate Epochs over range
+    /// for e in EpochRange::new(epcs, epcf, 1.0) {
+    ///     assert_eq!(epc, e);
+    ///     epc += 1;
+    /// }
+    /// ```
+    pub fn new(epoch_start:Epoch<'a>, epoch_end:Epoch<'a>, step:f64) -> Self {
 
         Self {
             epoch_current: epoch_start.clone(),
@@ -1733,6 +2469,45 @@ mod tests {
 
         let epc = Epoch::from_datetime(1980, 1, 7, 0, 0, 1.0, 0.0,TimeSystem::GPS, &eop);
         assert_eq!(epc.gps_nanoseconds(), 86401.0*1.0e9);
+    }
+
+    #[test]
+    fn test_isostring() {
+        let eop = setup_eop();
+
+        // Confirm Before the leap second
+        let epc = Epoch::from_datetime(2016, 12, 31, 23, 59, 59.0, 0.0, TimeSystem::UTC, &eop);
+        assert_eq!(epc.isostring(), "2016-12-31T23:59:59Z");
+
+        // The leap second
+        let epc = Epoch::from_datetime(2016, 12, 31, 23, 59, 60.0, 0.0, TimeSystem::UTC, &eop);
+        assert_eq!(epc.isostring(), "2016-12-31T23:59:60Z");
+
+        // After the leap second
+        let epc = Epoch::from_datetime(2017, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::UTC, &eop);
+        assert_eq!(epc.isostring(), "2017-01-01T00:00:00Z");
+    }
+
+    #[test]
+    fn test_isostringd() {
+        let eop = setup_eop();
+
+        // Confirm Before the leap second
+        let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 1.23456, 0.0, TimeSystem::UTC, &eop);
+        assert_eq!(epc.isostringd(0), "2000-01-01T12:00:01Z");
+        assert_eq!(epc.isostringd(1), "2000-01-01T12:00:01.2Z");
+        assert_eq!(epc.isostringd(2), "2000-01-01T12:00:01.23Z");
+        assert_eq!(epc.isostringd(3), "2000-01-01T12:00:01.234Z");
+    }
+
+    #[test]
+    fn test_to_string_as_tsys() {
+        let eop = setup_eop();
+
+        // Confirm Before the leap second
+        let epc = Epoch::from_datetime(2020, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::UTC, &eop);
+        assert_eq!(epc.to_string_as_tsys(TimeSystem::UTC), "2020-01-01 00:00:00.000 UTC");
+        assert_eq!(epc.to_string_as_tsys(TimeSystem::GPS), "2020-01-01 00:00:18.000 GPS");
     }
 
     #[test]

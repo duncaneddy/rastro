@@ -28,7 +28,7 @@ pub const MJD_ZERO:f64 = 2400000.5;
 
 
 /// Modified Julian Date of January 1, 2000 12:00:00. Value is independent of time
-/// scale.
+/// system.
 ///
 /// # References:
 /// TODO: Fix Reference
