@@ -1,7 +1,5 @@
-use pyo3::{exceptions::PyRuntimeError, prelude::*, PyObjectProtocol};
+use pyo3::{exceptions::PyRuntimeError, prelude::*};
 use pyo3::wrap_pyfunction;
-
-use std::collections::HashMap;
 use rastro::eop as eop;
 
 /// Stores Rust instance of EarthOrientationData
@@ -24,14 +22,15 @@ use rastro::eop as eop;
 /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI.Units: (seconds)
 ///   day. Units: (seconds)
 #[pyclass]
-struct EarthOrientationData {
+#[derive(Clone,Debug)]
+pub struct EarthOrientationData {
     /// Stored object for underlying EOP
-    robj: eop::EarthOrientationData,
+    pub robj: eop::EarthOrientationData,
 }
 
-// Define python class attributes
-#[pyproto]
-impl PyObjectProtocol for EarthOrientationData {
+#[pymethods]
+impl EarthOrientationData {
+
     fn __repr__(&self) -> String {
         format!("EarthOrientationData<type: {}, {} entries, mjd_min: {}, mjd_max: {},  \
         mjd_last_lod: \
@@ -48,10 +47,7 @@ impl PyObjectProtocol for EarthOrientationData {
         interpolate: {}>", self.robj.eop_type, self.robj.data.len(), self.robj.mjd_min, self.robj.mjd_max,
                 self.robj.mjd_last_lod, self.robj.mjd_last_dxdy, self.robj.extrapolate, self.robj.interpolate)
     }
-}
 
-#[pymethods]
-impl EarthOrientationData {
     // Define attribute access methods
     /// `str`: Type of Earth orientation data loaded. Can be "C04", "StandardBulletinA", or "StandardBulletinB"
     #[getter]

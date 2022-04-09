@@ -22,7 +22,7 @@ license = "MIT"
 rastro = { path = "../rastro" } # Do NOT edit. Will be updated for release by CI pipeline
 
 [dependencies.pyo3]
-version = "0.15.1"
+version = "0.16.2"
 features = ["extension-module"]
 
 [lib]

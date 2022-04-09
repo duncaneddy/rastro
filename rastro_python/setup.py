@@ -29,6 +29,7 @@ if __name__ == "__main__":
             RustExtension("rastro.constants", debug=False),
             RustExtension("rastro.orbits", debug=False),
             RustExtension("rastro.eop", debug=False),
+            RustExtension("rastro.time", debug=False),
         ],
         entry_points={
             'console_scripts': [

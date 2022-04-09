@@ -66,7 +66,7 @@ fn align_dsns(days:u32, seconds:u32, nanoseconds:f64) -> (u32, u32, f64){
     (days, seconds, nanoseconds)
 }
 
-/// Convert a Gregorian calendar date representation to the equivalent Modified Julian Date
+/// Convert a Gregorian calendar date representation to the equivalent Julian Date
 /// representation of that same instant in time.
 ///
 /// Note: Due to the ambiguity of the nature of leap second insertion, this
@@ -86,13 +86,13 @@ fn align_dsns(days:u32, seconds:u32, nanoseconds:f64) -> (u32, u32, f64){
 ///
 /// # Examples
 /// ```rust
-/// use rastro::time::caldate_to_jd;
-/// let jd = caldate_to_jd(2000, 1, 1, 12, 0, 0.0, 0.0);
+/// use rastro::time::datetime_to_jd;
+/// let jd = datetime_to_jd(2000, 1, 1, 12, 0, 0.0, 0.0);
 ///
 /// assert!(jd == 2451545.0);
 /// ```
 #[allow(temporary_cstring_as_ptr)]
-pub fn caldate_to_jd(year:u32, month:u8, day:u8, hour:u8, minute:u8, second:f64,
+pub fn datetime_to_jd(year:u32, month:u8, day:u8, hour:u8, minute:u8, second:f64,
                      nanosecond:f64) -> f64 {
 
     let mut jd:f64 = 0.0;
@@ -128,15 +128,15 @@ pub fn caldate_to_jd(year:u32, month:u8, day:u8, hour:u8, minute:u8, second:f64,
 ///
 /// # Examples
 /// ```rust
-/// use rastro::time::caldate_to_mjd;
-/// let mjd = caldate_to_mjd(2000, 1, 1, 12, 0, 0.0, 0.0);
+/// use rastro::time::datetime_to_mjd;
+/// let mjd = datetime_to_mjd(2000, 1, 1, 12, 0, 0.0, 0.0);
 ///
 /// assert!(mjd == 51544.5);
 /// ```
 #[allow(temporary_cstring_as_ptr)]
-pub fn caldate_to_mjd(year:u32, month:u8, day:u8, hour:u8, minute:u8, second:f64,
+pub fn datetime_to_mjd(year:u32, month:u8, day:u8, hour:u8, minute:u8, second:f64,
                      nanosecond:f64) -> f64 {
-    caldate_to_jd(year, month, day, hour, minute, second, nanosecond) - MJD_ZERO
+    datetime_to_jd(year, month, day, hour, minute, second, nanosecond) - MJD_ZERO
 }
 
 /// Convert a Julian Date representation to the equivalent Gregorian calendar date representation
@@ -186,7 +186,7 @@ pub fn jd_to_datetime(jd: f64) -> (u32, u8, u8, u8, u8, f64, f64) {
     (iy as u32, im as u8, id as u8, ihmsf[0] as u8, ihmsf[1] as u8, ihmsf[2] as f64, ihmsf[3] as f64)
 }
 
-/// Convert a Julian Date representation to the equivalent Gregorian calendar date representation
+/// Convert a Modified Julian Date representation to the equivalent Gregorian calendar date representation
 /// of that same instant in time.
 ///
 /// Note: Due to the ambiguity of the nature of leap second insertion, this
@@ -299,8 +299,8 @@ fn tai_jdfd_to_utc_offset(jd:f64, fd:f64) -> f64 {
 /// Args:
 ///     jd (float): Part 1 of two-part date (Julian days)
 ///     fd (float): Part 2 of two-part date (Fractional days)
-///     time_system_src (str): Base time system
-///     time_system_dest (str): Destination time system
+///     time_system_src (TimeSystem): Base time system
+///     time_system_dest (TimeSystem): Destination time system
 ///
 /// Returns:
 ///     offset (float): Offset between soruce and destination time systems in seconds.
@@ -485,7 +485,6 @@ impl fmt::Display for TimeSystem {
 ///
 /// All arithmetic operations (addition, substracion) that the structure supports
 /// use seconds as the default value and return time differences in seconds.
-///
 #[derive(Copy, Clone)]
 pub struct Epoch<'a> {
     /// Time system used to instantiate the Epoch. The time system will be used to
@@ -1999,13 +1998,13 @@ mod tests {
 
 
     #[test]
-    fn test_caldate_to_jd() {
-        assert_eq!(caldate_to_jd(2000, 1, 1, 12, 0, 0.0, 0.0), 2451545.0);
+    fn test_datetime_to_jd() {
+        assert_eq!(datetime_to_jd(2000, 1, 1, 12, 0, 0.0, 0.0), 2451545.0);
     }
 
     #[test]
-    fn test_caldate_to_mjd() {
-        assert_eq!(caldate_to_mjd(2000, 1, 1, 12, 0, 0.0, 0.0), 51544.5);
+    fn test_datetime_to_mjd() {
+        assert_eq!(datetime_to_mjd(2000, 1, 1, 12, 0, 0.0, 0.0), 51544.5);
     }
 
     #[test]
@@ -2039,7 +2038,7 @@ mod tests {
         let eop = setup_eop();
 
         // Test date
-        let jd = caldate_to_jd(2018, 6, 1, 0, 0, 0.0, 0.0);
+        let jd = datetime_to_jd(2018, 6, 1, 0, 0, 0.0, 0.0);
 
         // UTC - TAI offset
         let dutc = -37.0;
