@@ -63,9 +63,17 @@ from rastro.eop import (
 )
 
 from rastro.time import (
+    TestClass,
     datetime_to_jd,
     datetime_to_mjd,
     mjd_to_datetime,
     jd_to_datetime,
     time_system_offset
+)
+
+from rastro.test import (
+    RClass,
+    count_class,
+    access_internal,
+    add_internal,
 )

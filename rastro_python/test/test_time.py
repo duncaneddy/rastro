@@ -4,7 +4,7 @@ import rastro
 @pytest.fixture
 def eop():
     return rastro.EarthOrientationData.from_default_c04("Hold", True)
-
+#
 def test_datetime_to_jd():
     assert rastro.datetime_to_jd(2000, 1, 1, 12, 0, 0.0, 0.0) == 2451545.0
 
@@ -18,6 +18,10 @@ def test_mjd_to_datetime():
     assert rastro.mjd_to_datetime(51544.5) == (2000, 1, 1, 12, 0, 0.0, 0.0)
 
 def test_time_system_offset(eop):
+
+    c = rastro.TestClass.CreateTestClass(45.0)
+    assert rastro.time_system_offset(0.0, 0.0, "GPS", "GPS", c) == 45.0
+
     # Test date
     jd = rastro.datetime_to_jd(2018, 6, 1, 0, 0, 0.0, 0.0)
 

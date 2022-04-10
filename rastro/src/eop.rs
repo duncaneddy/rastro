@@ -65,6 +65,11 @@ impl fmt::Display for EOPType {
     }
 }
 
+#[derive(Clone)]
+pub struct TestClass {
+    pub value: f64,
+}
+
 /// Stores Earth orientation parameter data.
 ///
 /// The structure assumes the input data uses the IAU 2010/2000A conventions. That is the
