@@ -17,6 +17,9 @@
 <a href="https://duncaneddy.github.io/rastro" target="_blank">
     <img src="https://img.shields.io/badge/docs-latest-blue.svg" alt="Docs">
 </a>
+<a href="https://github.com/duncaneddy/rastro/blob/main/LICENSE" target="_blank">
+    <img src="https://img.shields.io/badge/License-MIT-green.svg", alt="License">
+</a>
 </p>
 
 ----
