@@ -11,54 +11,11 @@ use pyo3::{wrap_pyfunction, exceptions::PyRuntimeError};
 use pyo3::prelude::*;
 use rastro::{constants, eop, time, orbits};
 
-// TODO: Remove test module when unneeded
-pub mod test;
-
 ////////////////
 //  Consants  //
 ////////////////
 
-#[pymodule]
-pub fn constants(_py: Python, module: &PyModule) -> PyResult<()> {
-    module.add("DEG2RAD", constants::DEG2RAD)?;
-    module.add("RAD2DEG", constants::RAD2DEG)?;
-    module.add("AS2RAD", constants::AS2RAD)?;
-    module.add("RAD2AS", constants::RAD2AS)?;
-    module.add("MJD_ZERO", constants::MJD_ZERO)?;
-    module.add("MJD2000", constants::MJD2000)?;
-    module.add("GPS_TAI", constants::GPS_TAI)?;
-    module.add("TAI_GPS", constants::TAI_GPS)?;
-    module.add("TT_TAI", constants::TT_TAI)?;
-    module.add("TAI_TT", constants::TAI_TT)?;
-    module.add("GPS_TT", constants::GPS_TT)?;
-    module.add("TT_GPS", constants::TT_GPS)?;
-    module.add("GPS_ZERO", constants::GPS_ZERO)?;
-    module.add("C_LIGHT", constants::C_LIGHT)?;
-    module.add("AU", constants::AU)?;
-    module.add("R_EARTH", constants::R_EARTH)?;
-    module.add("WGS84_A", constants::WGS84_A)?;
-    module.add("WGS84_F", constants::WGS84_F)?;
-    module.add("GM_EARTH", constants::GM_EARTH)?;
-    module.add("ECC_EARTH", constants::ECC_EARTH)?;
-    module.add("J2_EARTH", constants::J2_EARTH)?;
-    module.add("OMEGA_EARTH", constants::OMEGA_EARTH)?;
-    module.add("GM_SUN", constants::GM_SUN)?;
-    module.add("R_SUN", constants::R_SUN)?;
-    module.add("P_SUN", constants::P_SUN)?;
-    module.add("R_MOON", constants::R_MOON)?;
-    module.add("GM_MOON", constants::GM_MOON)?;
-    module.add("GM_MERCURY", constants::GM_MERCURY)?;
-    module.add("GM_VENUS", constants::GM_VENUS)?;
-    module.add("GM_MARS", constants::GM_MARS)?;
-    module.add("GM_JUPITER", constants::GM_JUPITER)?;
-    module.add("GM_SATURN", constants::GM_SATURN)?;
-    module.add("GM_URANUS", constants::GM_URANUS)?;
-    module.add("GM_NEPTUNE", constants::GM_NEPTUNE)?;
-    module.add("GM_PLUTO", constants::GM_PLUTO)?;
-
-    Ok(())
-}
-
+// Directly Added
 
 /////////////////////////
 //  Earth Orientation  //
@@ -621,19 +578,6 @@ fn mjd_to_datetime(mjd:f64) -> PyResult<(u32, u8, u8, u8, u8, f64, f64)> {
     Ok(time::mjd_to_datetime(mjd))
 }
 
-#[pyclass]
-struct TestClass {
-    obj: eop::TestClass
-}
-
-#[pymethods]
-impl TestClass {
-    #[staticmethod]
-    fn CreateTestClass(v:f64) -> PyResult<TestClass> {
-        Ok(TestClass{obj: eop::TestClass{value:v}})
-    }
-}
-
 /// Compute the offset between two time systems at a given Epoch.
 ///
 /// The offset (in seconds) is computed as:
@@ -655,7 +599,7 @@ impl TestClass {
 #[pyfunction]
 #[pyo3(text_signature = "(jd, fd, time_system_src, time_system_dest, eop)")]
 fn time_system_offset(jd:f64, fd:f64, time_system_src:&str, time_system_dest:&str,
-                      eop: &TestClass) -> PyResult<f64> {
+                      eop: &EarthOrientationData) -> PyResult<f64> {
 
     let ts_src = match str_to_time_system(time_system_src) {
         Ok(ts) => ts,
@@ -667,9 +611,7 @@ fn time_system_offset(jd:f64, fd:f64, time_system_src:&str, time_system_dest:&st
         Err(e) => return Err(e)
     };
 
-    Ok(eop.obj.value)
-    // Ok(0.0)
-    // Ok(time::time_system_offset(jd, fd, ts_src, ts_dst, &eop.obj))
+    Ok(time::time_system_offset(jd, fd, ts_src, ts_dst, &eop.obj))
 }
 
 /// `Epoch` representing a specific instant in time.
@@ -750,18 +692,6 @@ struct Epoch<'a> {
 //     // pub fn gast(&self, as_degrees: bool) -> f64 {}
 //     // pub fn gmst(&self, as_degrees: bool) -> f64 {}
 // }
-
-#[pymodule]
-pub fn time(_py: Python, module: &PyModule) -> PyResult<()> {
-    module.add_class::<TestClass>()?;
-    module.add_function(wrap_pyfunction!(datetime_to_jd, module)?)?;
-    module.add_function(wrap_pyfunction!(datetime_to_mjd, module)?)?;
-    module.add_function(wrap_pyfunction!(mjd_to_datetime, module)?)?;
-    module.add_function(wrap_pyfunction!(jd_to_datetime, module)?)?;
-    module.add_function(wrap_pyfunction!(time_system_offset, module)?)?;
-
-    Ok(())
-}
 
 //////////////
 //  Orbits  //
@@ -1063,8 +993,65 @@ fn anomaly_mean_to_true(anm_mean: f64, e: f64, as_degrees: bool) -> PyResult<f64
     }
 }
 
+////////////
+// Module //
+////////////
+
+// NOTE: All imports have to be defined as a single module otherwise PyO3 runs
+// into conversion errors when classes are passed between modules
+
 #[pymodule]
-pub fn orbits(_py: Python, module: &PyModule) -> PyResult<()> {
+pub fn module(_py: Python, module: &PyModule) -> PyResult<()> {
+    // Constants
+    module.add("DEG2RAD", constants::DEG2RAD)?;
+    module.add("RAD2DEG", constants::RAD2DEG)?;
+    module.add("AS2RAD", constants::AS2RAD)?;
+    module.add("RAD2AS", constants::RAD2AS)?;
+    module.add("MJD_ZERO", constants::MJD_ZERO)?;
+    module.add("MJD2000", constants::MJD2000)?;
+    module.add("GPS_TAI", constants::GPS_TAI)?;
+    module.add("TAI_GPS", constants::TAI_GPS)?;
+    module.add("TT_TAI", constants::TT_TAI)?;
+    module.add("TAI_TT", constants::TAI_TT)?;
+    module.add("GPS_TT", constants::GPS_TT)?;
+    module.add("TT_GPS", constants::TT_GPS)?;
+    module.add("GPS_ZERO", constants::GPS_ZERO)?;
+    module.add("C_LIGHT", constants::C_LIGHT)?;
+    module.add("AU", constants::AU)?;
+    module.add("R_EARTH", constants::R_EARTH)?;
+    module.add("WGS84_A", constants::WGS84_A)?;
+    module.add("WGS84_F", constants::WGS84_F)?;
+    module.add("GM_EARTH", constants::GM_EARTH)?;
+    module.add("ECC_EARTH", constants::ECC_EARTH)?;
+    module.add("J2_EARTH", constants::J2_EARTH)?;
+    module.add("OMEGA_EARTH", constants::OMEGA_EARTH)?;
+    module.add("GM_SUN", constants::GM_SUN)?;
+    module.add("R_SUN", constants::R_SUN)?;
+    module.add("P_SUN", constants::P_SUN)?;
+    module.add("R_MOON", constants::R_MOON)?;
+    module.add("GM_MOON", constants::GM_MOON)?;
+    module.add("GM_MERCURY", constants::GM_MERCURY)?;
+    module.add("GM_VENUS", constants::GM_VENUS)?;
+    module.add("GM_MARS", constants::GM_MARS)?;
+    module.add("GM_JUPITER", constants::GM_JUPITER)?;
+    module.add("GM_SATURN", constants::GM_SATURN)?;
+    module.add("GM_URANUS", constants::GM_URANUS)?;
+    module.add("GM_NEPTUNE", constants::GM_NEPTUNE)?;
+    module.add("GM_PLUTO", constants::GM_PLUTO)?;
+
+    // EOP
+    module.add_class::<EarthOrientationData>()?;
+    module.add_function(wrap_pyfunction!(download_c04_eop_file, module)?)?;
+    module.add_function(wrap_pyfunction!(download_standard_eop_file, module)?)?;
+
+    // Time
+    module.add_function(wrap_pyfunction!(datetime_to_jd, module)?)?;
+    module.add_function(wrap_pyfunction!(datetime_to_mjd, module)?)?;
+    module.add_function(wrap_pyfunction!(mjd_to_datetime, module)?)?;
+    module.add_function(wrap_pyfunction!(jd_to_datetime, module)?)?;
+    module.add_function(wrap_pyfunction!(time_system_offset, module)?)?;
+
+    // Orbits
     module.add_function(wrap_pyfunction!(orbital_period, module)?)?;
     module.add_function(wrap_pyfunction!(orbital_period_general, module)?)?;
     module.add_function(wrap_pyfunction!(mean_motion, module)?)?;

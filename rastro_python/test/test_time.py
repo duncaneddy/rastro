@@ -19,9 +19,6 @@ def test_mjd_to_datetime():
 
 def test_time_system_offset(eop):
 
-    c = rastro.TestClass.CreateTestClass(45.0)
-    assert rastro.time_system_offset(0.0, 0.0, "GPS", "GPS", c) == 45.0
-
     # Test date
     jd = rastro.datetime_to_jd(2018, 6, 1, 0, 0, 0.0, 0.0)
 
@@ -30,39 +27,39 @@ def test_time_system_offset(eop):
     dut1 = 0.0769859
 
     # GPS
-    # assert rastro.time_system_offset(jd, 0.0, "GPS", "GPS", eop) == 0.0
-    # assert rastro.time_system_offset(jd, 0.0, "GPS", "TT",  eop) == rastro.TT_GPS
-    # assert rastro.time_system_offset(jd, 0.0, "GPS", "UTC", eop) == dutc + rastro.TAI_GPS
-    # assert rastro.time_system_offset(jd, 0.0, "GPS", "UT1", eop) == pytest.approx(dutc + rastro.TAI_GPS + dut1, abs=1e-6)
-    # assert rastro.time_system_offset(jd, 0.0, "GPS", "TAI", eop) == rastro.TAI_GPS
-    #
-    # // TT
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TT, TimeSystem::GPS, &eop), GPS_TT);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TT, TimeSystem::TT,  &eop), 0.0);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TT, TimeSystem::UTC, &eop), dutc + TAI_TT);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TT, TimeSystem::UT1, &eop), dutc + TAI_TT + dut1, epsilon=1e-6);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TT, TimeSystem::TAI, &eop), TAI_TT);
-    #
-    # // UTC
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UTC, TimeSystem::GPS, &eop), -dutc + GPS_TAI);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UTC, TimeSystem::TT,  &eop), -dutc + TT_TAI);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UTC, TimeSystem::UTC, &eop), 0.0);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UTC, TimeSystem::UT1, &eop), dut1, epsilon=1e-6);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UTC, TimeSystem::TAI, &eop), -dutc);
-    #
-    # // UT1
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UT1, TimeSystem::GPS, &eop), -dutc + GPS_TAI - dut1, epsilon=1e-6);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UT1, TimeSystem::TT,  &eop), -dutc + TT_TAI - dut1, epsilon=1e-6);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UT1, TimeSystem::UTC, &eop), -dut1, epsilon=1e-6);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UT1, TimeSystem::UT1, &eop), 0.0, epsilon=1e-6);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::UT1, TimeSystem::TAI, &eop), -dutc - dut1, epsilon=1e-6);
-    #
-    # // TAI
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TAI, TimeSystem::GPS, &eop), GPS_TAI);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TAI, TimeSystem::TT,  &eop), TT_TAI);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TAI, TimeSystem::UTC, &eop), dutc);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TAI, TimeSystem::UT1, &eop), dutc + dut1, epsilon=1e-6);
-    # assert_abs_diff_eq!(time_system_offset(jd, 0.0, TimeSystem::TAI, TimeSystem::TAI, &eop), 0.0);
+    assert rastro.time_system_offset(jd, 0.0, "GPS", "GPS", eop) == 0.0
+    assert rastro.time_system_offset(jd, 0.0, "GPS", "TT",  eop) == rastro.TT_GPS
+    assert rastro.time_system_offset(jd, 0.0, "GPS", "UTC", eop) == dutc + rastro.TAI_GPS
+    assert rastro.time_system_offset(jd, 0.0, "GPS", "UT1", eop) == pytest.approx(dutc + rastro.TAI_GPS + dut1, abs=1e-6)
+    assert rastro.time_system_offset(jd, 0.0, "GPS", "TAI", eop) == rastro.TAI_GPS
+
+    # TT
+    assert rastro.time_system_offset(jd, 0.0, "TT", "GPS", eop) == rastro.GPS_TT
+    assert rastro.time_system_offset(jd, 0.0, "TT", "TT",  eop) == 0.0
+    assert rastro.time_system_offset(jd, 0.0, "TT", "UTC", eop) == dutc + rastro.TAI_TT
+    assert rastro.time_system_offset(jd, 0.0, "TT", "UT1", eop) == pytest.approx(dutc + rastro.TAI_TT + dut1, abs=1e-6)
+    assert rastro.time_system_offset(jd, 0.0, "TT", "TAI", eop) == rastro.TAI_TT
+
+    # UTC
+    assert rastro.time_system_offset(jd, 0.0, "UTC", "GPS", eop) == -dutc + rastro.GPS_TAI
+    assert rastro.time_system_offset(jd, 0.0, "UTC", "TT",  eop) == -dutc + rastro.TT_TAI
+    assert rastro.time_system_offset(jd, 0.0, "UTC", "UTC", eop) == 0.0
+    assert rastro.time_system_offset(jd, 0.0, "UTC", "UT1", eop) == pytest.approx(dut1, abs=1e-6)
+    assert rastro.time_system_offset(jd, 0.0, "UTC", "TAI", eop) == -dutc
+
+    # UT1
+    assert rastro.time_system_offset(jd, 0.0, "UT1", "GPS", eop) == pytest.approx(-dutc + rastro.GPS_TAI - dut1, abs=1e-6)
+    assert rastro.time_system_offset(jd, 0.0, "UT1", "TT",  eop) == pytest.approx(-dutc + rastro.TT_TAI - dut1, abs=1e-6)
+    assert rastro.time_system_offset(jd, 0.0, "UT1", "UTC", eop) == pytest.approx(-dut1, abs=1e-6)
+    assert rastro.time_system_offset(jd, 0.0, "UT1", "UT1", eop) == pytest.approx(0.0, abs=1e-6)
+    assert rastro.time_system_offset(jd, 0.0, "UT1", "TAI", eop) == pytest.approx(-dutc - dut1, abs=1e-6)
+
+    # TAI
+    assert rastro.time_system_offset(jd, 0.0, "TAI", "GPS", eop) == rastro.GPS_TAI
+    assert rastro.time_system_offset(jd, 0.0, "TAI", "TT",  eop) == rastro.TT_TAI
+    assert rastro.time_system_offset(jd, 0.0, "TAI", "UTC", eop) == dutc
+    assert rastro.time_system_offset(jd, 0.0, "TAI", "UT1", eop) == pytest.approx(dutc + dut1, abs=1e-6)
+    assert rastro.time_system_offset(jd, 0.0, "TAI", "TAI", eop) == 0.0
 
 # def test_epoch_string():
 #     pass

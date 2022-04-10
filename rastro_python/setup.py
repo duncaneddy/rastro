@@ -26,11 +26,7 @@ if __name__ == "__main__":
             "Programming Language :: Rust",
         ],
         rust_extensions=[
-            RustExtension("rastro.test", binding=Binding.PyO3, debug=False),
-            RustExtension("rastro.constants", binding=Binding.PyO3, debug=False),
-            RustExtension("rastro.orbits", binding=Binding.PyO3, debug=False),
-            RustExtension("rastro.eop", binding=Binding.PyO3, debug=False),
-            RustExtension("rastro.time", binding=Binding.PyO3, debug=False),
+            RustExtension("rastro.module", binding=Binding.PyO3, debug=False),
         ],
         entry_points={
             'console_scripts': [
