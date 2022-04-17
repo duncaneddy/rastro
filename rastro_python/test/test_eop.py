@@ -1,6 +1,6 @@
 import pytest
 import rastro
-from rastro.constants import AS2RAD
+from rastro import AS2RAD
 
 def test_from_c04_file(iau2000_c04_14_filepath):
     eop = rastro.EarthOrientationData.from_c04_file(iau2000_c04_14_filepath, "Zero", True)

@@ -41,7 +41,7 @@ use rastro::{constants, eop, time, orbits};
 /// - `lod`: Difference between astronomically determined length of day and 86400 second TAI.Units: (seconds)
 ///   day. Units: (seconds)
 #[pyclass]
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 pub struct EarthOrientationData {
     /// Stored object for underlying EOP
     pub obj: eop::EarthOrientationData,
@@ -462,7 +462,7 @@ pub fn eop(_py: Python, module: &PyModule) -> PyResult<()> {
 //////////
 
 /// Helper function to parse strings into appropriate time system enumerations
-fn str_to_time_system(s:&str) -> Result<time::TimeSystem, PyErr> {
+fn string_to_time_system(s:&str) -> Result<time::TimeSystem, PyErr> {
     match s.as_ref() {
         "GPS" => Ok(time::TimeSystem::GPS),
         "TAI" => Ok(time::TimeSystem::TAI),
@@ -601,12 +601,12 @@ fn mjd_to_datetime(mjd:f64) -> PyResult<(u32, u8, u8, u8, u8, f64, f64)> {
 fn time_system_offset(jd:f64, fd:f64, time_system_src:&str, time_system_dest:&str,
                       eop: &EarthOrientationData) -> PyResult<f64> {
 
-    let ts_src = match str_to_time_system(time_system_src) {
+    let ts_src = match string_to_time_system(time_system_src) {
         Ok(ts) => ts,
         Err(e) => return Err(e)
     };
 
-    let ts_dst = match str_to_time_system(time_system_dest) {
+    let ts_dst = match string_to_time_system(time_system_dest) {
         Ok(ts) => ts,
         Err(e) => return Err(e)
     };
@@ -638,59 +638,63 @@ fn time_system_offset(jd:f64, fd:f64, time_system_src:&str, time_system_dest:&st
 ///
 /// All arithmetic operations (addition, substracion) that the structure supports
 /// use seconds as the default value and return time differences in seconds.
-struct Epoch<'a> {
-    /// Stored object for underlying EOP
-    obj: time::Epoch<'a>,
-}
+// #[pyclass]
+// struct Epoch<'a> {
+//     /// Stored object for underlying EOP
+//     obj: time::Epoch<'a>,
+// }
 
 // #[pymethods]
-// impl Epoch {
-//     // Define attribute access methods
-//     /// `str`: Time system of Epoch. One of: "GPS", "TAI", "TT", "UTC", "UT1"
-//     #[getter]
-//     fn time_system(&self) -> String {
-//         match self.robj.eop_type {
-//             eop::EOPType::GPS => String::from("GPS"),
-//             eop::EOPType::TAI => String::from("TAI"),
-//             eop::EOPType::TT => String::from("TT"),
-//             eop::EOPType::UTC => String::from("UTC"),
-//             eop::EOPType::UT1 => String::from("UT1"),
-//         }
+// impl<'a> Epoch<'a> {
+//
+//     fn __repr__(&self) -> String {
+//         format!("{:?}", self.obj)
 //     }
 //
-//     // pub fn from_date(year:u32, month:u8, day:u8, time_system: TimeSystem, eop: &'a EarthOrientationData)
-//     // pub fn from_datetime(year:u32, month:u8, day:u8, hour:u8, minute:u8, second:f64,
-//     //                      nanosecond:f64, time_system: TimeSystem, eop: &'a EarthOrientationData) -> Self {}
-//     // pub fn from_string(datestr: &str, eop: &'a EarthOrientationData) -> Option<Self> {
-//     //
-//     // }
-//     // pub fn from_jd(jd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
-//     //
-//     // }
-//     // pub fn from_mjd(mjd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
-//     //
-//     // }
-//     // pub fn from_gps_date(week: u32, seconds: f64, eop: &'a EarthOrientationData) -> Self {
-//     //
-//     // }
-//     // pub fn from_gps_seconds(gps_seconds: f64, eop: &'a EarthOrientationData) -> Self {
-//     //
-//     // }
-//     // pub fn from_gps_nanoseconds(gps_nanoseconds: u64, eop: &'a EarthOrientationData) -> Self {
-//     // pub fn to_datetime_as_tsys(&self, time_system:TimeSystem) -> (u32, u8, u8, u8, u8, f64, f64) {}
-//     // pub fn to_datetime(&self) -> (u32, u8, u8, u8, u8, f64, f64) {}
-//     // pub fn jd_as_tsys(&self, time_system:TimeSystem) -> f64 {}
-//     // pub fn jd(&self) -> f64 {}
-//     // pub fn mjd_as_tsys(&self, time_system:TimeSystem) -> f64 {}
-//     // pub fn mjd(&self) -> f64 {}
-//     // pub fn gps_date(&self) -> (u32, f64) {}
-//     // pub fn gps_seconds(&self) -> f64 {}
-//     // pub fn gps_nanoseconds(&self) -> f64 {}
-//     // pub fn isostring(&self) -> String {}
-//     // pub fn isostringd(&self, decimals: usize) -> String {}
-//     // pub fn to_string_as_tsys(&self, time_system:TimeSystem) -> String {}
-//     // pub fn gast(&self, as_degrees: bool) -> f64 {}
-//     // pub fn gmst(&self, as_degrees: bool) -> f64 {}
+//     fn __str__(&self) -> String {
+//         self.obj.to_string()
+//     }
+
+    // // Define attribute access methods
+    // /// `str`: Time system of Epoch. One of: "GPS", "TAI", "TT", "UTC", "UT1"
+    // #[getter]
+    // fn time_system(&self) -> String {
+    //     time_system_to_string(self.obj.time_system)
+    // }
+
+    // pub fn from_date(year:u32, month:u8, day:u8, time_system: TimeSystem, eop: &'a EarthOrientationData)
+    // pub fn from_datetime(year:u32, month:u8, day:u8, hour:u8, minute:u8, second:f64,
+    //                      nanosecond:f64, time_system: TimeSystem, eop: &'a EarthOrientationData) -> Self {}
+    // pub fn from_string(datestr: &str, eop: &'a EarthOrientationData) -> Option<Self> {
+    //
+    // }
+    // pub fn from_jd(jd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
+    //
+    // }
+    // pub fn from_mjd(mjd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
+    //
+    // }
+    // pub fn from_gps_date(week: u32, seconds: f64, eop: &'a EarthOrientationData) -> Self {
+    //
+    // }
+    // pub fn from_gps_seconds(gps_seconds: f64, eop: &'a EarthOrientationData) -> Self {
+    //
+    // }
+    // pub fn from_gps_nanoseconds(gps_nanoseconds: u64, eop: &'a EarthOrientationData) -> Self {
+    // pub fn to_datetime_as_tsys(&self, time_system:TimeSystem) -> (u32, u8, u8, u8, u8, f64, f64) {}
+    // pub fn to_datetime(&self) -> (u32, u8, u8, u8, u8, f64, f64) {}
+    // pub fn jd_as_tsys(&self, time_system:TimeSystem) -> f64 {}
+    // pub fn jd(&self) -> f64 {}
+    // pub fn mjd_as_tsys(&self, time_system:TimeSystem) -> f64 {}
+    // pub fn mjd(&self) -> f64 {}
+    // pub fn gps_date(&self) -> (u32, f64) {}
+    // pub fn gps_seconds(&self) -> f64 {}
+    // pub fn gps_nanoseconds(&self) -> f64 {}
+    // pub fn isostring(&self) -> String {}
+    // pub fn isostringd(&self, decimals: usize) -> String {}
+    // pub fn to_string_as_tsys(&self, time_system:TimeSystem) -> String {}
+    // pub fn gast(&self, as_degrees: bool) -> f64 {}
+    // pub fn gmst(&self, as_degrees: bool) -> f64 {}
 // }
 
 //////////////
