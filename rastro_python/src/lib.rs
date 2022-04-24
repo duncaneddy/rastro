@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use pyo3::types::PyType;
 /// This is the wrapper for the rastro script.
 ///
 /// It is currently all in one file because of the PyO3 issues discussed in
@@ -691,64 +692,175 @@ fn time_system_offset(
 ///
 /// All arithmetic operations (addition, substracion) that the structure supports
 /// use seconds as the default value and return time differences in seconds.
-// #[pyclass]
-// struct Epoch<'a> {
-//     /// Stored object for underlying EOP
-//     obj: time::Epoch<'a>,
-// }
+#[pyclass]
+struct Epoch {
+    /// Stored object for underlying EOP
+    obj: time::Epoch,
+}
 
-// #[pymethods]
-// impl<'a> Epoch<'a> {
-//
-//     fn __repr__(&self) -> String {
-//         format!("{:?}", self.obj)
-//     }
-//
-//     fn __str__(&self) -> String {
-//         self.obj.to_string()
-//     }
+#[pymethods]
+impl Epoch {
+    fn __repr__(&self) -> String {
+        format!("{:?}", self.obj)
+    }
 
-// // Define attribute access methods
-// /// `str`: Time system of Epoch. One of: "GPS", "TAI", "TT", "UTC", "UT1"
-// #[getter]
-// fn time_system(&self) -> String {
-//     time_system_to_string(self.obj.time_system)
-// }
+    fn __str__(&self) -> String {
+        self.obj.to_string()
+    }
 
-// pub fn from_date(year:u32, month:u8, day:u8, time_system: TimeSystem, eop: &'a EarthOrientationData)
-// pub fn from_datetime(year:u32, month:u8, day:u8, hour:u8, minute:u8, second:f64,
-//                      nanosecond:f64, time_system: TimeSystem, eop: &'a EarthOrientationData) -> Self {}
-// pub fn from_string(datestr: &str, eop: &'a EarthOrientationData) -> Option<Self> {
-//
-// }
-// pub fn from_jd(jd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
-//
-// }
-// pub fn from_mjd(mjd: f64, time_system:TimeSystem, eop: &'a EarthOrientationData) -> Self {
-//
-// }
-// pub fn from_gps_date(week: u32, seconds: f64, eop: &'a EarthOrientationData) -> Self {
-//
-// }
-// pub fn from_gps_seconds(gps_seconds: f64, eop: &'a EarthOrientationData) -> Self {
-//
-// }
-// pub fn from_gps_nanoseconds(gps_nanoseconds: u64, eop: &'a EarthOrientationData) -> Self {
-// pub fn to_datetime_as_tsys(&self, time_system:TimeSystem) -> (u32, u8, u8, u8, u8, f64, f64) {}
-// pub fn to_datetime(&self) -> (u32, u8, u8, u8, u8, f64, f64) {}
-// pub fn jd_as_tsys(&self, time_system:TimeSystem) -> f64 {}
-// pub fn jd(&self) -> f64 {}
-// pub fn mjd_as_tsys(&self, time_system:TimeSystem) -> f64 {}
-// pub fn mjd(&self) -> f64 {}
-// pub fn gps_date(&self) -> (u32, f64) {}
-// pub fn gps_seconds(&self) -> f64 {}
-// pub fn gps_nanoseconds(&self) -> f64 {}
-// pub fn isostring(&self) -> String {}
-// pub fn isostringd(&self, decimals: usize) -> String {}
-// pub fn to_string_as_tsys(&self, time_system:TimeSystem) -> String {}
-// pub fn gast(&self, as_degrees: bool) -> f64 {}
-// pub fn gmst(&self, as_degrees: bool) -> f64 {}
-// }
+    // Define attribute access methods
+    /// `str`: Time system of Epoch. One of: "GPS", "TAI", "TT", "UTC", "UT1"
+    #[getter]
+    fn time_system(&self) -> String {
+        time_system_to_string(self.obj.time_system)
+    }
+
+    #[classmethod]
+    fn from_date(
+        cls: &PyType,
+        year: u32,
+        month: u8,
+        day: u8,
+        time_system: &str,
+    ) -> PyResult<Epoch> {
+        Ok(Epoch {
+            obj: time::Epoch::from_date(
+                year,
+                month,
+                day,
+                string_to_time_system(time_system).unwrap(),
+            ),
+        })
+    }
+
+    #[classmethod]
+    pub fn from_datetime(
+        cls: &PyType,
+        year: u32,
+        month: u8,
+        day: u8,
+        hour: u8,
+        minute: u8,
+        second: f64,
+        nanosecond: f64,
+        time_system: &str,
+    ) -> PyResult<Epoch> {
+        Ok(Epoch {
+            obj: time::Epoch::from_datetime(
+                year,
+                month,
+                day,
+                hour,
+                minute,
+                second,
+                nanosecond,
+                string_to_time_system(time_system).unwrap(),
+            ),
+        })
+    }
+
+    #[classmethod]
+    pub fn from_string(cls: &PyType, datestr: &str) -> PyResult<Epoch> {
+        Ok(Epoch {
+            obj: time::Epoch::from_string(datestr).unwrap(),
+        })
+    }
+
+    #[classmethod]
+    pub fn from_jd(cls: &PyType, jd: f64, time_system: &str) -> PyResult<Epoch> {
+        Ok(Epoch {
+            obj: time::Epoch::from_jd(jd, string_to_time_system(time_system).unwrap()),
+        })
+    }
+
+    #[classmethod]
+    pub fn from_mjd(cls: &PyType, mjd: f64, time_system: &str) -> PyResult<Epoch> {
+        Ok(Epoch {
+            obj: time::Epoch::from_mjd(mjd, string_to_time_system(time_system).unwrap()),
+        })
+    }
+
+    #[classmethod]
+    pub fn from_gps_date(cls: &PyType, week: u32, seconds: f64) -> PyResult<Epoch> {
+        Ok(Epoch {
+            obj: time::Epoch::from_gps_date(week, seconds),
+        })
+    }
+
+    #[classmethod]
+    pub fn from_gps_seconds(cls: &PyType, gps_seconds: f64) -> PyResult<Epoch> {
+        Ok(Epoch {
+            obj: time::Epoch::from_gps_seconds(gps_seconds),
+        })
+    }
+
+    #[classmethod]
+    pub fn from_gps_nanoseconds(cls: &PyType, gps_nanoseconds: u64) -> PyResult<Epoch> {
+        Ok(Epoch {
+            obj: time::Epoch::from_gps_nanoseconds(gps_nanoseconds),
+        })
+    }
+
+    pub fn to_datetime_as_tsys(&self, time_system: &str) -> (u32, u8, u8, u8, u8, f64, f64) {
+        self.obj
+            .to_datetime_as_tsys(string_to_time_system(time_system).unwrap())
+    }
+
+    pub fn to_datetime(&self) -> (u32, u8, u8, u8, u8, f64, f64) {
+        self.obj.to_datetime()
+    }
+
+    pub fn jd_as_tsys(&self, time_system: &str) -> f64 {
+        self.obj
+            .jd_as_tsys(string_to_time_system(time_system).unwrap())
+    }
+
+    pub fn jd(&self) -> f64 {
+        self.obj.jd()
+    }
+
+    pub fn mjd_as_tsys(&self, time_system: &str) -> f64 {
+        self.obj
+            .mjd_as_tsys(string_to_time_system(time_system).unwrap())
+    }
+
+    pub fn mjd(&self) -> f64 {
+        self.obj.mjd()
+    }
+
+    pub fn gps_date(&self) -> (u32, f64) {
+        self.obj.gps_date()
+    }
+
+    pub fn gps_seconds(&self) -> f64 {
+        self.obj.gps_seconds()
+    }
+
+    pub fn gps_nanoseconds(&self) -> f64 {
+        self.obj.gps_nanoseconds()
+    }
+
+    pub fn isostring(&self) -> String {
+        self.obj.isostring()
+    }
+
+    pub fn isostringd(&self, decimals: usize) -> String {
+        self.obj.isostringd(decimals)
+    }
+
+    pub fn to_string_as_tsys(&self, time_system: &str) -> String {
+        self.obj
+            .to_string_as_tsys(string_to_time_system(time_system).unwrap())
+    }
+
+    pub fn gast(&self, as_degrees: bool) -> f64 {
+        self.obj.gast(as_degrees)
+    }
+
+    pub fn gmst(&self, as_degrees: bool) -> f64 {
+        self.obj.gmst(as_degrees)
+    }
+}
 
 //////////////
 //  Orbits  //
@@ -1129,6 +1241,7 @@ pub fn module(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(mjd_to_datetime, module)?)?;
     module.add_function(wrap_pyfunction!(jd_to_datetime, module)?)?;
     module.add_function(wrap_pyfunction!(time_system_offset, module)?)?;
+    module.add_class::<Epoch>()?;
 
     // Orbits
     module.add_function(wrap_pyfunction!(orbital_period, module)?)?;

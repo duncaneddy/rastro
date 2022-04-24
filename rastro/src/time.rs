@@ -2252,13 +2252,13 @@ mod tests {
     fn test_epoch_from_date() {
         assert_global_test_eop();
 
-        let epc = Epoch::from_date(2020, 1, 1, TimeSystem::GPS);
+        let epc = Epoch::from_date(2020, 1, 2, TimeSystem::GPS);
 
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
 
         assert_eq!(year, 2020);
         assert_eq!(month, 1);
-        assert_eq!(day, 1);
+        assert_eq!(day, 2);
         assert_eq!(hour, 0);
         assert_eq!(minute, 0);
         assert_eq!(second, 0.0);
@@ -2270,17 +2270,17 @@ mod tests {
         assert_global_test_eop();
 
         // Test date initialization
-        let epc = Epoch::from_datetime(2020, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::TAI);
+        let epc = Epoch::from_datetime(2020, 1, 2, 3, 4, 5.0, 6.0, TimeSystem::TAI);
 
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
 
         assert_eq!(year, 2020);
         assert_eq!(month, 1);
-        assert_eq!(day, 1);
-        assert_eq!(hour, 0);
-        assert_eq!(minute, 0);
-        assert_eq!(second, 0.0);
-        assert_eq!(nanosecond, 0.0);
+        assert_eq!(day, 2);
+        assert_eq!(hour, 3);
+        assert_eq!(minute, 4);
+        assert_eq!(second, 5.0);
+        assert_eq!(nanosecond, 6.0);
 
         // Test initialization with seconds and nanoseconds
         let epc = Epoch::from_datetime(2020, 1, 1, 0, 0, 0.5, 1.2345, TimeSystem::TAI);

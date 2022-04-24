@@ -1,5 +1,6 @@
 import pathlib
 import pytest
+import rastro
 
 # Testing Paths
 PACKAGE_ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -15,3 +16,7 @@ def iau2000_c04_14_filepath():
 def iau2000_finals_ab_filepath():
     filepath = TEST_ASSETS / 'iau2000A_finals_ab.txt'
     yield str(filepath)
+
+@pytest.fixture
+def eop(iau2000_c04_14_filepath):
+    rastro.set_global_eop_from_c04_file(iau2000_c04_14_filepath, "Hold", True)
