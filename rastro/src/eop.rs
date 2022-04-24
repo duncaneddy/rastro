@@ -2077,7 +2077,7 @@ pub fn get_global_eop_extrapolate() -> EOPExtrapolation {
 /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Confirm initialization complete
-/// assert_eq!(eop.interpolate(), true);
+/// assert_eq!(get_global_eop_interpolate(), true);
 /// ```
 pub fn get_global_eop_interpolate() -> bool {
     GLOBAL_EOP.interpolate()
