@@ -359,14 +359,11 @@ fn tai_jdfd_to_utc_offset(jd: f64, fd: f64) -> f64 {
 /// Example:
 /// ```rust
 /// use rastro::constants::MJD_ZERO;
-/// use rastro::eop::{EarthOrientationData, EOPExtrapolation, EOPType};
+/// use rastro::eop::*;
 /// use rastro::time::{time_system_offset, TimeSystem};
 ///
-/// // Load Standard EOP
-/// let eop_extrapolation = EOPExtrapolation::Hold;
-/// let eop_interpolation = true;
-/// let eop_type = EOPType::StandardBulletinA;
-/// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+/// // Initialize EOP
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Get offset between GPS time and UT1 for 0h 2020-03-01
 /// let offset = time_system_offset(58909.0 + MJD_ZERO, 0.0, TimeSystem::GPS, TimeSystem::UT1);
@@ -399,8 +396,7 @@ pub fn time_system_offset(
             offset += utc_jdfd_to_utc_offset(jd, fd);
         }
         TimeSystem::UT1 => {
-            let dut1 = eop::get_ut1_utc((jd - MJD_ZERO) + fd)
-                .expect("No Earth orientation data initialized");
+            let dut1 = eop::get_global_ut1_utc((jd - MJD_ZERO) + fd).unwrap();
 
             // UTC -> TAI offset
             offset += utc_jdfd_to_utc_offset(jd, fd - dut1);
@@ -427,8 +423,7 @@ pub fn time_system_offset(
             offset -= tai_jdfd_to_utc_offset(jd, fd + offset / 86400.0);
 
             // Add UTC -> UT1 correction to offset
-            offset += eop::get_ut1_utc(jd + fd + offset / 86400.0 - MJD_ZERO)
-                .expect("No Earth orientation data initialized");
+            offset += eop::get_global_ut1_utc(jd + fd + offset / 86400.0 - MJD_ZERO).unwrap();
         }
     }
 
@@ -615,7 +610,6 @@ impl Epoch {
     /// - `month` Gregorian calendar month
     /// - `day`: Gregorian calendar day
     /// - `time_system`: Time system the input time specification is given in
-    /// - `eop` Earth orientation data loading structure.
     ///
     /// # Returns
     /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
@@ -623,15 +617,11 @@ impl Epoch {
     ///
     /// # Examples
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_date(2022, 4, 1, TimeSystem::GPS);
@@ -651,7 +641,6 @@ impl Epoch {
     /// - `second`: Second of day
     /// - `nanosecond`: Nanosecond into day
     /// - `time_system`: Time system the input time specification is given in
-    /// - `eop` Earth orientation data loading structure.
     ///
     /// # Returns
     /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
@@ -659,15 +648,11 @@ impl Epoch {
     ///
     /// # Examples
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.4, 5.6, TimeSystem::GPS);
@@ -753,7 +738,6 @@ impl Epoch {
     ///
     /// # Arguments
     /// - `string`: String encoding instant in time
-    /// - `eop` Earth orientation data loading structure.
     ///
     /// # Returns
     /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
@@ -761,15 +745,11 @@ impl Epoch {
     ///
     /// # Examples
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_string("2022-04-01 01:02:03.456 GPS");
@@ -875,7 +855,6 @@ impl Epoch {
     ///
     /// # Arguments
     /// - `jd`: Julian date as a floating point number
-    /// - `eop` Earth orientation data loading structure.
     ///
     /// # Returns
     /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
@@ -883,15 +862,11 @@ impl Epoch {
     ///
     /// # Examples
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// let epc = Epoch::from_jd(2451545.0, TimeSystem::TT);
     /// ```
@@ -921,7 +896,6 @@ impl Epoch {
     ///
     /// # Arguments
     /// - `mjd`: Modified Julian date as a floating point number
-    /// - `eop` Earth orientation data loading structure.
     ///
     /// # Returns
     /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
@@ -929,15 +903,11 @@ impl Epoch {
     ///
     /// # Examples
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// let epc = Epoch::from_mjd(51545.5, TimeSystem::TT);
     /// ```
@@ -954,7 +924,6 @@ impl Epoch {
     /// # Arguments
     /// - `week`: Modified Julian date as a floating point number
     /// - `seconds`: Modified Julian date as a floating point number
-    /// - `eop` Earth orientation data loading structure.
     ///
     /// # Returns
     /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
@@ -962,15 +931,11 @@ impl Epoch {
     ///
     /// # Examples
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_gps_date(2203, 86400.0*5.0);
@@ -1005,7 +970,6 @@ impl Epoch {
     ///
     /// # Arguments
     /// - `seconds`: Modified Julian date as a floating point number
-    /// - `eop` Earth orientation data loading structure.
     ///
     /// # Returns
     /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
@@ -1013,15 +977,11 @@ impl Epoch {
     ///
     /// # Examples
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_gps_seconds(2203.0*7.0*86400.0 + 86400.0*5.0);
@@ -1056,7 +1016,6 @@ impl Epoch {
     ///
     /// # Arguments
     /// - `seconds`: Modified Julian date as a floating point number
-    /// - `eop` Earth orientation data loading structure.
     ///
     /// # Returns
     /// `Epoch`: Returns an `Epoch` struct that represents the instant in time
@@ -1064,15 +1023,11 @@ impl Epoch {
     ///
     /// # Examples
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // January 6, 1980
     /// let epc = Epoch::from_gps_nanoseconds(0);
@@ -1156,15 +1111,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 5.0, TimeSystem::GPS);
@@ -1226,15 +1177,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 5.0, TimeSystem::GPS);
@@ -1257,15 +1204,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS);
@@ -1287,15 +1230,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS);
@@ -1317,15 +1256,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS);
@@ -1347,15 +1282,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS);
@@ -1376,15 +1307,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS);
@@ -1409,15 +1336,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS);
@@ -1439,15 +1362,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 0, 0, 0.0, 0.0, TimeSystem::GPS);
@@ -1468,15 +1387,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 0.0, TimeSystem::UTC);
@@ -1505,15 +1420,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 456000000.0, TimeSystem::UTC);
@@ -1558,15 +1469,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 456000000.0, TimeSystem::UTC);
@@ -1602,15 +1509,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 456000000.0, TimeSystem::UTC);
@@ -1643,15 +1546,11 @@ impl Epoch {
     ///
     /// # Example
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // April 1, 2022
     /// let epc = Epoch::from_datetime(2022, 4, 1, 1, 2, 3.0, 456000000.0, TimeSystem::UTC);
@@ -2076,15 +1975,11 @@ impl EpochRange {
     ///
     /// # Examples
     /// ```rust
-    /// use std::env;
-    /// use std::path::Path;
     /// use rastro::eop::*;
     /// use rastro::time::*;
     ///
-    /// // Initialize Earth Orientation Parameter data
-    /// let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    /// let filepath = Path::new(&manifest_dir).join("test_assets").join("iau2000A_c04_14.txt");    ///
-    /// let eop = EarthOrientationData::from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true).unwrap();
+    /// // Quick EOP initialization
+    /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
     ///
     /// // Epochs specifying start and end of iteration
     /// let epcs = Epoch::from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::TAI);
@@ -2135,10 +2030,31 @@ impl Iterator for EpochRange {
 
 #[cfg(test)]
 mod tests {
+    use std::env;
+    use std::path::Path;
+
     use approx::assert_abs_diff_eq;
 
     use crate::constants::*;
+    use crate::eop::*;
     use crate::time::*;
+
+    fn assert_global_test_eop() {
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir)
+            .join("test_assets")
+            .join("iau2000A_c04_14.txt");
+
+        let eop_extrapolation = EOPExtrapolation::Hold;
+        let eop_interpolation = true;
+
+        set_global_eop_from_c04_file(
+            filepath.to_str().unwrap(),
+            eop_extrapolation,
+            eop_interpolation,
+        )
+        .unwrap();
+    }
 
     #[test]
     fn test_datetime_to_jd() {
@@ -2152,6 +2068,8 @@ mod tests {
 
     #[test]
     fn test_jd_to_datetime() {
+        assert_global_test_eop();
+
         let (year, month, day, hour, minute, second, nanosecond) = jd_to_datetime(2451545.0);
 
         assert_eq!(year, 2000);
@@ -2165,6 +2083,8 @@ mod tests {
 
     #[test]
     fn test_mjd_to_datetime() {
+        assert_global_test_eop();
+
         let (year, month, day, hour, minute, second, nanosecond) = mjd_to_datetime(51544.5);
 
         assert_eq!(year, 2000);
@@ -2178,6 +2098,8 @@ mod tests {
 
     #[test]
     fn test_time_system_offset() {
+        assert_global_test_eop();
+
         // Test date
         let jd = datetime_to_jd(2018, 6, 1, 0, 0, 0.0, 0.0);
 
@@ -2307,6 +2229,8 @@ mod tests {
 
     #[test]
     fn test_epoch_display() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_datetime(2020, 2, 3, 4, 5, 6.0, 0.0, TimeSystem::GPS);
 
         assert_eq!(epc.to_string(), "2020-02-03 04:05:06.000 GPS")
@@ -2314,6 +2238,8 @@ mod tests {
 
     #[test]
     fn test_epoch_debug() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_datetime(2020, 2, 3, 4, 5, 6.0, 0.0, TimeSystem::GPS);
 
         assert_eq!(
@@ -2324,6 +2250,8 @@ mod tests {
 
     #[test]
     fn test_epoch_from_date() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_date(2020, 1, 1, TimeSystem::GPS);
 
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
@@ -2339,6 +2267,8 @@ mod tests {
 
     #[test]
     fn test_epoch_from_datetime() {
+        assert_global_test_eop();
+
         // Test date initialization
         let epc = Epoch::from_datetime(2020, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::TAI);
 
@@ -2368,6 +2298,8 @@ mod tests {
 
     #[test]
     fn test_epoch_from_string() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_string("2018-12-20").unwrap();
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
         assert_eq!(year, 2018);
@@ -2481,6 +2413,8 @@ mod tests {
 
     #[test]
     fn test_epoch_from_jd() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_jd(MJD_ZERO + MJD2000, TimeSystem::TAI);
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
         assert_eq!(year, 2000);
@@ -2507,6 +2441,8 @@ mod tests {
 
     #[test]
     fn test_epoch_from_mjd() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_mjd(MJD2000, TimeSystem::TAI);
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
         assert_eq!(year, 2000);
@@ -2533,6 +2469,8 @@ mod tests {
 
     #[test]
     fn test_epoch_from_gps_date() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_gps_date(0, 0.0);
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
         assert_eq!(year, 1980);
@@ -2558,6 +2496,8 @@ mod tests {
 
     #[test]
     fn test_epoch_from_gps_seconds() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_gps_seconds(0.0);
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
         assert_eq!(year, 1980);
@@ -2583,6 +2523,8 @@ mod tests {
 
     #[test]
     fn test_epoch_from_gps_nanoseconds() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_gps_nanoseconds(0);
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
         assert_eq!(year, 1980);
@@ -2609,6 +2551,8 @@ mod tests {
 
     #[test]
     fn test_epoch_to_jd() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 0.0, 0.0, TimeSystem::TAI);
 
         assert_eq!(epc.jd(), MJD_ZERO + MJD2000);
@@ -2622,6 +2566,8 @@ mod tests {
 
     #[test]
     fn test_epoch_to_mjd() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 0.0, 0.0, TimeSystem::TAI);
 
         assert_eq!(epc.mjd(), MJD2000);
@@ -2632,6 +2578,8 @@ mod tests {
 
     #[test]
     fn test_gps_date() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_date(2018, 3, 1, TimeSystem::GPS);
         let (gps_week, gps_seconds) = epc.gps_date();
         assert_eq!(gps_week, 1990);
@@ -2655,6 +2603,8 @@ mod tests {
 
     #[test]
     fn test_gps_seconds() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_date(1980, 1, 6, TimeSystem::GPS);
         assert_eq!(epc.gps_seconds(), 0.0);
 
@@ -2664,6 +2614,8 @@ mod tests {
 
     #[test]
     fn test_gps_nanoseconds() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_date(1980, 1, 6, TimeSystem::GPS);
         assert_eq!(epc.gps_nanoseconds(), 0.0);
 
@@ -2673,6 +2625,8 @@ mod tests {
 
     #[test]
     fn test_isostring() {
+        assert_global_test_eop();
+
         // Confirm Before the leap second
         let epc = Epoch::from_datetime(2016, 12, 31, 23, 59, 59.0, 0.0, TimeSystem::UTC);
         assert_eq!(epc.isostring(), "2016-12-31T23:59:59Z");
@@ -2688,6 +2642,8 @@ mod tests {
 
     #[test]
     fn test_isostringd() {
+        assert_global_test_eop();
+
         // Confirm Before the leap second
         let epc = Epoch::from_datetime(2000, 1, 1, 12, 0, 1.23456, 0.0, TimeSystem::UTC);
         assert_eq!(epc.isostringd(0), "2000-01-01T12:00:01Z");
@@ -2698,6 +2654,8 @@ mod tests {
 
     #[test]
     fn test_to_string_as_tsys() {
+        assert_global_test_eop();
+
         // Confirm Before the leap second
         let epc = Epoch::from_datetime(2020, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::UTC);
         assert_eq!(
@@ -2712,6 +2670,8 @@ mod tests {
 
     #[test]
     fn test_gmst() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_date(2000, 1, 1, TimeSystem::UTC);
         assert_abs_diff_eq!(epc.gmst(true), 99.969, epsilon = 1.0e-3);
 
@@ -2721,6 +2681,8 @@ mod tests {
 
     #[test]
     fn test_gast() {
+        assert_global_test_eop();
+
         let epc = Epoch::from_date(2000, 1, 1, TimeSystem::UTC);
         assert_abs_diff_eq!(epc.gast(true), 99.965, epsilon = 1.0e-3);
 
@@ -2730,6 +2692,8 @@ mod tests {
 
     #[test]
     fn test_ops_add_assign() {
+        assert_global_test_eop();
+
         // Test Positive additions of different size
         let mut epc = Epoch::from_date(2022, 1, 31, TimeSystem::TAI);
         epc += 1.0;
@@ -2820,6 +2784,8 @@ mod tests {
 
     #[test]
     fn test_ops_sub_assign() {
+        assert_global_test_eop();
+
         let mut epc = Epoch::from_date(2022, 1, 31, TimeSystem::TAI);
         epc -= 1.23456789e-9;
         let (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime();
@@ -2873,6 +2839,8 @@ mod tests {
 
     #[test]
     fn test_ops_add() {
+        assert_global_test_eop();
+
         // Base epoch
         let epc = Epoch::from_date(2022, 1, 31, TimeSystem::TAI);
 
@@ -2959,6 +2927,8 @@ mod tests {
 
     #[test]
     fn test_ops_sub() {
+        assert_global_test_eop();
+
         // Base epoch
         let epc = Epoch::from_date(2022, 1, 31, TimeSystem::TAI);
 
@@ -3000,6 +2970,8 @@ mod tests {
 
     #[test]
     fn test_ops_sub_epoch() {
+        assert_global_test_eop();
+
         let epc_1 = Epoch::from_date(2022, 1, 31, TimeSystem::TAI);
         let epc_2 = Epoch::from_date(2022, 2, 1, TimeSystem::TAI);
         assert_eq!(epc_2 - epc_1, 86400.0);
@@ -3025,6 +2997,8 @@ mod tests {
 
     #[test]
     fn test_eq_epoch() {
+        assert_global_test_eop();
+
         let epc_1 = Epoch::from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23456789, TimeSystem::TAI);
         let epc_2 = Epoch::from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23456789, TimeSystem::TAI);
         assert_eq!(epc_1 == epc_2, true);
@@ -3041,6 +3015,8 @@ mod tests {
 
     #[test]
     fn test_cmp_epoch() {
+        assert_global_test_eop();
+
         let epc_1 = Epoch::from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23456, TimeSystem::TAI);
         let epc_2 = Epoch::from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23455, TimeSystem::TAI);
         assert_eq!(epc_1 > epc_2, true);
@@ -3077,6 +3053,8 @@ mod tests {
 
     #[test]
     fn test_addition_stability() {
+        assert_global_test_eop();
+
         let mut epc = Epoch::from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::TAI);
 
         // Advance a year 1 second at a time
@@ -3096,6 +3074,8 @@ mod tests {
 
     #[test]
     fn test_epoch_range() {
+        assert_global_test_eop();
+
         let mut epcv: Vec<Epoch> = Vec::new();
         let epcs = Epoch::from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, TimeSystem::TAI);
         let epcf = Epoch::from_datetime(2022, 1, 2, 0, 0, 0.0, 0.0, TimeSystem::TAI);

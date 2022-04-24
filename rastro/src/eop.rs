@@ -8,17 +8,11 @@ use std::str::FromStr;
 use crate::constants::AS2RAD;
 use std::fs;
 use std::io::Write;
-// use std::lazy::Lazy;
 use std::path::Path;
 use std::sync::{Arc, RwLock};
 use ureq;
 
 use once_cell::sync::Lazy;
-
-// Placeholder delete
-pub fn get_ut1_utc(mjd: f64) -> Result<f64, String> {
-    Ok(0.0)
-}
 
 // Package EOP data as part of crate
 /// Packaged C04 EOP Data File
@@ -516,11 +510,11 @@ impl GlobalEarthOrientationData {
     /// // Set type of EOP data to load
     /// let eop_type = EOPType::StandardBulletinA;
     ///
-    /// // Load standard Earth orientation file. Typically a "Finals2000" file
+    /// // Create default Earth orientation variable
     /// let eop = GlobalEarthOrientationData::new();
     ///
     /// // Initialize EOP variable from file
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);
     /// ```
     pub fn from_default_standard(
         &self,
@@ -544,11 +538,8 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Setup EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
     /// let eop = GlobalEarthOrientationData::new();
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
     /// assert_eq!(eop.initialized(), true);
@@ -567,11 +558,8 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Setup EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
     /// let eop = GlobalEarthOrientationData::new();
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
     /// assert!(eop.len() >= 10000);
@@ -590,11 +578,8 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Setup EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
     /// let eop = GlobalEarthOrientationData::new();
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
     /// assert_eq!(eop.eop_type(), EOPType::StandardBulletinA);
@@ -613,11 +598,8 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Setup EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
     /// let eop = GlobalEarthOrientationData::new();
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
     /// assert_eq!(eop.extrapolate(), EOPExtrapolation::Hold);
@@ -636,11 +618,8 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Setup EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
     /// let eop = GlobalEarthOrientationData::new();
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
     /// assert_eq!(eop.interpolate(), true);
@@ -659,15 +638,12 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Setup EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
     /// let eop = GlobalEarthOrientationData::new();
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
-    /// assert_eq!(eop.mjd_min() >= 0);
-    /// assert_eq!(eop.mjd_min() < 99999);
+    /// assert!(eop.mjd_min() >= 0);
+    /// assert!(eop.mjd_min() < 99999);
     /// ```
     pub fn mjd_min(&self) -> u32 {
         return self.0.read().unwrap().mjd_min;
@@ -683,15 +659,12 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Setup EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
     /// let eop = GlobalEarthOrientationData::new();
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
-    /// assert_eq!(eop.mjd_max() >= 0);
-    /// assert_eq!(eop.mjd_max() < 99999);
+    /// assert!(eop.mjd_max() >= 0);
+    /// assert!(eop.mjd_max() < 99999);
     /// ```
     pub fn mjd_max(&self) -> u32 {
         return self.0.read().unwrap().mjd_max;
@@ -707,15 +680,12 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Setup EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
     /// let eop = GlobalEarthOrientationData::new();
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
-    /// assert_eq!(eop.mjd_last_lod() >= 0);
-    /// assert_eq!(eop.mjd_last_lod() < 99999);
+    /// assert!(eop.mjd_last_lod() >= 0);
+    /// assert!(eop.mjd_last_lod() < 99999);
     /// ```
     pub fn mjd_last_lod(&self) -> u32 {
         return self.0.read().unwrap().mjd_last_lod;
@@ -731,15 +701,12 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Setup EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
     /// let eop = GlobalEarthOrientationData::new();
-    /// eop.from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
-    /// assert_eq!(eop.mjd_last_dxdy() >= 0);
-    /// assert_eq!(eop.mjd_last_dxdy() < 99999);
+    /// assert!(eop.mjd_last_dxdy() >= 0);
+    /// assert!(eop.mjd_last_dxdy() < 99999);
     /// ```
     pub fn mjd_last_dxdy(&self) -> u32 {
         return self.0.read().unwrap().mjd_last_dxdy;
@@ -772,13 +739,11 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
-    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// let eop = GlobalEarthOrientationData::new();
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);
     ///
     /// // Get EOP for 36 hours before the end of the table
-    /// let ut1_utc = eop.get_ut1_utc(eop.mjd_max as f64 - 1.5);
+    /// let ut1_utc = eop.get_ut1_utc(eop.mjd_max() as f64 - 1.5);
     /// ```
     pub fn get_ut1_utc(&self, mjd: f64) -> Result<f64, String> {
         // Acquire read lock for EarthOrientation Data
@@ -850,13 +815,11 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
-    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// let eop = GlobalEarthOrientationData::new();
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);
     ///
     /// // Get EOP for 36 hours before the end of the table
-    /// let (pm_x, pm_y) = eop.get_pm(eop.mjd_max as f64 - 1.5);
+    /// let (pm_x, pm_y) = eop.get_pm(eop.mjd_max() as f64 - 1.5).unwrap();
     /// ```
     pub fn get_pm(&self, mjd: f64) -> Result<(f64, f64), String> {
         // Acquire read lock for EarthOrientation Data
@@ -938,13 +901,11 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
-    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// let eop = GlobalEarthOrientationData::new();
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);
     ///
     /// // Get EOP for 36 hours before the end of the table
-    /// let (dx, dy) = eop.get_dxdy(eop.mjd_last_dxdy as f64 - 1.5);
+    /// let (dx, dy) = eop.get_dxdy(eop.mjd_last_dxdy() as f64 - 1.5).unwrap();
     /// ```
     pub fn get_dxdy(&self, mjd: f64) -> Result<(f64, f64), String> {
         // Acquire read lock for EarthOrientation Data
@@ -1028,13 +989,11 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
-    /// let eop = EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// let eop = GlobalEarthOrientationData::new();
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);
     ///
     /// // Get EOP for 36 hours before the end of the table
-    /// let lod = eop.get_lod(eop.mjd_last_lod as f64 - 1.5);
+    /// let lod = eop.get_lod(eop.mjd_last_lod() as f64 - 1.5).unwrap();
     /// ```
     pub fn get_lod(&self, mjd: f64) -> Result<f64, String> {
         // Acquire read lock for EarthOrientation Data
@@ -1114,13 +1073,11 @@ impl GlobalEarthOrientationData {
     /// use rastro::eop::*;
     ///
     /// // Load Standard EOP
-    /// let eop_extrapolation = EOPExtrapolation::Hold;
-    /// let eop_interpolation = true;
-    /// let eop_type = EOPType::StandardBulletinA;
-    /// let EarthOrientationData::from_default_standard(eop_extrapolation, eop_interpolation, eop_type);
+    /// let eop = GlobalEarthOrientationData::new();
+    /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Get EOP for 36 hours before the end of the table
-    /// let eop_params = eop.get_eop(eop.mjd_max as f64 - 1.5);
+    /// let eop_params = eop.get_eop(eop.mjd_max() as f64 - 1.5).unwrap();
     /// ```
     #[allow(non_snake_case)]
     pub fn get_eop(&self, mjd: f64) -> Result<(f64, f64, f64, f64, f64, f64), String> {
@@ -1623,7 +1580,7 @@ pub fn download_standard_eop_file(filepath: &str) -> Result<(), &str> {
 /// // Initialize the RAstro
 /// set_global_eop_from_zero();
 ///
-/// assert_eq!(GLOBAL_EOP.initialized(), true);
+/// assert_eq!(get_global_eop_initialization(), true);
 /// ```
 pub fn set_global_eop_from_zero() {
     GLOBAL_EOP.from_zero()
@@ -1658,7 +1615,7 @@ pub fn set_global_eop_from_zero() {
 /// // Initialize the RAstro
 /// set_global_eop_from_static_values(0.001, 0.002, 0.003, 0.004, 0.005, 0.006);
 ///
-/// assert_eq!(GLOBAL_EOP.initialized(), true);
+/// assert_eq!(get_global_eop_initialization(), true);
 /// ```
 #[allow(non_snake_case)]
 pub fn set_global_eop_from_static_values(
@@ -1706,7 +1663,7 @@ pub fn set_global_eop_from_static_values(
 /// // Initialize the RAstro
 /// set_global_eop_from_c04_file(filepath.to_str().unwrap(), eop_extrapolation, eop_interpolation).unwrap();
 ///
-/// assert_eq!(GLOBAL_EOP.initialized(), true);
+/// assert_eq!(get_global_eop_initialization(), true);
 /// ```
 pub fn set_global_eop_from_c04_file(
     filepath: &str,
@@ -1743,7 +1700,7 @@ pub fn set_global_eop_from_c04_file(
 /// // Initialize the RAstro
 /// set_global_eop_from_default_c04(eop_extrapolation, eop_interpolation).unwrap();
 ///
-/// assert_eq!(GLOBAL_EOP.initialized(), true);
+/// assert_eq!(get_global_eop_initialization(), true);
 /// ```
 pub fn set_global_eop_from_default_c04(
     extrapolate: EOPExtrapolation,
@@ -1788,7 +1745,7 @@ pub fn set_global_eop_from_default_c04(
 /// // Initialize the RAstro
 /// set_global_eop_from_standard_file(filepath.to_str().unwrap(), eop_extrapolation, eop_interpolation, eop_type).unwrap();
 ///
-/// assert_eq!(GLOBAL_EOP.initialized(), true);
+/// assert_eq!(get_global_eop_initialization(), true);
 /// ```
 pub fn set_global_eop_from_standard_file(
     filepath: &str,
@@ -1830,7 +1787,7 @@ pub fn set_global_eop_from_standard_file(
 /// // Initialize the RAstro
 /// set_global_eop_from_default_standard(eop_extrapolation, eop_interpolation, eop_type).unwrap();
 ///
-/// assert_eq!(GLOBAL_EOP.initialized(), true);
+/// assert_eq!(get_global_eop_initialization(), true);
 /// ```
 pub fn set_global_eop_from_default_standard(
     extrapolate: EOPExtrapolation,
@@ -1867,13 +1824,10 @@ pub fn set_global_eop_from_default_standard(
 /// use rastro::eop::*;
 ///
 /// // Initialize Global EOP
-/// let eop_extrapolation = EOPExtrapolation::Hold;
-/// let eop_interpolation = true;
-/// let eop_type = EOPType::StandardBulletinA;
-/// set_global_eop_from_default_standard(eop_extrapolation, eop_interpolation, eop_type).unwrap();
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Access UT1-UTC offset value at specific date
-/// let ut1_utc = get_ut1_utc(GLOBAL_EOP.mjd_max() as f64 - 1.5);
+/// let ut1_utc = get_global_ut1_utc(59422.0).unwrap();
 /// ```
 pub fn get_global_ut1_utc(mjd: f64) -> Result<f64, String> {
     GLOBAL_EOP.get_ut1_utc(mjd)
@@ -1907,13 +1861,10 @@ pub fn get_global_ut1_utc(mjd: f64) -> Result<f64, String> {
 /// use rastro::eop::*;
 ///
 /// // Initialize Global EOP
-/// let eop_extrapolation = EOPExtrapolation::Hold;
-/// let eop_interpolation = true;
-/// let eop_type = EOPType::StandardBulletinA;
-/// set_global_eop_from_default_standard(eop_extrapolation, eop_interpolation, eop_type).unwrap();
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Get polar motion x and y values for 36 hours before the end of the table
-/// let (dx, dy) = get_global_pm(GLOBAL_EOP.mjd_max() as f64 - 1.5);
+/// let (pm_x, pm_y) = get_global_pm(59422.0).unwrap();
 /// ```
 pub fn get_global_pm(mjd: f64) -> Result<(f64, f64), String> {
     GLOBAL_EOP.get_pm(mjd)
@@ -1947,13 +1898,10 @@ pub fn get_global_pm(mjd: f64) -> Result<(f64, f64), String> {
 /// use rastro::eop::*;
 ///
 /// // Initialize Global EOP
-/// let eop_extrapolation = EOPExtrapolation::Hold;
-/// let eop_interpolation = true;
-/// let eop_type = EOPType::StandardBulletinA;
-/// set_global_eop_from_default_standard(eop_extrapolation, eop_interpolation, eop_type).unwrap();
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Get dX and dY for 36 hours before the end of the table
-/// let (dx, dy) = get_global_dxdy(GLOBAL_EOP.mjd_max() as f64 - 1.5);
+/// let (dx, dy) = get_global_dxdy(59422.0).unwrap();
 /// ```
 pub fn get_global_dxdy(mjd: f64) -> Result<(f64, f64), String> {
     GLOBAL_EOP.get_dxdy(mjd)
@@ -1987,13 +1935,10 @@ pub fn get_global_dxdy(mjd: f64) -> Result<(f64, f64), String> {
 /// use rastro::eop::*;
 ///
 /// // Initialize Global EOP
-/// let eop_extrapolation = EOPExtrapolation::Hold;
-/// let eop_interpolation = true;
-/// let eop_type = EOPType::StandardBulletinA;
-/// set_global_eop_from_default_standard(eop_extrapolation, eop_interpolation, eop_type).unwrap();
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Get LOD for 36 hours before the end of the table
-/// let lod = eop.get_global_lod(GLOBAL_EOP.mjd_max() as f64 - 1.5);
+/// let lod = get_global_lod(59422.0).unwrap();
 /// ```
 pub fn get_global_lod(mjd: f64) -> Result<f64, String> {
     GLOBAL_EOP.get_lod(mjd)
@@ -2034,17 +1979,32 @@ pub fn get_global_lod(mjd: f64) -> Result<f64, String> {
 /// use rastro::eop::*;
 ///
 /// // Initialize Global EOP
-/// let eop_extrapolation = EOPExtrapolation::Hold;
-/// let eop_interpolation = true;
-/// let eop_type = EOPType::StandardBulletinA;
-/// set_global_eop_from_default_standard(eop_extrapolation, eop_interpolation, eop_type).unwrap();
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Get EOP for 36 hours before the end of the table
-/// let eop_params = get_global_eop(GLOBAL_EOP.mjd_max() as f64 - 1.5);
+/// let eop_params = get_global_eop(59422.0).unwrap();
 /// ```
 #[allow(non_snake_case)]
 pub fn get_global_eop(mjd: f64) -> Result<(f64, f64, f64, f64, f64, f64), String> {
     GLOBAL_EOP.get_eop(mjd)
+}
+
+/// Returns initialzation state of global Earth orientation data
+///
+/// # Returns
+/// - `intialized`: Boolean, which if `true` indicates that the global static variable has been properly initialized.
+///
+/// # Examples
+/// ```rust
+/// use rastro::eop::*;
+///
+/// // Initialize Global EOP
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
+///
+/// assert_eq!(get_global_eop_initialization(), true);
+/// ```
+pub fn get_global_eop_initialization() -> bool {
+    GLOBAL_EOP.initialized()
 }
 
 #[cfg(test)]
