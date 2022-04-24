@@ -24,23 +24,23 @@ fig.update_yaxes(
 ## Generate and plot data
 
 # Load EOP Data
-eop = rastro.EarthOrientationData.from_default_standard("Hold", True, "StandardBulletinA")
+rastro.set_global_eop_from_default_standard("Hold", True, "StandardBulletinA")
 
 # Get range of dates stores in EOP data
-days = np.arange(eop.mjd_min, eop.mjd_max, 1)
+days = np.arange(rastro.get_global_eop_mjd_min(), rastro.get_global_eop_mjd_max(), 1)
 
 # Get UT1-UTC offsets
-ut1_utc = [eop.get_ut1_utc(mjd) for mjd in days]
+ut1_utc = [rastro.get_global_ut1_utc(mjd) for mjd in days]
 
 fig.add_trace(go.Scatter(x=days, y=ut1_utc))
 
 # Update Axes
 fig.update_xaxes(
-    tickmode='linear', tick0=eop.mjd_min, dtick=300, tickformat='5f',
+    tickmode='linear', tick0=rastro.get_global_eop_mjd_min(), dtick=300, tickformat='5f',
     title_text="Modified Julian Date"
 )
 fig.update_xaxes(
-    showgrid=True, gridwidth=1, gridcolor='LightGrey', range=[eop.mjd_min, eop.mjd_max],
+    showgrid=True, gridwidth=1, gridcolor='LightGrey', range=[rastro.get_global_eop_mjd_min(), rastro.get_global_eop_mjd_max()],
     showline=True, linewidth=2, linecolor='Grey'
 )
 fig.update_yaxes(

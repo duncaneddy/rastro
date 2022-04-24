@@ -80,19 +80,55 @@ consistent with ITRF2014.
 
 ## Earth Orientation Parameters
 
-Rastro provides the `EarthOrientationData` object to handle loading, storing, and 
+Rastro provides the `EarthOrientationProvider` structure to handle loading, storing, and 
 providing Earth orientation data for use. The package also includes default data files 
 for ease of use that are sufficient for most purposes.
 
+The `EarthOrientationProvider` structure can be used to handle storing and accessing the Earth
+orientation data directly, however it is generally preferable to use the static instance of this
+object provided by the crate. This static instance of `EarthOrientationProvider` is a global
+source of Earth orientation which is loaded once, then utilized by other RAstro function which
+need Earth orientation data. This prevents having to load the data multiple times enables
+consistent API design between the Rust and Python implementations. 
+
+??? info
+
+    Explicitly passing Earth orientation was tried in an early implementation, however 
+    the Rust brorrow checker, prevented python wrapper functions from directly passing
+    the underlying Rust reference between them. This would have then required the
+    Python wrapper to perform a clone of the Earth orientation data for most time operations
+    leading to unacceptable overhead. Having a single static instance of Earth orientation
+    data for the crate, protected by a read-write lock and atomic reference counting
+    enabled the creation of a consistent API between both Rust and Python implementations
+    without sacrifing performance or safety.
+
 ### Loading Data Data Sets
 
-Earth orientation data is loaded by creating an instance of an `EarthOrientationData` object with
-from the desired data source. There are four methods that can be used: `from_default_standard`, 
-`from_c04_file`, `from_default_standard`,  and `from_standard_file`. The `from_default_standard` 
-and `from_c04_file` methods will load long-term IERS C04 products and 
-expect to be passed such as an input. Similarly, `from_default_standard`  and 
-`from_standard_file` can be used to load either Bulletin A or Bulletin B data from the IERS 
-standard file product format.
+Most software using this library requires upfront, explicit initialization of the 
+static Earth orientation data. Earth orientation data is loaded globally by calling one
+of the provided loading methods: `set_global_eop_from_zero`, `set_global_eop_from_static_values`,
+`set_global_eop_from_c04_file`, `set_global_eop_from_default_c04`, `set_global_eop_from_standard_file`,
+or `set_global_eop_from_default_standard`. These methods can be called multiple times
+to reset or override the currently loaded data.
+
+The `set_global_eop_from_zero` will initialize the global data with zeroed values. This enables
+usage of other module functionality, but does not provide the most accurate modeling of Earth
+or time systems. It should be used when a quick, approximately correct answer is needed.
+`set_global_eop_from_static_values` is a similar initialization method which configures the
+module with a single set of Earth orientation data used for all transformations.
+
+To configure more accurate Earth orientation data to use in the module, `set_global_eop_from_c04_file`
+can be used to load long-term IERS C04 products and `set_global_eop_from_standard_file` to load either
+Bulletin A or Bulletin B data from the IERS standard file product format.
+
+RAstro distributions also include packaged IERS C04 and Bulletin A/B data. These can be
+configured using `set_global_eop_from_default_c04` or `set_global_eop_from_default_standard`,
+respectively. While not updated regularly.
+
+For the most accurate Earth orientation data modeling in scripts, you should download the
+latest available Earth orientation data for the desired model and the using
+the file-based loading methods (`set_global_eop_from_c04_file` or `set_global_eop_from_standard_file`)
+to initialize the Earth orientation data based on the file.
 
 When creating any new Earth Orientation data instance there are two parameters that are set at 
 loading time which will determine how the EOP instances handles data returns for certain cases.
@@ -103,7 +139,7 @@ data are handled. The possible behaviors are
 - `Hold`: Will return the last available returned value when data is not available
 - `Error`: Data access attempts where data is not present will panic and terminate the program
 
-The second parameter the the `interpolate` setting. When `interpolate` is set to true and data 
+The second parameter the `interpolate` setting. When `interpolate` is set to true and data 
 requests made for a point that wasn't explicitly loaded as part of the input data set will be 
 linearly interpolated to the desired time. When set to `false`, the function call will return 
 the last value prior to the requested data.
@@ -150,11 +186,27 @@ when parsing the file. In rust
 
 ### Accessing Earth Orientation Data
 
-Most of the time the data stored by the Earth orientation object is not used directly, instead 
-the object is passed to others that will make the appropraite access calls.
+Most of the time the data stored by the Earth orientation object is not used directly. If your 
+application calls for accessing the `EarthOrientationProvider` object provides a number of 
+methods for accessing different Earth orientation Parameters stored by the object. However, in most
+cases, it is best to use the data for the crate's loaded static Earth orientation data. In these 
+cases the following methods can be used to access the loaded static Earth orientation data:
+- `get_global_ut1_utc`
+- `get_global_pm`
+- `get_global_dxdy`
+- `get_global_lod`
+- `get_global_eop`
 
-If your application calls for accessing The `EarthOrientationData` object provides a number of 
-methods for accessing different Earth orientation Parameters stored by the object.
+The following methods return information on the currently loaded Earth orientation data:
+- `get_global_eop_initialization`
+- `get_global_eop_len`
+- `get_global_eop_type`
+- `get_global_eop_extrapolate`
+- `get_global_eop_interpolate`
+- `get_global_eop_mjd_min`
+- `get_global_eop_mjd_max`
+- `get_global_eop_mjd_last_lod`
+- `get_global_eop_mjd_last_dxdy`
 
 === "Rust"
 

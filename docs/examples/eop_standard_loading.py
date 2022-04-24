@@ -16,23 +16,23 @@ if __name__ == '__main__':
     #   - "StandardBulletinA"
     #   - "StandardBulletinB"
     #   - "C04"
-    eop = rastro.EarthOrientationData.from_default_standard("Hold", True, "StandardBulletinA")
+    rastro.set_global_eop_from_default_standard("Hold", True, "StandardBulletinA")
 
     # Last ut1_utc offset stored in table.
     # eop.mjd_max is the maximum MJD date of data loaded in the table.
-    last_ut1_utc = eop.get_ut1_utc(eop.mjd_max)
+    last_ut1_utc = rastro.get_global_ut1_utc(rastro.get_global_eop_mjd_max())
 
     # Get UT1_UTC value that is well beyond the end of the loaded data
-    hold_ut1_utc = eop.get_ut1_utc(9999999.9)
+    hold_ut1_utc = rastro.get_global_ut1_utc(9999999.9)
 
     # Confirm that the EOP provider extrapolated beyond the end of the table by holding the value
     assert last_ut1_utc == hold_ut1_utc
 
     # Example 2: Load Default C04 data with "Zero" extrapolation value
-    eop = rastro.EarthOrientationData.from_default_standard("Zero", True, "StandardBulletinB")
+    rastro.set_global_eop_from_default_standard("Zero", True, "StandardBulletinA")
 
     # Confirm that values beyond the end of table are zero
-    assert eop.get_ut1_utc(9999999.9) == 0.0
+    assert rastro.get_global_ut1_utc(9999999.9) == 0.0
 
     # Example 3: Load Standard data from user-provided file
 

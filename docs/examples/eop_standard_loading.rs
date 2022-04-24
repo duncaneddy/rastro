@@ -1,4 +1,4 @@
-use rastro::eop::{EarthOrientationData, EOPExtrapolation, EOPType};
+use rastro::eop::*;
 
 fn main() {
     // Example 1: Load Default C04 File with extrapolation
@@ -16,27 +16,28 @@ fn main() {
     //   - EOPType::StandardBulletinA
     //   - EOPType::StandardBulletinB
     //   - EOPType::C04
-    let eop = EarthOrientationData::from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);
+    set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA)
+        .unwrap();
 
     // Last ut1_utc offset stored in table.
     // eop.mjd_max is the maximum MJD date of data loaded in the table.
-    let last_ut1_utc = eop.get_ut1_utc(eop.mjd_max.into());
+    let last_ut1_utc = get_global_ut1_utc(get_global_eop_mjd_max().into()).unwrap();
 
     // Get UT1_UTC value that is well beyond the end of the loaded data
-    let hold_ut1_utc = eop.get_ut1_utc(9999999.9);
+    let hold_ut1_utc = get_global_ut1_utc(9999999.9).unwrap();
 
     // Confirm that the EOP provider extrapolated beyond the end of the table by holding the value
     assert!(last_ut1_utc == hold_ut1_utc);
 
-
     // Example 2: Load Default C04 data with "Zero" extrapolation value
-    let eop = EarthOrientationData::from_default_standard(EOPExtrapolation::Zero, true, EOPType::StandardBulletinB);
+    set_global_eop_from_default_standard(EOPExtrapolation::Zero, true, EOPType::StandardBulletinA)
+        .unwrap();
 
     // Confirm that values beyond the end of table are zero
-    assert!(eop.get_ut1_utc(9999999.9) == 0.0);
+    assert!(get_global_ut1_utc(9999999.9).unwrap() == 0.0);
 
     // Example 3: Load Standard data from user-provided file
 
     // let filepath = Path::new("~/PATH/TO/YOUR/EOP_FILE/iau2000A_finals_ab.txt");
-    // let eop = EarthOrientationData::from_standard_file(filepath, EOPExtrapolation::Error, false, EOPType::StandardBulletinB);
+    // set_global_eop_from_standard_file(filepath, EOPExtrapolation::Error, false, EOPType::StandardBulletinB);
 }
