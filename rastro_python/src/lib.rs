@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
-use pyo3::types::PyType;
+use pyo3::pyclass::CompareOp;
+use pyo3::types::{PyFloat, PyType};
 /// This is the wrapper for the rastro script.
 ///
 /// It is currently all in one file because of the PyO3 issues discussed in
@@ -8,8 +9,7 @@ use pyo3::types::PyType;
 /// entire wrapper in a single file until this is addressed.
 ///
 /// While unfortunate, that's where we are at.
-use pyo3::{exceptions::PyRuntimeError, wrap_pyfunction};
-use rastro::eop::{EOPExtrapolation, EOPType};
+use pyo3::{exceptions, wrap_pyfunction};
 use rastro::{constants, eop, orbits, time};
 
 ////////////////
@@ -28,7 +28,7 @@ fn string_to_eop_extrapolation(s: &str) -> Result<eop::EOPExtrapolation, PyErr> 
         "Hold" => Ok(eop::EOPExtrapolation::Hold),
         "Zero" => Ok(eop::EOPExtrapolation::Zero),
         "Error" => Ok(eop::EOPExtrapolation::Error),
-        _ => Err(PyRuntimeError::new_err(format!(
+        _ => Err(exceptions::PyRuntimeError::new_err(format!(
             "Unknown EOP Extrapolation string \"{}\"",
             s
         ))),
@@ -36,7 +36,7 @@ fn string_to_eop_extrapolation(s: &str) -> Result<eop::EOPExtrapolation, PyErr> 
 }
 
 /// Helper function to convert EOPExtrapolation enumerations into representative string
-fn eop_extrapolation_to_string(extrapolation: EOPExtrapolation) -> String {
+fn eop_extrapolation_to_string(extrapolation: eop::EOPExtrapolation) -> String {
     match extrapolation {
         eop::EOPExtrapolation::Hold => String::from("Hold"),
         eop::EOPExtrapolation::Zero => String::from("Zero"),
@@ -51,7 +51,7 @@ fn string_to_eop_type(s: &str) -> Result<eop::EOPType, PyErr> {
         "StandardBulletinA" => Ok(eop::EOPType::StandardBulletinA),
         "StandardBulletinB" => Ok(eop::EOPType::StandardBulletinB),
         "Static" => Ok(eop::EOPType::Static),
-        _ => Err(PyRuntimeError::new_err(format!(
+        _ => Err(exceptions::PyRuntimeError::new_err(format!(
             "Unknown EOP Type string \"{}\"",
             s
         ))),
@@ -499,7 +499,7 @@ fn string_to_time_system(s: &str) -> Result<time::TimeSystem, PyErr> {
         "TT" => Ok(time::TimeSystem::TT),
         "UTC" => Ok(time::TimeSystem::UTC),
         "UT1" => Ok(time::TimeSystem::UT1),
-        _ => Err(PyRuntimeError::new_err(format!(
+        _ => Err(exceptions::PyRuntimeError::new_err(format!(
             "Unknown time system string \"{}\"",
             s
         ))),
@@ -860,6 +860,52 @@ impl Epoch {
     pub fn gmst(&self, as_degrees: bool) -> f64 {
         self.obj.gmst(as_degrees)
     }
+
+    pub fn __add__(&self, other: f64) -> PyResult<Epoch> {
+        Ok(Epoch {
+            obj: self.obj + other,
+        })
+    }
+
+    pub fn __iadd__(&mut self, other: f64) -> () {
+        self.obj += other;
+    }
+
+    pub fn __sub__(&self, other: &Epoch) -> f64 {
+        self.obj - other.obj
+    }
+
+    // pub fn __sub__(&self, other: f64) -> PyResult<Epoch> {
+    //     Ok(Epoch {
+    //         obj: self.obj - other,
+    //     })
+    // }
+
+    // pub fn __sub__(&self, other: &PyAny) -> PyResult<PyAny> {
+    //     if other.is_instance_of::<&Epoch>().unwrap() {
+    //         let epc: Epoch = other.extract().unwrap();
+    //         Ok((self.obj - epc.obj))
+    //     } else {
+    //         Err(TypeError::py_err(
+    //             "Epoch subtractraction not implemented for this type.",
+    //         ))
+    //     }
+    // }
+
+    pub fn __isub__(&mut self, other: f64) -> () {
+        self.obj -= other;
+    }
+
+    fn __richcmp__(&self, other: &Epoch, op: CompareOp) -> bool {
+        match op {
+            CompareOp::Eq => (self.obj == other.obj),
+            CompareOp::Ne => (self.obj != other.obj),
+            CompareOp::Ge => (self.obj >= other.obj),
+            CompareOp::Gt => (self.obj > other.obj),
+            CompareOp::Le => (self.obj <= other.obj),
+            CompareOp::Lt => (self.obj < other.obj),
+        }
+    }
 }
 
 //////////////
@@ -1093,7 +1139,7 @@ fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> PyResul
     if res.is_ok() {
         Ok(res.unwrap())
     } else {
-        Err(PyRuntimeError::new_err(res.err().unwrap()))
+        Err(exceptions::PyRuntimeError::new_err(res.err().unwrap()))
     }
 }
 
@@ -1158,7 +1204,7 @@ fn anomaly_mean_to_true(anm_mean: f64, e: f64, as_degrees: bool) -> PyResult<f64
     if res.is_ok() {
         Ok(res.unwrap())
     } else {
-        Err(PyRuntimeError::new_err(res.err().unwrap()))
+        Err(exceptions::PyRuntimeError::new_err(res.err().unwrap()))
     }
 }
 

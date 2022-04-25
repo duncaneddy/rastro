@@ -429,33 +429,339 @@ def test_gast(eop):
     epc = rastro.Epoch.from_date(2000, 1, 1, "UTC")
     assert epc.gast(False) == pytest.approx(99.965 * math.pi / 180.0, abs = 1.0e-3)
 
-# def test_ops_add_assign():
-#     pass
+def test_ops_add_assign():
+    # Test Positive additions of different size
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc += 1.0
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 31
+    assert hour == 0
+    assert minute == 0
+    assert second == 1.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc += 86400.5
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 2
+    assert day == 1
+    assert hour == 0
+    assert minute == 0
+    assert second == 0.0
+    assert nanosecond == 500_000_000.0
+    assert epc.time_system == "TAI"
+
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc += 1.23456789e-9
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 31
+    assert hour == 0
+    assert minute == 0
+    assert second == 0.0
+    assert nanosecond == 1.23456789
+    assert epc.time_system == "TAI"
+
+    # Test subtractions of different size
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc += -1.0
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 30
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc += -86400.5
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 29
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 500_000_000.0
+    assert epc.time_system == "TAI"
+
+    # Test types
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc += 1
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 31
+    assert hour == 0
+    assert minute == 0
+    assert second == 1.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc += -1
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 30
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+def test_ops_sub_assign():
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc -= 1.23456789e-9
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 30
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 999_999_999.7654321
+    assert epc.time_system == "TAI"
+
+    # Test subtractions of different size
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc -= 1.0
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 30
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc -= 86400.5
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 29
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 500_000_000.0
+    assert epc.time_system == "TAI"
+
+    # Test types
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc -= 1
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 30
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+def test_ops_add():
+    # Base epoch
+    epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+
+    # Test Positive additions of different size
+    epc_2 = epc + 1.0
+    (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 31
+    assert hour == 0
+    assert minute == 0
+    assert second == 1.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+    epc_2 = epc + 86400.5
+    (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+    assert year == 2022
+    assert month == 2
+    assert day == 1
+    assert hour == 0
+    assert minute == 0
+    assert second == 0.0
+    assert nanosecond == 500_000_000.0
+    assert epc.time_system == "TAI"
+
+    epc_2 = epc + 1.23456789e-9
+    (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 31
+    assert hour == 0
+    assert minute == 0
+    assert second == 0.0
+    assert nanosecond == 1.23456789
+    assert epc.time_system == "TAI"
+
+    # Test subtractions of different size
+    epc_2 = epc + -1.0
+    (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 30
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+    epc_2 = epc + -86400.5
+    (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 29
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 500_000_000.0
+    assert epc.time_system == "TAI"
+
+    # Test types
+    epc_2 = epc + 1
+    (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 31
+    assert hour == 0
+    assert minute == 0
+    assert second == 1.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+    epc_2 = epc + -1
+    (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+    assert year == 2022
+    assert month == 1
+    assert day == 30
+    assert hour == 23
+    assert minute == 59
+    assert second == 59.0
+    assert nanosecond == 0.0
+    assert epc.time_system == "TAI"
+
+# def test_ops_sub(eop):
+#     # Base epoch
+#     epc = rastro.Epoch.from_date(2022, 1, 31, "TAI")
 #
-# def test_ops_sub_assign():
-#     pass
+#     # Test subtractions of different size
+#     epc_2 = epc - 1.0
+#     (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+#     assert year == 2022
+#     assert month == 1
+#     assert day == 30
+#     assert hour == 23
+#     assert minute == 59
+#     assert second == 59.0
+#     assert nanosecond == 0.0
+#     assert epc.time_system == "TAI"
 #
-# def test_ops_add():
-#     pass
+#     epc_2 = epc - 86400.5
+#     (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+#     assert year == 2022
+#     assert month == 1
+#     assert day == 29
+#     assert hour == 23
+#     assert minute == 59
+#     assert second == 59.0
+#     assert nanosecond == 500_000_000.0
+#     assert epc.time_system == "TAI"
 #
-# def test_ops_sub():
-#     pass
-#
-# def test_ops_sub_epoch():
-#     pass
-#
-# def test_eq_epoch():
-#     pass
-#
-# def test_cmp_epoch():
-#     pass
-#
+#     # Test types
+#     epc_2 = epc - 1
+#     (year, month, day, hour, minute, second, nanosecond) = epc_2.to_datetime()
+#     assert year == 2022
+#     assert month == 1
+#     assert day == 30
+#     assert hour == 23
+#     assert minute == 59
+#     assert second == 59.0
+#     assert nanosecond == 0.0
+#     assert epc.time_system == "TAI"
+
+def test_ops_sub_epoch():
+    epc_1 = rastro.Epoch.from_date(2022, 1, 31, "TAI")
+    epc_2 = rastro.Epoch.from_date(2022, 2, 1, "TAI")
+    assert epc_2 - epc_1 == 86400.0
+
+    epc_1 = rastro.Epoch.from_date(2021, 1, 1, "TAI")
+    epc_2 = rastro.Epoch.from_date(2022, 1, 1, "TAI")
+    assert epc_2 - epc_1 == 86400.0 * 365.0
+
+    epc_1 = rastro.Epoch.from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, "TAI")
+    epc_2 = rastro.Epoch.from_datetime(2022, 1, 1, 0, 0, 0.0, 1.0, "TAI")
+    assert epc_2 - epc_1 == 1.0e-9
+
+    epc_1 = rastro.Epoch.from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, "TAI")
+    epc_2 = rastro.Epoch.from_datetime(2022, 1, 2, 1, 1, 1.0, 1.0, "TAI")
+    assert epc_2 - epc_1 == 86400.0 + 3600.0 + 60.0 + 1.0 + 1.0e-9
+
+    epc_1 = rastro.Epoch.from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, "TAI")
+    epc_2 = rastro.Epoch.from_datetime(2022, 1, 1, 0, 0, 19.0, 0.0, "TAI")
+    assert epc_2 - epc_1 == 19.0
+    assert epc_1 - epc_2 == -19.0
+    assert epc_1 - epc_1 == 0.0
+
+def test_eq_epoch(eop):
+    epc_1 = rastro.Epoch.from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23456789, "TAI")
+    epc_2 = rastro.Epoch.from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23456789, "TAI")
+    assert epc_1 == epc_2
+
+    epc_1 = rastro.Epoch.from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23456, "TAI")
+    epc_2 = rastro.Epoch.from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23455, "TAI")
+    assert epc_1 != epc_2
+
+    # Check instant comparison against time systems works
+    epc_1 = rastro.Epoch.from_datetime(1980, 1, 6, 0, 0, 0.0, 0.0, "GPS")
+    epc_2 = rastro.Epoch.from_datetime(1980, 1, 6, 0, 0, 19.0, 0.0, "TAI")
+    assert epc_1 == epc_2
+
+def test_cmp_epoch(eop):
+    epc_1 = rastro.Epoch.from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23456, "TAI")
+    epc_2 = rastro.Epoch.from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23455, "TAI")
+    assert (epc_1 > epc_2) == True
+    assert (epc_1 >= epc_2) == True
+    assert (epc_1 < epc_2) == False
+    assert (epc_1 <= epc_2) == False
+
+    epc_1 = rastro.Epoch.from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23456, "TAI")
+    epc_2 = rastro.Epoch.from_datetime(2022, 1, 1, 12, 23, 59.9, 1.23456, "TAI")
+    assert (epc_1 > epc_2) == False
+    assert (epc_1 >= epc_2) == True
+    assert (epc_1 < epc_2) == False
+    assert (epc_1 <= epc_2) == True
+
 # def test_nanosecond_addition_stability():
 #     pass
 #
-# def test_addition_stability():
-#     pass
-#
+def test_addition_stability():
+    epc = rastro.Epoch.from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, "TAI")
+
+    # Advance a year 1 second at a time
+    for _ in range(0, 86400*365):
+        epc += 1.0
+
+    (year, month, day, hour, minute, second, nanosecond) = epc.to_datetime()
+    assert year == 2023
+    assert month == 1
+    assert day == 1
+    assert hour == 0
+    assert minute == 0
+    assert second == 0.0
+    assert nanosecond == 0.0
+
 # def test_epoch_range():
 #     pass
 
