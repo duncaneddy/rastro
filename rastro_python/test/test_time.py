@@ -762,7 +762,20 @@ def test_addition_stability():
     assert second == 0.0
     assert nanosecond == 0.0
 
-# def test_epoch_range():
-#     pass
+def test_epoch_range():
+    epcs = rastro.Epoch.from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, "TAI")
+    epcf = rastro.Epoch.from_datetime(2022, 1, 2, 0, 0, 0.0, 0.0, "TAI")
+    epc  = rastro.Epoch.from_datetime(2022, 1, 1, 0, 0, 0.0, 0.0, "TAI")
 
+    epcv = []
+    for e in rastro.EpochRange(epcs, epcf, 1.0):
+        assert epc == e
+        epc += 1
+        epcv.append(e)
+
+
+    epcl = rastro.Epoch.from_datetime(2022, 1, 1, 23, 59, 59.0, 0.0, "TAI")
+    assert len(epcv) == 86400
+    assert (epcv[-1] != epcf)
+    assert (epcv[-1] - epcl) <= 1.0e-9
 

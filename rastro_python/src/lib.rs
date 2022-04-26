@@ -908,6 +908,32 @@ impl Epoch {
     }
 }
 
+#[pyclass]
+struct EpochRange {
+    obj: time::EpochRange,
+}
+
+#[pymethods]
+impl EpochRange {
+    #[new]
+    fn new(epoch_start: &Epoch, epoch_end: &Epoch, step: f64) -> Self {
+        Self {
+            obj: time::EpochRange::new(epoch_start.obj, epoch_end.obj, step),
+        }
+    }
+
+    fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
+        slf
+    }
+
+    fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<Epoch> {
+        match slf.obj.next() {
+            Some(e) => Some(Epoch { obj: e }),
+            None => None,
+        }
+    }
+}
+
 //////////////
 //  Orbits  //
 //////////////
@@ -1288,6 +1314,7 @@ pub fn module(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(jd_to_datetime, module)?)?;
     module.add_function(wrap_pyfunction!(time_system_offset, module)?)?;
     module.add_class::<Epoch>()?;
+    module.add_class::<EpochRange>()?;
 
     // Orbits
     module.add_function(wrap_pyfunction!(orbital_period, module)?)?;
