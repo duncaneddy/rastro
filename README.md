@@ -33,7 +33,7 @@ Source Code: https://github.com/duncaneddy/rastro
 ----
 
 # RAstro
-rastro is a modern space dynamics library for research and engineering
+RAstro is a modern satellite dynamics library for research and engineering
 applications. It is designed to be high performance, easy to learn, and
 fast to code, and ready for flight.
 
@@ -50,21 +50,20 @@ The key features are:
   to core library being written in Rust.
 
 RAstro gets its name from the combination of Rust and astrodynamics (Rust + 
-astro = RAstro). Space dynamics is an expansive field that covers multiple 
-domains of mathematics, astrodynamics, attitude dynamics, and systems 
-engineering. While the underlying concepts have been studied and known since 
+astrodynamics = RAstro). The library specifically focuses on satellite astrodynamics
+and space mission analysis. While the underlying concepts have been studied and known since 
 Kepler wrote down his three laws, there are few modern software 
-libraries that make these concepts easily accessible. Space dynamics 
-software generally runs into the following pitfalls:
+libraries that make these concepts easily accessible. Astrodynamics and  
+space mission analysis software generally runs into the following pitfalls:
 
-1. It is usually expensive, commercially licensed software making it 
-   inaccessible for students, hobby projects, or new endeavours.
-2. They are heritage libraries making integration with modern tools challenging
-3. They are heritage APIs, while extremely well tested, also have an extremely 
-   steep learning curve. Additionally, the closed-source nature makes it 
-   difficult, if not impossible, to understand the true algorithmic 
+1. The software is usually expensive, commercially licensed software making it 
+   inaccessible for students, hobby projects, or new endeavours on a budget.
+2. While extremely well tested, other astrodynamics software can have an extremely 
+   steep learning curve, making it difficult to quickly run simple analysis.
+3. Some common astrodynamics and mission analysis software is closed-source nature 
+   making it difficult, if not impossible, to understand the true algorithmic 
    implementation. This can make root-causing issues and learning from the 
-   software prohibitive. 
+   software prohibitive if not impossible. 
 
 Due to these challenges, students, researchers, and engineers frequently end up 
 reimplementing common astrodynamics functions with an unfortunately frequent 
