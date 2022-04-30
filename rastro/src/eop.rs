@@ -2940,6 +2940,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(non_snake_case)]
     fn test_cip_format_consistency() {
         // Check that the units of C04 and Standard format CIP corrections are
         // approximately the same
@@ -2952,7 +2953,7 @@ mod tests {
 
         let eop_standard = EarthOrientationProvider::new();
 
-        let eop_standard_result = eop_standard
+        let _eop_standard_result = eop_standard
             .from_standard_file(
                 filepath.to_str().unwrap(),
                 EOPExtrapolation::Hold,
@@ -2970,7 +2971,7 @@ mod tests {
 
         let eop_c04 = EarthOrientationProvider::new();
 
-        let eop_c04_result = eop_c04
+        let _eop_c04_result = eop_c04
             .from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true)
             .unwrap();
         assert!(eop_c04.initialized());
@@ -2992,8 +2993,8 @@ mod tests {
         assert_abs_diff_eq!(lod_s, lod_c04, epsilon = 1.0e-4);
 
         // Confirm dX, and dY are not approximately equal even for the same file
-        let (dX_s, dY_s) = eop_standard.get_dxdy(54195.0).unwrap();
-        let (dX_c04, dY_c04) = eop_c04.get_dxdy(54195.0).unwrap();
+        // let (dX_s, dY_s) = eop_standard.get_dxdy(54195.0).unwrap();
+        // let (dX_c04, dY_c04) = eop_c04.get_dxdy(54195.0).unwrap();
         // assert_abs_diff_eq!(dX_s, dX_c04, epsilon = 1.0e-12)
     }
 }
