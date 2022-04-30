@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 use pyo3::pyclass::CompareOp;
-use pyo3::types::{PyFloat, PyType};
+use pyo3::types::PyType;
 /// This is the wrapper for the rastro script.
 ///
 /// It is currently all in one file because of the PyO3 issues discussed in
@@ -467,7 +467,7 @@ pub fn get_global_eop_mjd_last_dxdy() -> u32 {
 #[pyfunction]
 #[pyo3(text_signature = "(filepath)")]
 fn download_c04_eop_file(filepath: &str) -> PyResult<()> {
-    eop::download_c04_eop_file(filepath);
+    eop::download_c04_eop_file(filepath).unwrap();
     Ok(())
 }
 
@@ -483,7 +483,7 @@ fn download_c04_eop_file(filepath: &str) -> PyResult<()> {
 #[pyfunction]
 #[pyo3(text_signature = "(filepath)")]
 fn download_standard_eop_file(filepath: &str) -> PyResult<()> {
-    eop::download_standard_eop_file(filepath);
+    eop::download_standard_eop_file(filepath).unwrap();
     Ok(())
 }
 
@@ -717,7 +717,7 @@ impl Epoch {
 
     #[classmethod]
     fn from_date(
-        cls: &PyType,
+        _cls: &PyType,
         year: u32,
         month: u8,
         day: u8,
@@ -735,7 +735,7 @@ impl Epoch {
 
     #[classmethod]
     pub fn from_datetime(
-        cls: &PyType,
+        _cls: &PyType,
         year: u32,
         month: u8,
         day: u8,
@@ -760,42 +760,42 @@ impl Epoch {
     }
 
     #[classmethod]
-    pub fn from_string(cls: &PyType, datestr: &str) -> PyResult<Epoch> {
+    pub fn from_string(_cls: &PyType, datestr: &str) -> PyResult<Epoch> {
         Ok(Epoch {
             obj: time::Epoch::from_string(datestr).unwrap(),
         })
     }
 
     #[classmethod]
-    pub fn from_jd(cls: &PyType, jd: f64, time_system: &str) -> PyResult<Epoch> {
+    pub fn from_jd(_cls: &PyType, jd: f64, time_system: &str) -> PyResult<Epoch> {
         Ok(Epoch {
             obj: time::Epoch::from_jd(jd, string_to_time_system(time_system).unwrap()),
         })
     }
 
     #[classmethod]
-    pub fn from_mjd(cls: &PyType, mjd: f64, time_system: &str) -> PyResult<Epoch> {
+    pub fn from_mjd(_cls: &PyType, mjd: f64, time_system: &str) -> PyResult<Epoch> {
         Ok(Epoch {
             obj: time::Epoch::from_mjd(mjd, string_to_time_system(time_system).unwrap()),
         })
     }
 
     #[classmethod]
-    pub fn from_gps_date(cls: &PyType, week: u32, seconds: f64) -> PyResult<Epoch> {
+    pub fn from_gps_date(_cls: &PyType, week: u32, seconds: f64) -> PyResult<Epoch> {
         Ok(Epoch {
             obj: time::Epoch::from_gps_date(week, seconds),
         })
     }
 
     #[classmethod]
-    pub fn from_gps_seconds(cls: &PyType, gps_seconds: f64) -> PyResult<Epoch> {
+    pub fn from_gps_seconds(_cls: &PyType, gps_seconds: f64) -> PyResult<Epoch> {
         Ok(Epoch {
             obj: time::Epoch::from_gps_seconds(gps_seconds),
         })
     }
 
     #[classmethod]
-    pub fn from_gps_nanoseconds(cls: &PyType, gps_nanoseconds: u64) -> PyResult<Epoch> {
+    pub fn from_gps_nanoseconds(_cls: &PyType, gps_nanoseconds: u64) -> PyResult<Epoch> {
         Ok(Epoch {
             obj: time::Epoch::from_gps_nanoseconds(gps_nanoseconds),
         })

@@ -76,6 +76,10 @@ nav:
       - Time [WIP]:
         - user_guide/time/index.md
         - user_guide/time/epoch.md
+      - user_guide/frames.md
+      - Transforms [WIP]:
+          - user_guide/transforms/index.md
+          - user_guide/transforms/absolute.md
       - Orbits:
         - user_guide/orbits/index.md
         - user_guide/orbits/properties.md

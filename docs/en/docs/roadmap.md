@@ -13,30 +13,30 @@ This page documents the current feature development roadmap for RAstro.
     - [x] Customized of handling of out-of-range EOP requests
 - [ ] Time Management (Epoch)
     - [ ] Epoch Class
-        - [ ] Initialization
-            - [ ] String
-            - [ ] Caldate
-            - [ ] MJD
-            - [ ] GPS Elapsed Seconds
-            - [ ] GPS Week / Seconds
-        - [ ] Fundamental Operations
-          - [ ] Arithmetic Operations
-          - [ ] Logical Comparisons
+        - [x] Initialization
+            - [x] String
+            - [x] Caldate
+            - [x] MJD
+            - [x] GPS Elapsed Seconds
+            - [x] GPS Week / Seconds
+        - [x] Fundamental Operations
+          - [x] Arithmetic Operations
+          - [x] Logical Comparisons
         - [ ] Output representations
-          - [ ] Date String
-          - [ ] Caldate String
-          - [ ] Isoformat
+          - [x] Date String
+          - [x] Caldate String
+          - [x] Isoformat
           - [ ] POSIX Seconds
-          - [ ] Day of Year
-          - [ ] Elapsed GPS Seconds
-          - [ ] GPS Day
-          - [ ] GPS Week
-          - [ ] GPS Date
-          - [ ] JD
-          - [ ] MJD
-          - [ ] GMST
-          - [ ] GAST
-    - [ ] Epoch Range Iterator
+          - [x] Day of Year
+          - [x] Elapsed GPS Seconds
+          - [x] GPS Day
+          - [x] GPS Week
+          - [x] GPS Date
+          - [x] JD
+          - [x] MJD
+          - [x] GMST
+          - [x] GAST
+    - [x] Epoch Range Iterator
 - [ ] Reference Frames
     - [ ] Precession/Nutation Model
     - [ ] Earth Rotation Model
