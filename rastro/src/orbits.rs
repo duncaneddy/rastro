@@ -1,6 +1,5 @@
-use std::{f64::consts::PI};
-// use nalgebra::{Vector3, Vector6};
-use crate::constants::{GM_EARTH, R_EARTH, J2_EARTH};
+use crate::constants::{GM_EARTH, J2_EARTH, R_EARTH};
+use std::f64::consts::PI;
 
 /// Computes the orbital period of an object around Earth.
 ///
@@ -67,7 +66,7 @@ pub fn orbital_period_general(a: f64, gm: f64) -> f64 {
 /// let n_deg = mean_motion(R_EARTH + 500e3, true);
 /// ```
 pub fn mean_motion(a: f64, as_degrees: bool) -> f64 {
-    mean_motion_general(a,  GM_EARTH, as_degrees)
+    mean_motion_general(a, GM_EARTH, as_degrees)
 }
 
 /// Computes the mean motion of an astronomical object around a general body
@@ -90,13 +89,13 @@ pub fn mean_motion(a: f64, as_degrees: bool) -> f64 {
 /// let n_earth = mean_motion_general(R_EARTH + 500e3, GM_EARTH, false);
 /// let n_moon  = mean_motion_general(R_MOON + 500e3, GM_MOON, true);
 /// ```
-pub fn mean_motion_general(a: f64,  gm: f64, as_degrees: bool) -> f64 {
+pub fn mean_motion_general(a: f64, gm: f64, as_degrees: bool) -> f64 {
     let n = (gm / a.powi(3)).sqrt();
 
     if as_degrees == true {
-        n * 180.0/PI
-    } else { 
-        n 
+        n * 180.0 / PI
+    } else {
+        n
     }
 }
 
@@ -141,11 +140,14 @@ pub fn semimajor_axis(n: f64, as_degrees: bool) -> f64 {
 /// let a_moon = semimajor_axis_general(0.0011067836148773837, GM_MOON, false);
 /// ```
 pub fn semimajor_axis_general(n: f64, gm: f64, as_degrees: bool) -> f64 {
-    let n = if as_degrees == true { n*PI/180.0 } else { n };
+    let n = if as_degrees == true {
+        n * PI / 180.0
+    } else {
+        n
+    };
 
-    (gm / n.powi(2)).powf(1.0/3.0)
+    (gm / n.powi(2)).powf(1.0 / 3.0)
 }
-
 
 /// Computes the perigee velocity of an astronomical object around Earth.
 ///
@@ -207,8 +209,8 @@ pub fn periapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
 /// use rastro::orbits::periapsis_distance;
 /// let rp = periapsis_distance(R_EARTH + 500e3, 0.1);
 /// ```
-pub fn periapsis_distance(a: f64, e:f64) -> f64 {
-    a*(1.0-e)
+pub fn periapsis_distance(a: f64, e: f64) -> f64 {
+    a * (1.0 - e)
 }
 
 /// Computes the apogee velocity of an astronomical object around Earth.
@@ -271,8 +273,8 @@ pub fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
 /// use rastro::orbits::apoapsis_distance;
 /// let ra = apoapsis_distance(R_EARTH + 500e3, 0.1);
 /// ```
-pub fn apoapsis_distance(a: f64, e:f64) -> f64 {
-    a*(1.0+e)
+pub fn apoapsis_distance(a: f64, e: f64) -> f64 {
+    a * (1.0 + e)
 }
 
 /// Computes the inclination for a Sun-synchronous orbit around Earth based on
@@ -299,7 +301,9 @@ pub fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> f64 {
     let omega_dot_ss = 2.0 * PI / 365.2421897 / 86400.0;
 
     // Compute inclination required for the desired RAAN precession
-    let i = (-2.0 * a.powf(3.5) * omega_dot_ss * (1.0-e.powi(2)).powi(2) / (3.0*(R_EARTH.powi(2)) * J2_EARTH * GM_EARTH.sqrt())).acos();
+    let i = (-2.0 * a.powf(3.5) * omega_dot_ss * (1.0 - e.powi(2)).powi(2)
+        / (3.0 * (R_EARTH.powi(2)) * J2_EARTH * GM_EARTH.sqrt()))
+    .acos();
 
     if as_degrees == true {
         i * 180.0 / PI
@@ -331,7 +335,11 @@ pub fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> f64 {
 ///  Applications*, 2012. Eq. 2.65.
 pub fn anomaly_eccentric_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 {
     // Ensure anm_ecc is in radians regardless of input
-    let anm_ecc = if as_degrees == true { anm_ecc * PI / 180.0 } else { anm_ecc };
+    let anm_ecc = if as_degrees == true {
+        anm_ecc * PI / 180.0
+    } else {
+        anm_ecc
+    };
 
     // Convert to mean anomaly
     let anm_mean = anm_ecc - e * anm_ecc.sin();
@@ -363,7 +371,11 @@ pub fn anomaly_eccentric_to_mean(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 
 /// ```
 pub fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> Result<f64, String> {
     // Ensure anm_mean is in radians regardless of input
-    let anm_mean = if as_degrees == true { anm_mean * PI / 180.0 } else { anm_mean };
+    let anm_mean = if as_degrees == true {
+        anm_mean * PI / 180.0
+    } else {
+        anm_mean
+    };
 
     // Set constants of iteration
     let max_iter = 10;
@@ -383,7 +395,10 @@ pub fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> Res
 
         i += 1;
         if i > max_iter {
-            return Err(format!("Reached maximum number of iterations ({}) before convergence for (M: {}, e: {}).", max_iter, anm_mean, e));
+            return Err(format!(
+                "Reached maximum number of iterations ({}) before convergence for (M: {}, e: {}).",
+                max_iter, anm_mean, e
+            ));
         }
     }
 
@@ -417,9 +432,13 @@ pub fn anomaly_mean_to_eccentric(anm_mean: f64, e: f64, as_degrees: bool) -> Res
 /// 1. D. Vallado, *Fundamentals of Astrodynamics and Applications (4th Ed.)*, pp. 47, eq. 2-9, 2010.
 pub fn anomaly_true_to_eccentric(anm_true: f64, e: f64, as_degrees: bool) -> f64 {
     // Ensure anm_true is in radians regardless of input
-    let anm_true = if as_degrees == true { anm_true * PI / 180.0 } else { anm_true };
+    let anm_true = if as_degrees == true {
+        anm_true * PI / 180.0
+    } else {
+        anm_true
+    };
 
-    let anm_ecc = (anm_true.sin()*(1.0-e.powi(2)).sqrt()).atan2(anm_true.cos() + e);
+    let anm_ecc = (anm_true.sin() * (1.0 - e.powi(2)).sqrt()).atan2(anm_true.cos() + e);
 
     if as_degrees == true {
         anm_ecc * 180.0 / PI
@@ -450,9 +469,13 @@ pub fn anomaly_true_to_eccentric(anm_true: f64, e: f64, as_degrees: bool) -> f64
 /// 1. D. Vallado, *Fundamentals of Astrodynamics and Applications (4th Ed.)*, pp. 47, eq. 2-9, 2010.
 pub fn anomaly_eccentric_to_true(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 {
     // Ensure anm_ecc is in radians regardless of input
-    let anm_ecc = if as_degrees == true { anm_ecc * PI / 180.0 } else { anm_ecc };
+    let anm_ecc = if as_degrees == true {
+        anm_ecc * PI / 180.0
+    } else {
+        anm_ecc
+    };
 
-    let anm_true = (anm_ecc.sin()*(1.0-e.powi(2)).sqrt()).atan2(anm_ecc.cos() - e);
+    let anm_true = (anm_ecc.sin() * (1.0 - e.powi(2)).sqrt()).atan2(anm_ecc.cos() - e);
 
     if as_degrees == true {
         anm_true * 180.0 / PI
@@ -483,7 +506,11 @@ pub fn anomaly_eccentric_to_true(anm_ecc: f64, e: f64, as_degrees: bool) -> f64 
 ///  1. O. Montenbruck, and E. Gill, *Satellite Orbits: Models, Methods and
 ///  Applications*, 2012.
 pub fn anomaly_true_to_mean(anm_true: f64, e: f64, as_degrees: bool) -> f64 {
-    anomaly_eccentric_to_mean(anomaly_true_to_eccentric(anm_true, e, as_degrees), e, as_degrees)
+    anomaly_eccentric_to_mean(
+        anomaly_true_to_eccentric(anm_true, e, as_degrees),
+        e,
+        as_degrees,
+    )
 }
 
 /// Converts mean anomaly into true anomaly
@@ -505,7 +532,11 @@ pub fn anomaly_true_to_mean(anm_true: f64, e: f64, as_degrees: bool) -> f64 {
 /// ```
 pub fn anomaly_mean_to_true(anm_mean: f64, e: f64, as_degrees: bool) -> Result<f64, String> {
     // Ensure anm_mean is in radians regardless of input
-    let anm_mean = if as_degrees == true { anm_mean * PI / 180.0 } else { anm_mean };
+    let anm_mean = if as_degrees == true {
+        anm_mean * PI / 180.0
+    } else {
+        anm_mean
+    };
 
     // Set constants of iteration
     let max_iter = 10;
@@ -525,7 +556,10 @@ pub fn anomaly_mean_to_true(anm_mean: f64, e: f64, as_degrees: bool) -> Result<f
 
         i += 1;
         if i > max_iter {
-            return Err(format!("Reached maximum number of iterations ({}) before convergence for (M: {}, e: {}).", max_iter, anm_mean, e));
+            return Err(format!(
+                "Reached maximum number of iterations ({}) before convergence for (M: {}, e: {}).",
+                max_iter, anm_mean, e
+            ));
         }
     }
 
@@ -538,93 +572,99 @@ pub fn anomaly_mean_to_true(anm_mean: f64, e: f64, as_degrees: bool) -> Result<f
     Ok(anomaly_eccentric_to_true(anm_ecc, e, as_degrees))
 }
 
-
 //
 // Unit Tests!
 //
 
-
 #[cfg(test)]
 mod tests {
+    use crate::constants::{GM_EARTH, R_EARTH, R_MOON};
     use crate::{constants, orbits::*};
-    use crate::constants::{R_EARTH, GM_EARTH, R_MOON};
 
     use approx::{assert_abs_diff_eq, assert_abs_diff_ne};
 
     #[test]
     fn test_orbital_period() {
-        assert_abs_diff_eq!(orbital_period(R_EARTH + 500e3), 5676.977164028288, epsilon=1e-12);
+        assert_abs_diff_eq!(
+            orbital_period(R_EARTH + 500e3),
+            5676.977164028288,
+            epsilon = 1e-12
+        );
     }
 
     #[test]
     fn test_orbital_period_general() {
-        assert_abs_diff_eq!(orbital_period_general(R_EARTH + 500e3, GM_EARTH), 5676.977164028288, epsilon=1e-12);
+        assert_abs_diff_eq!(
+            orbital_period_general(R_EARTH + 500e3, GM_EARTH),
+            5676.977164028288,
+            epsilon = 1e-12
+        );
     }
 
     #[test]
     fn test_mean_motion() {
         let n = mean_motion(R_EARTH + 500e3, false);
-        assert_abs_diff_eq!(n, 0.0011067836148773837, epsilon=1e-12);
+        assert_abs_diff_eq!(n, 0.0011067836148773837, epsilon = 1e-12);
 
         let n = mean_motion(R_EARTH + 500e3, true);
-        assert_abs_diff_eq!(n, 0.0634140299667068, epsilon=1e-12);
+        assert_abs_diff_eq!(n, 0.0634140299667068, epsilon = 1e-12);
     }
 
     #[test]
     fn test_mean_motion_general() {
         let n = mean_motion_general(R_EARTH + 500e3, GM_EARTH, false);
-        assert_abs_diff_eq!(n, 0.0011067836148773837, epsilon=1e-12);
+        assert_abs_diff_eq!(n, 0.0011067836148773837, epsilon = 1e-12);
 
         let n = mean_motion_general(R_EARTH + 500e3, GM_EARTH, true);
-        assert_abs_diff_eq!(n, 0.0634140299667068, epsilon=1e-12);
+        assert_abs_diff_eq!(n, 0.0634140299667068, epsilon = 1e-12);
 
         let n = mean_motion_general(R_EARTH + 500e3, constants::GM_MOON, false);
-        assert_abs_diff_ne!(n, 0.0011067836148773837, epsilon=1e-12);
+        assert_abs_diff_ne!(n, 0.0011067836148773837, epsilon = 1e-12);
 
         let n = mean_motion_general(R_EARTH + 500e3, constants::GM_MOON, true);
-        assert_abs_diff_ne!(n, 0.0634140299667068, epsilon=1e-12);
+        assert_abs_diff_ne!(n, 0.0634140299667068, epsilon = 1e-12);
 
         let n = mean_motion_general(constants::R_MOON + 500e3, constants::GM_MOON, false);
-        assert_abs_diff_eq!(n, 0.0006613509296264638, epsilon=1e-12);
+        assert_abs_diff_eq!(n, 0.0006613509296264638, epsilon = 1e-12);
 
         let n = mean_motion_general(constants::R_MOON + 500e3, constants::GM_MOON, true);
-        assert_abs_diff_eq!(n, 0.0378926170446499, epsilon=1e-12);
+        assert_abs_diff_eq!(n, 0.0378926170446499, epsilon = 1e-12);
     }
 
     #[test]
     fn test_semimajor_axis() {
         let n = semimajor_axis(0.0011067836148773837, false);
-        assert_abs_diff_eq!(n, R_EARTH + 500e3, epsilon=1e-8);
+        assert_abs_diff_eq!(n, R_EARTH + 500e3, epsilon = 1e-8);
 
         let n = semimajor_axis(0.0634140299667068, true);
-        assert_abs_diff_eq!(n, R_EARTH + 500e3, epsilon=1e-8);
+        assert_abs_diff_eq!(n, R_EARTH + 500e3, epsilon = 1e-8);
     }
 
     #[test]
     fn test_semimajor_axis_general() {
         let n = semimajor_axis_general(0.0011067836148773837, GM_EARTH, false);
-        assert_abs_diff_eq!(n, R_EARTH + 500e3, epsilon=1e-8);
+        assert_abs_diff_eq!(n, R_EARTH + 500e3, epsilon = 1e-8);
 
         let n = semimajor_axis_general(0.0634140299667068, GM_EARTH, true);
-        assert_abs_diff_eq!(n, R_EARTH + 500e3, epsilon=1e-8);
+        assert_abs_diff_eq!(n, R_EARTH + 500e3, epsilon = 1e-8);
 
         let n = semimajor_axis_general(0.0006613509296264638, constants::GM_MOON, false);
-        assert_abs_diff_ne!(n, constants::R_MOON + 500e3, epsilon=1e-12);
+        assert_abs_diff_ne!(n, constants::R_MOON + 500e3, epsilon = 1e-12);
 
         let n = semimajor_axis_general(0.0378926170446499, constants::GM_MOON, true);
-        assert_abs_diff_ne!(n, constants::R_MOON + 500e3, epsilon=1e-12);
+        assert_abs_diff_ne!(n, constants::R_MOON + 500e3, epsilon = 1e-12);
     }
 
     #[test]
     fn test_perigee_velocity() {
         let vp = perigee_velocity(R_EARTH + 500e3, 0.001);
-        assert_abs_diff_eq!(vp, 7620.224976404526, epsilon=1e-12);
+        assert_abs_diff_eq!(vp, 7620.224976404526, epsilon = 1e-12);
     }
 
     #[test]
     fn test_periapsis_velocity() {
         let vp = periapsis_velocity(R_MOON + 500e3, 0.001, constants::GM_MOON);
-        assert_abs_diff_eq!(vp, 1481.5842246768275, epsilon=1e-12);
+        assert_abs_diff_eq!(vp, 1481.5842246768275, epsilon = 1e-12);
     }
 
     #[test]
@@ -639,13 +679,13 @@ mod tests {
     #[test]
     fn test_apogee_velocity() {
         let va = apogee_velocity(R_EARTH + 500e3, 0.001);
-        assert_abs_diff_eq!(va, 7604.999751676446, epsilon=1e-12);
+        assert_abs_diff_eq!(va, 7604.999751676446, epsilon = 1e-12);
     }
 
     #[test]
     fn test_apoapsis_velocity() {
         let va = apoapsis_velocity(R_MOON + 500e3, 0.001, constants::GM_MOON);
-        assert_abs_diff_eq!(va, 1478.624016435715, epsilon=1e-12);
+        assert_abs_diff_eq!(va, 1478.624016435715, epsilon = 1e-12);
     }
 
     #[test]
@@ -660,7 +700,7 @@ mod tests {
     #[test]
     fn test_sun_synchronous_inclination() {
         let inc = sun_synchronous_inclination(R_EARTH + 500e3, 0.001, true);
-        assert_abs_diff_eq!(inc, 97.40172901366881, epsilon=1e-12);
+        assert_abs_diff_eq!(inc, 97.40172901366881, epsilon = 1e-12);
     }
 
     #[test]
@@ -679,12 +719,12 @@ mod tests {
         let m = anomaly_eccentric_to_mean(180.0, 0.0, true);
         assert_eq!(m, 180.0);
 
-        // 90 degrees 
+        // 90 degrees
         let m = anomaly_eccentric_to_mean(PI / 2.0, 0.1, false);
-        assert_abs_diff_eq!(m, 1.4707963267948965, epsilon=1e-12);
+        assert_abs_diff_eq!(m, 1.4707963267948965, epsilon = 1e-12);
 
         let m = anomaly_eccentric_to_mean(90.0, 0.1, true);
-        assert_abs_diff_eq!(m, 84.27042204869177, epsilon=1e-12);
+        assert_abs_diff_eq!(m, 84.27042204869177, epsilon = 1e-12);
     }
 
     #[test]
@@ -703,12 +743,12 @@ mod tests {
         let e = anomaly_mean_to_eccentric(180.0, 0.0, true).unwrap();
         assert_eq!(e, 180.0);
 
-        // 90 degrees 
+        // 90 degrees
         let e = anomaly_mean_to_eccentric(1.4707963267948965, 0.1, false).unwrap();
-        assert_abs_diff_eq!(e, PI/2.0, epsilon=1e-12);
+        assert_abs_diff_eq!(e, PI / 2.0, epsilon = 1e-12);
 
         let e = anomaly_mean_to_eccentric(84.27042204869177, 0.1, true).unwrap();
-        assert_abs_diff_eq!(e, 90.0, epsilon=1e-12);
+        assert_abs_diff_eq!(e, 90.0, epsilon = 1e-12);
     }
 
     #[test]
@@ -720,13 +760,26 @@ mod tests {
             // Test starting conversion from eccentric anomaly and returning
             for i in 0..180 {
                 let theta = f64::from(i);
-                assert_abs_diff_eq!(theta, anomaly_mean_to_eccentric(anomaly_eccentric_to_mean(theta, e, true), e, true).unwrap(), epsilon=1e-12);
+                assert_abs_diff_eq!(
+                    theta,
+                    anomaly_mean_to_eccentric(anomaly_eccentric_to_mean(theta, e, true), e, true)
+                        .unwrap(),
+                    epsilon = 1e-12
+                );
             }
 
             // Test starting conversion from mean anomaly and returning
             for i in 0..180 {
                 let theta = f64::from(i);
-                assert_abs_diff_eq!(theta, anomaly_eccentric_to_mean(anomaly_mean_to_eccentric(theta, e, true).unwrap(), e, true), epsilon=1e-12);
+                assert_abs_diff_eq!(
+                    theta,
+                    anomaly_eccentric_to_mean(
+                        anomaly_mean_to_eccentric(theta, e, true).unwrap(),
+                        e,
+                        true
+                    ),
+                    epsilon = 1e-12
+                );
             }
         }
     }
@@ -749,16 +802,16 @@ mod tests {
 
         // 90 degrees
         let anm_ecc = anomaly_true_to_eccentric(PI / 2.0, 0.0, false);
-        assert_abs_diff_eq!(anm_ecc, PI/2.0, epsilon=1e-12);
+        assert_abs_diff_eq!(anm_ecc, PI / 2.0, epsilon = 1e-12);
 
         let anm_ecc = anomaly_true_to_eccentric(90.0, 0.0, true);
-        assert_abs_diff_eq!(anm_ecc, 90.0, epsilon=1e-12);
+        assert_abs_diff_eq!(anm_ecc, 90.0, epsilon = 1e-12);
 
         let anm_ecc = anomaly_true_to_eccentric(PI / 2.0, 0.1, false);
-        assert_abs_diff_eq!(anm_ecc, 1.4706289056333368, epsilon=1e-12);
+        assert_abs_diff_eq!(anm_ecc, 1.4706289056333368, epsilon = 1e-12);
 
         let anm_ecc = anomaly_true_to_eccentric(90.0, 0.1, true);
-        assert_abs_diff_eq!(anm_ecc, 84.26082952273322, epsilon=1e-12);
+        assert_abs_diff_eq!(anm_ecc, 84.26082952273322, epsilon = 1e-12);
     }
 
     #[test]
@@ -778,17 +831,17 @@ mod tests {
         assert_eq!(anm_true, 180.0);
 
         // 90 degrees
-        let anm_true = anomaly_eccentric_to_true(PI/2.0, 0.0, false);
-        assert_abs_diff_eq!(anm_true, PI/2.0, epsilon=1e-12);
+        let anm_true = anomaly_eccentric_to_true(PI / 2.0, 0.0, false);
+        assert_abs_diff_eq!(anm_true, PI / 2.0, epsilon = 1e-12);
 
         let anm_true = anomaly_eccentric_to_true(90.0, 0.0, true);
-        assert_abs_diff_eq!(anm_true, 90.0, epsilon=1e-12);
+        assert_abs_diff_eq!(anm_true, 90.0, epsilon = 1e-12);
 
-        let anm_true = anomaly_eccentric_to_true(PI/2.0, 0.1, false);
-        assert_abs_diff_eq!(anm_true, 1.6709637479564563, epsilon=1e-12);
+        let anm_true = anomaly_eccentric_to_true(PI / 2.0, 0.1, false);
+        assert_abs_diff_eq!(anm_true, 1.6709637479564563, epsilon = 1e-12);
 
         let anm_true = anomaly_eccentric_to_true(90.0, 0.1, true);
-        assert_abs_diff_eq!(anm_true, 95.73917047726677, epsilon=1e-12);
+        assert_abs_diff_eq!(anm_true, 95.73917047726677, epsilon = 1e-12);
     }
 
     #[test]
@@ -800,13 +853,21 @@ mod tests {
             // Test starting conversion from eccentric anomaly and returning
             for i in 0..180 {
                 let theta = f64::from(i);
-                assert_abs_diff_eq!(theta, anomaly_eccentric_to_true(anomaly_true_to_eccentric(theta, e, true), e, true), epsilon=1e-12);
+                assert_abs_diff_eq!(
+                    theta,
+                    anomaly_eccentric_to_true(anomaly_true_to_eccentric(theta, e, true), e, true),
+                    epsilon = 1e-12
+                );
             }
 
             // Test starting conversion from mean anomaly and returning
             for i in 0..180 {
                 let theta = f64::from(i);
-                assert_abs_diff_eq!(theta, anomaly_true_to_eccentric(anomaly_eccentric_to_true(theta, e, true), e, true), epsilon=1e-12);
+                assert_abs_diff_eq!(
+                    theta,
+                    anomaly_true_to_eccentric(anomaly_eccentric_to_true(theta, e, true), e, true),
+                    epsilon = 1e-12
+                );
             }
         }
     }
@@ -829,10 +890,10 @@ mod tests {
 
         // 90 degrees
         let m = anomaly_true_to_mean(PI / 2.0, 0.1, false);
-        assert_abs_diff_eq!(m, 1.3711301619226748, epsilon=1e-12);
+        assert_abs_diff_eq!(m, 1.3711301619226748, epsilon = 1e-12);
 
         let m = anomaly_true_to_mean(90.0, 0.1, true);
-        assert_abs_diff_eq!(m, 78.55997144125844, epsilon=1e-12);
+        assert_abs_diff_eq!(m, 78.55997144125844, epsilon = 1e-12);
     }
 
     #[test]
@@ -852,11 +913,11 @@ mod tests {
         assert_eq!(e, 180.0);
 
         // 90 degrees
-        let e = anomaly_mean_to_true(PI/2.0, 0.1, false).unwrap();
-        assert_abs_diff_eq!(e, 1.7694813731148669, epsilon=1e-12);
+        let e = anomaly_mean_to_true(PI / 2.0, 0.1, false).unwrap();
+        assert_abs_diff_eq!(e, 1.7694813731148669, epsilon = 1e-12);
 
         let e = anomaly_mean_to_true(90.0, 0.1, true).unwrap();
-        assert_abs_diff_eq!(e, 101.38381460649556, epsilon=1e-12);
+        assert_abs_diff_eq!(e, 101.38381460649556, epsilon = 1e-12);
     }
 
     #[test]
@@ -868,13 +929,21 @@ mod tests {
             // Test starting conversion from eccentric anomaly and returning
             for i in 0..180 {
                 let theta = f64::from(i);
-                assert_abs_diff_eq!(theta, anomaly_mean_to_true(anomaly_true_to_mean(theta, e, true), e, true).unwrap(), epsilon=1e-12);
+                assert_abs_diff_eq!(
+                    theta,
+                    anomaly_mean_to_true(anomaly_true_to_mean(theta, e, true), e, true).unwrap(),
+                    epsilon = 1e-12
+                );
             }
 
             // Test starting conversion from mean anomaly and returning
             for i in 0..180 {
                 let theta = f64::from(i);
-                assert_abs_diff_eq!(theta, anomaly_true_to_mean(anomaly_mean_to_true(theta, e, true).unwrap(), e, true), epsilon=1e-12);
+                assert_abs_diff_eq!(
+                    theta,
+                    anomaly_true_to_mean(anomaly_mean_to_true(theta, e, true).unwrap(), e, true),
+                    epsilon = 1e-12
+                );
             }
         }
     }
