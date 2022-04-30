@@ -642,7 +642,7 @@ impl EarthOrientationProvider {
     /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
-    /// assert!(eop.mjd_min() >= 0);
+    /// assert!(eop.mjd_min() > 0);
     /// assert!(eop.mjd_min() < 99999);
     /// ```
     pub fn mjd_min(&self) -> u32 {
@@ -663,7 +663,7 @@ impl EarthOrientationProvider {
     /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
-    /// assert!(eop.mjd_max() >= 0);
+    /// assert!(eop.mjd_max() > 0);
     /// assert!(eop.mjd_max() < 99999);
     /// ```
     pub fn mjd_max(&self) -> u32 {
@@ -684,7 +684,7 @@ impl EarthOrientationProvider {
     /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
-    /// assert!(eop.mjd_last_lod() >= 0);
+    /// assert!(eop.mjd_last_lod() > 0);
     /// assert!(eop.mjd_last_lod() < 99999);
     /// ```
     pub fn mjd_last_lod(&self) -> u32 {
@@ -705,7 +705,7 @@ impl EarthOrientationProvider {
     /// eop.from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA);;
     ///
     /// // Confirm initialization complete
-    /// assert!(eop.mjd_last_dxdy() >= 0);
+    /// assert!(eop.mjd_last_dxdy() > 0);
     /// assert!(eop.mjd_last_dxdy() < 99999);
     /// ```
     pub fn mjd_last_dxdy(&self) -> u32 {
@@ -1393,15 +1393,15 @@ fn parse_standard_eop_line(
                     }
                 };
                 lod = match f64::from_str(&line[78..86].trim()) {
-                    Ok(lod) => Some(lod),
+                    Ok(lod) => Some(lod * 1.0e-3),
                     Err(_) => None,
                 };
                 dX = match f64::from_str(&line[97..106].trim()) {
-                    Ok(dX) => Some(dX * AS2RAD),
+                    Ok(dX) => Some(dX * 1.0e-3 * AS2RAD),
                     Err(_) => None,
                 };
                 dY = match f64::from_str(&line[116..125].trim()) {
-                    Ok(dY) => Some(dY * AS2RAD),
+                    Ok(dY) => Some(dY * 1.0e-3 * AS2RAD),
                     Err(_) => None,
                 };
             }
@@ -1438,7 +1438,7 @@ fn parse_standard_eop_line(
                 };
                 lod = Some(0.0);
                 dX = match f64::from_str(&line[165..175].trim()) {
-                    Ok(dX) => Some(dX * AS2RAD),
+                    Ok(dX) => Some(dX * 1.0e-3 * AS2RAD),
                     Err(e) => {
                         return Err(format!(
                             "Failed to parse dX from '{}': {}",
@@ -1448,7 +1448,7 @@ fn parse_standard_eop_line(
                     }
                 };
                 dY = match f64::from_str(&line[175..185].trim()) {
-                    Ok(dY) => Some(dY * AS2RAD),
+                    Ok(dY) => Some(dY * 1.0e-3 * AS2RAD),
                     Err(e) => {
                         return Err(format!(
                             "Failed to parse dY from '{}': {}",
@@ -2096,7 +2096,7 @@ pub fn get_global_eop_interpolate() -> bool {
 /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Confirm initialization complete
-/// assert!(get_global_eop_mjd_min() >= 0);
+/// assert!(get_global_eop_mjd_min() > 0);
 /// assert!(get_global_eop_mjd_min() < 99999);
 /// ```
 pub fn get_global_eop_mjd_min() -> u32 {
@@ -2116,7 +2116,7 @@ pub fn get_global_eop_mjd_min() -> u32 {
 /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Confirm initialization complete
-/// assert!(get_global_eop_mjd_max() >= 0);
+/// assert!(get_global_eop_mjd_max() > 0);
 /// assert!(get_global_eop_mjd_max() < 99999);
 /// ```
 pub fn get_global_eop_mjd_max() -> u32 {
@@ -2136,7 +2136,7 @@ pub fn get_global_eop_mjd_max() -> u32 {
 /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Confirm initialization complete
-/// assert!(get_global_eop_mjd_last_lod() >= 0);
+/// assert!(get_global_eop_mjd_last_lod() > 0);
 /// assert!(get_global_eop_mjd_last_lod() < 99999);
 /// ```
 pub fn get_global_eop_mjd_last_lod() -> u32 {
@@ -2156,7 +2156,7 @@ pub fn get_global_eop_mjd_last_lod() -> u32 {
 /// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
 ///
 /// // Confirm initialization complete
-/// assert!(get_global_eop_mjd_last_dxdy() >= 0);
+/// assert!(get_global_eop_mjd_last_dxdy() > 0);
 /// assert!(get_global_eop_mjd_last_dxdy() < 99999);
 /// ```
 pub fn get_global_eop_mjd_last_dxdy() -> u32 {
@@ -2167,6 +2167,7 @@ pub fn get_global_eop_mjd_last_dxdy() -> u32 {
 mod tests {
     use crate::constants::AS2RAD;
     use crate::eop::*;
+    use approx::assert_abs_diff_eq;
     use std::env;
     use std::path::Path;
 
@@ -2349,9 +2350,9 @@ mod tests {
                 -0.043558 * AS2RAD,
                 0.265338 * AS2RAD,
                 -0.2891063,
-                Some(-0.259 * AS2RAD),
-                Some(-0.869 * AS2RAD),
-                Some(2.9374)
+                Some(-0.259 * 1.0e-3 * AS2RAD),
+                Some(-0.869 * 1.0e-3 * AS2RAD),
+                Some(2.9374 * 1.0e-3)
             ),
             parse_standard_eop_line(good_str, EOPType::StandardBulletinA).unwrap()
         );
@@ -2365,8 +2366,8 @@ mod tests {
                 0.012311 * AS2RAD,
                 0.360715 * AS2RAD,
                 -0.1074307,
-                Some(0.195 * AS2RAD),
-                Some(0.056 * AS2RAD),
+                Some(0.195 * 1.0e-3 * AS2RAD),
+                Some(0.056 * 1.0e-3 * AS2RAD),
                 None
             ),
             parse_standard_eop_line(no_lod_str, EOPType::StandardBulletinA).unwrap()
@@ -2422,8 +2423,8 @@ mod tests {
                 -0.039000 * AS2RAD,
                 0.281000 * AS2RAD,
                 -0.2908000,
-                Some(-16.159 * AS2RAD),
-                Some(-1.585 * AS2RAD),
+                Some(-16.159 * 1.0e-3 * AS2RAD),
+                Some(-1.585 * 1.0e-3 * AS2RAD),
                 Some(0.0)
             ),
             parse_standard_eop_line(good_str, EOPType::StandardBulletinB).unwrap()
@@ -2615,18 +2616,18 @@ mod tests {
 
         // Test getting exact point in table
         let (dX, dY) = eop.get_dxdy(59569.0).unwrap();
-        assert_eq!(dX, 0.088 * AS2RAD);
-        assert_eq!(dY, 0.057 * AS2RAD);
+        assert_eq!(dX, 0.088 * 1.0e-3 * AS2RAD);
+        assert_eq!(dY, 0.057 * 1.0e-3 * AS2RAD);
 
         // Test interpolating within table
         let (dX, dY) = eop.get_dxdy(59569.5).unwrap();
-        assert_eq!(dX, (0.088 * AS2RAD + 0.086 * AS2RAD) / 2.0);
-        assert_eq!(dY, (0.057 * AS2RAD + 0.058 * AS2RAD) / 2.0);
+        assert_eq!(dX, (0.088 * AS2RAD + 0.086 * AS2RAD) * 1.0e-3 / 2.0);
+        assert_eq!(dY, (0.057 * AS2RAD + 0.058 * AS2RAD) * 1.0e-3 / 2.0);
 
         // Test extrapolation hold
         let (dX, dY) = eop.get_dxdy(59950.0).unwrap();
-        assert_eq!(dX, 0.283 * AS2RAD);
-        assert_eq!(dY, 0.104 * AS2RAD);
+        assert_eq!(dX, 0.283 * 1.0e-3 * AS2RAD);
+        assert_eq!(dY, 0.104 * 1.0e-3 * AS2RAD);
 
         // Test extrapolation zero
         let eop = setup_test_eop(EOPExtrapolation::Zero);
@@ -2642,15 +2643,15 @@ mod tests {
 
         // Test getting exact point in table
         let lod = eop.get_lod(59569.0).unwrap();
-        assert_eq!(lod, -0.4288);
+        assert_eq!(lod, -0.4288 * 1.0e-3);
 
         // Test interpolating within table
         let lod = eop.get_lod(59569.5).unwrap();
-        assert_eq!(lod, (-0.4288 + -0.3405) / 2.0);
+        assert_eq!(lod, (-0.4288 + -0.3405) * 1.0e-3 / 2.0);
 
         // Test extrapolation hold
         let lod = eop.get_lod(59950.0).unwrap();
-        assert_eq!(lod, -0.3405);
+        assert_eq!(lod, -0.3405 * 1.0e-3);
 
         // Test extrapolation zero
         let eop = setup_test_eop(EOPExtrapolation::Zero);
@@ -2831,18 +2832,18 @@ mod tests {
 
         // Test getting exact point in table
         let (dX, dY) = get_global_dxdy(59569.0).unwrap();
-        assert_eq!(dX, 0.088 * AS2RAD);
-        assert_eq!(dY, 0.057 * AS2RAD);
+        assert_eq!(dX, 0.088 * 1.0e-3 * AS2RAD);
+        assert_eq!(dY, 0.057 * 1.0e-3 * AS2RAD);
 
         // Test interpolating within table
         let (dX, dY) = get_global_dxdy(59569.5).unwrap();
-        assert_eq!(dX, (0.088 * AS2RAD + 0.086 * AS2RAD) / 2.0);
-        assert_eq!(dY, (0.057 * AS2RAD + 0.058 * AS2RAD) / 2.0);
+        assert_eq!(dX, (0.088 * AS2RAD + 0.086 * AS2RAD) * 1.0e-3 / 2.0);
+        assert_eq!(dY, (0.057 * AS2RAD + 0.058 * AS2RAD) * 1.0e-3 / 2.0);
 
         // Test extrapolation hold
         let (dX, dY) = get_global_dxdy(59950.0).unwrap();
-        assert_eq!(dX, 0.283 * AS2RAD);
-        assert_eq!(dY, 0.104 * AS2RAD);
+        assert_eq!(dX, 0.283 * 1.0e-3 * AS2RAD);
+        assert_eq!(dY, 0.104 * 1.0e-3 * AS2RAD);
 
         // Test extrapolation zero
         setup_test_global_eop(EOPExtrapolation::Zero);
@@ -2858,15 +2859,15 @@ mod tests {
 
         // Test getting exact point in table
         let lod = get_global_lod(59569.0).unwrap();
-        assert_eq!(lod, -0.4288);
+        assert_eq!(lod, -0.4288 * 1.0e-3);
 
         // Test interpolating within table
         let lod = get_global_lod(59569.5).unwrap();
-        assert_eq!(lod, (-0.4288 + -0.3405) / 2.0);
+        assert_eq!(lod, (-0.4288 * 1.0e-3 + -0.3405 * 1.0e-3) / 2.0);
 
         // Test extrapolation hold
         let lod = get_global_lod(59950.0).unwrap();
-        assert_eq!(lod, -0.3405);
+        assert_eq!(lod, -0.3405 * 1.0e-3);
 
         // Test extrapolation zero
         setup_test_global_eop(EOPExtrapolation::Zero);
@@ -2936,5 +2937,63 @@ mod tests {
         setup_test_global_eop(EOPExtrapolation::Hold);
 
         assert_eq!(get_global_eop_mjd_last_dxdy(), 59648);
+    }
+
+    #[test]
+    fn test_cip_format_consistency() {
+        // Check that the units of C04 and Standard format CIP corrections are
+        // approximately the same
+
+        // Load Standard file
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir)
+            .join("test_assets")
+            .join("iau2000A_finals_ab.txt");
+
+        let eop_standard = EarthOrientationProvider::new();
+
+        let eop_standard_result = eop_standard
+            .from_standard_file(
+                filepath.to_str().unwrap(),
+                EOPExtrapolation::Hold,
+                true,
+                EOPType::StandardBulletinA,
+            )
+            .unwrap();
+        assert!(eop_standard.initialized());
+
+        // Load C04 file
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir)
+            .join("test_assets")
+            .join("iau2000A_c04_14.txt");
+
+        let eop_c04 = EarthOrientationProvider::new();
+
+        let eop_c04_result = eop_c04
+            .from_c04_file(filepath.to_str().unwrap(), EOPExtrapolation::Hold, true)
+            .unwrap();
+        assert!(eop_c04.initialized());
+
+        // Confrim xp and yp are approximately equal
+        let (pm_x_s, pm_y_s) = eop_standard.get_pm(54195.0).unwrap();
+        let (pm_x_c04, pm_y_c04) = eop_c04.get_pm(54195.0).unwrap();
+        assert_abs_diff_eq!(pm_x_s, pm_x_c04, epsilon = 1.0e-9);
+        assert_abs_diff_eq!(pm_y_s, pm_y_c04, epsilon = 1.0e-9);
+
+        // Confrim ut1-utc are approximately equal
+        let ut1_utc_s = eop_standard.get_ut1_utc(54195.0).unwrap();
+        let ut1_utc_c04 = eop_c04.get_ut1_utc(54195.0).unwrap();
+        assert_abs_diff_eq!(ut1_utc_s, ut1_utc_c04, epsilon = 1.0e-5);
+
+        // Confrim LOD are approximately equal
+        let lod_s = eop_standard.get_lod(54195.0).unwrap();
+        let lod_c04 = eop_c04.get_lod(54195.0).unwrap();
+        assert_abs_diff_eq!(lod_s, lod_c04, epsilon = 1.0e-4);
+
+        // Confirm dX, and dY are not approximately equal even for the same file
+        let (dX_s, dY_s) = eop_standard.get_dxdy(54195.0).unwrap();
+        let (dX_c04, dY_c04) = eop_c04.get_dxdy(54195.0).unwrap();
+        // assert_abs_diff_eq!(dX_s, dX_c04, epsilon = 1.0e-12)
     }
 }
