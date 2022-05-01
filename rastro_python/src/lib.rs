@@ -953,12 +953,11 @@ impl EpochRange {
 //     Ok(orbits::orbital_period(a))
 // }
 
-pub fn bias_precession_nutation(e: &Epoch) -> {}
-pub fn earth_rotation
-pub fn polar_motion
-pub fn rotation_eci_to_ecef
-pub fn rotation_ecef_to_eci
-
+// pub fn bias_precession_nutation(e: &Epoch)
+// pub fn earth_rotation
+// pub fn polar_motion
+// pub fn rotation_eci_to_ecef
+// pub fn rotation_ecef_to_eci
 
 /////////////////////
 // Transformations //

@@ -351,6 +351,10 @@ pub fn state_ecef_to_eci(epc: Epoch, x_ecef: na::Vector6<f64>) -> na::Vector6<f6
 // Earth-Fixed Transformations //
 /////////////////////////////////
 
+///////////
+// Tests //
+///////////
+
 #[cfg(test)]
 mod tests {
     use crate::constants::R_EARTH;
