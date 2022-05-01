@@ -154,18 +154,18 @@ def test_get_dxdy(iau2000_finals_ab_filepath):
 
     # Test getting exact point in table
     dX, dY = rastro.get_global_dxdy(59569.0)
-    assert dX == 0.088*rastro.AS2RAD
-    assert dY == 0.057*rastro.AS2RAD
+    assert dX == pytest.approx(0.088*rastro.AS2RAD * 1.0e-3, abs=1e-12)
+    assert dY == pytest.approx(0.057*rastro.AS2RAD * 1.0e-3, abs=1e-12)
 
     # Test interpolating within table
     dX, dY = rastro.get_global_dxdy(59569.5)
-    assert dX == (0.088*rastro.AS2RAD + 0.086*rastro.AS2RAD)/2.0
-    assert dY == (0.057*rastro.AS2RAD + 0.058*rastro.AS2RAD)/2.0
+    assert dX == pytest.approx((0.088*rastro.AS2RAD + 0.086*rastro.AS2RAD)/2.0 * 1.0e-3, abs=1e-12)
+    assert dY == pytest.approx((0.057*rastro.AS2RAD + 0.058*rastro.AS2RAD)/2.0 * 1.0e-3, abs=1e-12)
 
     # Test extrapolation hold
     dX, dY = rastro.get_global_dxdy(59950.0)
-    assert dX == 0.283*rastro.AS2RAD
-    assert dY == 0.104*rastro.AS2RAD
+    assert dX == pytest.approx(0.283*rastro.AS2RAD * 1.0e-3, abs=1e-12)
+    assert dY == pytest.approx(0.104*rastro.AS2RAD * 1.0e-3, abs=1e-12)
 
     # Test extrapolation zero
     rastro.set_global_eop_from_standard_file(iau2000_finals_ab_filepath, "Zero", True, "StandardBulletinA")
@@ -178,13 +178,13 @@ def test_get_lod(iau2000_finals_ab_filepath):
     rastro.set_global_eop_from_standard_file(iau2000_finals_ab_filepath, "Hold", True, "StandardBulletinA")
 
     # Test getting exact point in table
-    assert rastro.get_global_lod(59569.0) == -0.4288
+    assert rastro.get_global_lod(59569.0) == -0.4288 * 1.0e-3
 
     # Test interpolating within table
-    assert rastro.get_global_lod(59569.5) == (-0.4288 + -0.3405)/2.0
+    assert rastro.get_global_lod(59569.5) == (-0.4288 + -0.3405)/2.0 * 1.0e-3
 
     # Test extrapolation hold
-    assert rastro.get_global_lod(59950.0) == -0.3405
+    assert rastro.get_global_lod(59950.0) == -0.3405 * 1.0e-3
 
     # Test extrapolation zero
     rastro.set_global_eop_from_standard_file(iau2000_finals_ab_filepath, "Zero", True, "StandardBulletinA")

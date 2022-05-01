@@ -351,6 +351,64 @@ pub fn state_ecef_to_eci(epc: Epoch, x_ecef: na::Vector6<f64>) -> na::Vector6<f6
 // Earth-Fixed Transformations //
 /////////////////////////////////
 
+pub fn position_geocentric_to_ecef(x_geoc: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+pub fn position_ecef_to_geocentric(x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+
+pub fn position_geodetic_to_ecef(x_geod: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+pub fn position_ecef_to_geodetic(x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+
+pub fn position_enz_to_ecef(x_enz: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+pub fn position_ecef_to_enz(x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+
+pub fn state_enz_to_ecef(x_enz: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
+    Vector6::zeros()
+}
+pub fn state_ecef_to_enz(x_ecef: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
+    Vector6::zeros()
+}
+
+pub fn position_sez_to_ecef(x_sez: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+pub fn position_ecef_to_sez(x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+
+pub fn state_sez_to_ecef(x_sez: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
+    Vector6::zeros()
+}
+pub fn state_ecef_to_sez(x_ecef: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
+    Vector6::zeros()
+}
+
+pub fn position_enz_to_azel(x_enz: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+
+pub fn state_enz_to_azel(x_enz: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
+    Vector6::zeros()
+}
+
+pub fn position_sez_to_azel(x_sez: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    Vector3::zeros()
+}
+
+pub fn state_sez_to_azel(x_sez: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {
+    Vector6::zeros()
+}
+
 ///////////
 // Tests //
 ///////////
