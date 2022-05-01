@@ -4,13 +4,7 @@ use rsofa;
 use crate::constants::MJD_ZERO;
 use crate::eop;
 use crate::time::{Epoch, TimeSystem};
-
-fn matrix3_from_array(mat: &[[f64; 3]; 3]) -> na::Matrix3<f64> {
-    na::Matrix3::new(
-        mat[0][0], mat[0][1], mat[0][2], mat[1][0], mat[1][1], mat[1][2], mat[2][0], mat[2][1],
-        mat[2][2],
-    )
-}
+use crate::utils::matrix3_from_array;
 
 /// Computes the Bias-Precession-Nutation matrix transforming the GCRS to the
 /// CIRS intermediate reference frame. This transformation corrects for the
@@ -202,7 +196,6 @@ pub fn rotation_eci_to_ecef(epc: Epoch) -> na::Matrix3<f64> {
     polar_motion(epc) * earth_rotation(epc) * bias_precession_nutation(epc)
 }
 
-// pub fn sECItoECEF(epc:Epoch, x:na::Vector3<f64>) -> na::Vector3<f64>:
 /// Computes the combined rotation matrix from the Earth-fixed to the inertial
 /// reference frame. Applies corrections for bias, precession, nutation,
 /// Earth-rotation, and polar motion.
@@ -240,7 +233,6 @@ pub fn rotation_eci_to_ecef(epc: Epoch) -> na::Matrix3<f64> {
 pub fn rotation_ecef_to_eci(epc: Epoch) -> na::Matrix3<f64> {
     rotation_eci_to_ecef(epc).transpose()
 }
-// pub fn sECEFtoECI(epc:Epoch, x:na::Vector3<f64>) -> na::Vector3<f64>:
 
 #[cfg(test)]
 mod tests {

@@ -934,6 +934,36 @@ impl EpochRange {
     }
 }
 
+////////////
+// Frames //
+////////////
+
+/// Computes the orbital period of an object around Earth.
+///
+/// Uses rastro.constants.GM_EARTH as the standard gravitational parameter for the calculation.
+///
+/// Arguments:
+///     a (`float`): The semi-major axis of the astronomical object. Units: (m)
+///
+/// Returns:
+///     period (`float`): The orbital period of the astronomical object. Units: (s)
+#[pyfunction]
+#[pyo3(text_signature = "(a)")]
+// fn orbital_period(a: f64) -> PyResult<f64> {
+//     Ok(orbits::orbital_period(a))
+// }
+
+pub fn bias_precession_nutation(e: &Epoch) -> {}
+pub fn earth_rotation
+pub fn polar_motion
+pub fn rotation_eci_to_ecef
+pub fn rotation_ecef_to_eci
+
+
+/////////////////////
+// Transformations //
+/////////////////////
+
 //////////////
 //  Orbits  //
 //////////////

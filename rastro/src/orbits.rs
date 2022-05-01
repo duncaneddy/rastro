@@ -8,7 +8,7 @@ use std::f64::consts::PI;
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
 ///
 /// # Returns
 ///
@@ -29,8 +29,8 @@ pub fn orbital_period(a: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
-/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
+/// * `gm`:The standard gravitational parameter of primary body. Units: (_m^3/s^2_)
 ///
 /// # Returns
 ///
@@ -51,8 +51,8 @@ pub fn orbital_period_general(a: f64, gm: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
-/// * `as_degrees`:Return output in degrees instead of radians
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
+/// * `as_degrees`: Return output in degrees instead of radians
 ///
 /// # Returns
 ///
@@ -74,8 +74,8 @@ pub fn mean_motion(a: f64, as_degrees: bool) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
-/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
+/// * `gm`:The standard gravitational parameter of primary body. Units: (_m^3/s^2_)
 /// * `as_degrees`:Return output in degrees instead of radians
 ///
 /// # Returns
@@ -109,7 +109,7 @@ pub fn mean_motion_general(a: f64, gm: f64, as_degrees: bool) -> f64 {
 ///
 /// # Returns
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
 ///
 /// # Examples
 /// ```rust
@@ -126,12 +126,12 @@ pub fn semimajor_axis(n: f64, as_degrees: bool) -> f64 {
 /// # Arguments
 ///
 /// * `n`:The mean motion of the astronomical object. Units: (rad) or (deg)
-/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `gm`:The standard gravitational parameter of primary body. Units: (_m^3/s^2_)
 /// * `as_degrees`:Interpret mean motion as degrees if `true` or radians if `false`
 ///
 /// # Returns
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
 ///
 /// # Examples
 /// ```rust
@@ -153,7 +153,7 @@ pub fn semimajor_axis_general(n: f64, gm: f64, as_degrees: bool) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
 /// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
@@ -174,9 +174,9 @@ pub fn perigee_velocity(a: f64, e: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
 /// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `gm`:The standard gravitational parameter of primary body. Units: (_m^3/s^2_)
 ///
 /// # Returns
 ///
@@ -196,7 +196,7 @@ pub fn periapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
 /// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
@@ -217,7 +217,7 @@ pub fn periapsis_distance(a: f64, e: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
 /// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
@@ -238,9 +238,9 @@ pub fn apogee_velocity(a: f64, e: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
 /// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `gm`:The standard gravitational parameter of primary body. Units: [m^3/s^2]
+/// * `gm`:The standard gravitational parameter of primary body. Units: (_m^3/s^2_)
 ///
 /// # Returns
 ///
@@ -260,7 +260,7 @@ pub fn apoapsis_velocity(a: f64, e: f64, gm: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
+/// * `a`:The semi-major axis of the astronomical object. Units: (_m_)
 /// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
 ///
 /// # Returns
@@ -282,13 +282,13 @@ pub fn apoapsis_distance(a: f64, e: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `a`:The semi-major axis of the astronomical object. Units: (m)
-/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees`:Return output in degrees instead of radians
+/// * `a`: The semi-major axis of the astronomical object. Units: (_m_)
+/// * `e`: The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees`: Return output in degrees instead of radians
 ///
 /// # Returns
 ///
-/// * `inc`:Inclination for a Sun synchronous orbit. Units: (deg) or (rad)
+/// * `inc`: Inclination for a Sun synchronous orbit. Units: (deg) or (rad)
 ///
 /// # Examples
 /// ```rust
@@ -316,13 +316,13 @@ pub fn sun_synchronous_inclination(a: f64, e: f64, as_degrees: bool) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `anm_ecc`:Eccentric anomaly. Units: (rad) or (deg)
-/// * `e`:The eccentricity of the astronomical object's orbit. Dimensionless
-/// * `as_degrees`:Interprets input and returns output in (deg) if `true` or (rad) if `false`
+/// * `anm_ecc`: Eccentric anomaly. Units: (rad) or (deg)
+/// * `e`: The eccentricity of the astronomical object's orbit. Dimensionless
+/// * `as_degrees`: Interprets input and returns output in (deg) if `true` or (rad) if `false`
 ///
 /// # Returns
 ///
-/// * `anm_mean`:Mean anomaly. Units: (rad) or (deg)
+/// * `anm_mean`: Mean anomaly. Units: (rad) or (deg)
 ///
 /// # Examples
 /// ```rust
