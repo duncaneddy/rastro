@@ -947,8 +947,8 @@ impl EpochRange {
 ///
 /// Returns:
 ///     period (`float`): The orbital period of the astronomical object. Units: (s)
-#[pyfunction]
-#[pyo3(text_signature = "(a)")]
+// #[pyfunction]
+// #[pyo3(text_signature = "(a)")]
 // fn orbital_period(a: f64) -> PyResult<f64> {
 //     Ok(orbits::orbital_period(a))
 // }
