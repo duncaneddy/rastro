@@ -83,6 +83,17 @@ dynamics software:
 - [SatelliteDynamics.jl](https://github.com/sisl/SatelliteDynamics.jl) A 
   Julia astrodynamics library
 
+[//]: # (## Requirements)
+[//]: # ()
+[//]: # (## Installation)
+[//]: # ()
+[//]: # (## Example)
+[//]: # ()
+[//]: # (### Setup)
+[//]: # ()
+[//]: # (### Execution)
+[//]: # ()
+[//]: # (### Vizualization)
 ## Documentation
 
 You can find the package documentation [here](https://duncaneddy.github.io/rastro).

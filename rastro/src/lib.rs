@@ -88,6 +88,8 @@ email me at duncan.eddy (at) gmail.com.
 I'd love to hear your feedback or thoughts!
 */
 
+extern crate core;
+
 // Bring Modules into scope
 pub mod constants;
 

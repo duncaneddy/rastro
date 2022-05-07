@@ -1,7 +1,12 @@
+use numpy;
+use numpy::{Ix1, Ix2, PyArray};
 use pyo3::prelude::*;
 use pyo3::pyclass::CompareOp;
 use pyo3::types::PyType;
-/// This is the wrapper for the rastro script.
+use pyo3::{exceptions, wrap_pyfunction};
+use rastro::*;
+
+/// This is the wrapper for the rastro crate.
 ///
 /// It is currently all in one file because of the PyO3 issues discussed in
 /// https://github.com/PyO3/pyo3/issues/1444 which prevents sharing rust-defined
@@ -9,8 +14,62 @@ use pyo3::types::PyType;
 /// entire wrapper in a single file until this is addressed.
 ///
 /// While unfortunate, that's where we are at.
-use pyo3::{exceptions, wrap_pyfunction};
-use rastro::{constants, eop, orbits, time};
+
+// helper functions
+
+macro_rules! matrix_to_numpy {
+    ($py:expr,$mat:expr,$r:expr,$c:expr,$typ:ty) => {{
+        let arr = numpy::PyArray2::<$typ>::new($py, [$r, $c], false);
+
+        for i in 0..$r {
+            for j in 0..$c {
+                arr.uget_raw([i, j]).write($mat[(i, j)])
+            }
+        }
+
+        arr
+    }};
+}
+
+macro_rules! vector_to_numpy {
+    ($py:expr,$vec:expr,$l:expr,$typ:ty) => {{
+        let arr = numpy::PyArray1::<$typ>::new($py, [$s], false);
+
+        for i in 0..$s {
+            arr.uget_raw([i]).write($vec[i])
+        }
+
+        arr
+    }};
+}
+
+macro_rules! numpy_to_vector {
+    ($py:expr,$vec:expr,$l:expr,$typ:ty) => {{
+        let arr = numpy::PyArray1::<$typ>::new($py, [$s], false);
+
+        for i in 0..$s {
+            arr.uget_raw([i]).write($vec[i])
+        }
+
+        arr
+    }};
+}
+
+// unsafe fn numpy_matrix3_from_nalgebra<'py>(
+//     py: Python<'py>,
+//     // mat: Matrix3<f64>,
+// ) -> &'py PyArray<f64, Ix2> {
+//     let arr = numpy::PyArray2::<f64>::new(py, [3, 3], false);
+//
+//     for i in 0..3 {
+//         for j in 0..3 {
+//             arr.uget_raw([i, j]).write(0.0)
+//             // arr.uget_raw([i, j]).write(mat[(i, j)])
+//         }
+//     }
+//
+//     arr
+// }
 
 ////////////////
 //  Consants  //
@@ -938,30 +997,157 @@ impl EpochRange {
 // Frames //
 ////////////
 
-/// Computes the orbital period of an object around Earth.
+/// Computes the Bias-Precession-Nutation matrix transforming the GCRS to the
+/// CIRS intermediate reference frame. This transformation corrects for the
+/// bias, precession, and nutation of Celestial Intermediate Origin (CIO) with
+/// respect to inertial space.
 ///
-/// Uses rastro.constants.GM_EARTH as the standard gravitational parameter for the calculation.
+/// This formulation computes the Bias-Precession-Nutation correction matrix
+/// according using a CIO based model using using the IAU 2006
+/// precession and IAU 2000A nutation models.
+///
+/// The function will utilize the global Earth orientation and loaded data to
+/// apply corrections to the Celestial Intermediate Pole (CIP) derived from
+/// empirical observations.
 ///
 /// Arguments:
-///     a (`float`): The semi-major axis of the astronomical object. Units: (m)
+///     epc (`Epoch`): Epoch instant for computation of transformation matrix
 ///
 /// Returns:
-///     period (`float`): The orbital period of the astronomical object. Units: (s)
-// #[pyfunction]
-// #[pyo3(text_signature = "(a)")]
-// fn orbital_period(a: f64) -> PyResult<f64> {
-//     Ok(orbits::orbital_period(a))
-// }
+///     rc2i (`numpy.ndarray`): 3x3 Rotation matrix transforming GCRS -> CIRS
+///
+/// References:
+/// - [IAU SOFA Tools For Earth Attitude, Example 5.5](http://www.iausofa.org/2021_0512_C/sofa/sofa_pn_c.pdf) Software Version 18, 2021-04-18
+#[pyfunction]
+#[pyo3(text_signature = "(epc)")]
+fn bias_precession_nutation<'py>(py: Python<'py>, epc: &Epoch) -> &'py PyArray<f64, Ix2> {
+    unsafe {
+        let mat = frames::bias_precession_nutation(epc.obj);
 
-// pub fn bias_precession_nutation(e: &Epoch)
-// pub fn earth_rotation
-// pub fn polar_motion
-// pub fn rotation_eci_to_ecef
-// pub fn rotation_ecef_to_eci
+        matrix_to_numpy!(py, mat, 3, 3, f64)
+    }
+}
+
+/// Computes the Earth rotation matrix transforming the CIRS to the TIRS
+/// intermediate reference frame. This transformation corrects for the Earth
+/// rotation.
+///
+/// Arguments:
+///     epc (`Epoch`): Epoch instant for computation of transformation matrix
+///
+/// Returns:
+///     r (`numpy.ndarray`): 3x3 Rotation matrix transforming CIRS -> TIRS
+#[pyfunction]
+#[pyo3(text_signature = "(epc)")]
+fn earth_rotation<'py>(py: Python<'py>, epc: &Epoch) -> &'py PyArray<f64, Ix2> {
+    unsafe {
+        let mat = frames::earth_rotation(epc.obj);
+        matrix_to_numpy!(py, mat, 3, 3, f64)
+    }
+}
+
+/// Computes the Earth rotation matrix transforming the TIRS to the ITRF reference
+/// frame.
+///
+/// The function will utilize the global Earth orientation and loaded data to
+/// apply corrections to compute the polar motion correction based on empirical
+/// observations of polar motion drift.
+///
+/// Arguments:
+///     epc (`Epoch`): Epoch instant for computation of transformation matrix
+///
+/// Returns:
+///     rpm (`numpy.ndarray`): 3x3 Rotation matrix transforming TIRS -> ITRF
+#[pyfunction]
+#[pyo3(text_signature = "(epc)")]
+fn polar_motion<'py>(py: Python<'py>, epc: &Epoch) -> &'py PyArray<f64, Ix2> {
+    unsafe {
+        let mat = frames::polar_motion(epc.obj);
+        matrix_to_numpy!(py, mat, 3, 3, f64)
+    }
+}
+
+/// Computes the combined rotation matrix from the inertial to the Earth-fixed
+/// reference frame. Applies corrections for bias, precession, nutation,
+/// Earth-rotation, and polar motion.
+///
+/// The transformation is accomplished using the IAU 2006/2000A, CIO-based
+/// theory using classical angles. The method as described in section 5.5 of
+/// the SOFA C transformation cookbook.
+///
+/// The function will utilize the global Earth orientation and loaded data to
+/// apply corrections for Celestial Intermidate Pole (CIP) and polar motion drift
+/// derived from empirical observations.
+///
+/// Arguments:
+///     epc (`Epoch`): Epoch instant for computation of transformation matrix
+///
+/// Returns:
+///     r (`numpy.ndarray`): 3x3 Rotation matrix transforming GCRF -> ITRF
+#[pyfunction]
+#[pyo3(text_signature = "(epc)")]
+fn rotation_eci_to_ecef<'py>(py: Python<'py>, epc: &Epoch) -> &'py PyArray<f64, Ix2> {
+    unsafe {
+        let mat = frames::rotation_eci_to_ecef(epc.obj);
+        matrix_to_numpy!(py, mat, 3, 3, f64)
+    }
+}
+
+/// Computes the combined rotation matrix from the Earth-fixed to the inertial
+/// reference frame. Applies corrections for bias, precession, nutation,
+/// Earth-rotation, and polar motion.
+///
+/// The transformation is accomplished using the IAU 2006/2000A, CIO-based
+/// theory using classical angles. The method as described in section 5.5 of
+/// the SOFA C transformation cookbook.
+///
+/// The function will utilize the global Earth orientation and loaded data to
+/// apply corrections for Celestial Intermidate Pole (CIP) and polar motion drift
+/// derived from empirical observations.
+///
+/// Arguments:
+///     epc (`Epoch`): Epoch instant for computation of transformation matrix
+///
+/// Returns:
+///     r (`numpy.ndarray`): 3x3 Rotation matrix transforming ITRF -> GCRF
+#[pyfunction]
+#[pyo3(text_signature = "(epc)")]
+fn rotation_ecef_to_eci<'py>(py: Python<'py>, epc: &Epoch) -> &'py PyArray<f64, Ix2> {
+    unsafe {
+        let mat = frames::rotation_ecef_to_eci(epc.obj);
+        matrix_to_numpy!(py, mat, 3, 3, f64)
+    }
+}
 
 /////////////////////
 // Transformations //
 /////////////////////
+
+// fn state_osculating_to_cartesian<'py>(py: Python<'py>, x_oe: &'py PyArray<f64, Ix1>, as_degrees: bool) -> &'py PyArray<f64, Ix1> {
+//
+// }
+
+// fn state_cartesian_to_osculating<'py>(py: Python<'py>, x_cart: na::Vector6<f64>, as_degrees: bool) -> na::Vector6<f64> {}
+// fn position_eci_to_ecef<'py>(py: Python<'py>, epc: Epoch, x: Vector3<f64>) -> Vector3<f64> {}
+// fn position_ecef_to_eci<'py>(py: Python<'py>, epc: Epoch, x: Vector3<f64>) -> Vector3<f64> {}
+// fn state_eci_to_ecef<'py>(py: Python<'py>, epc: Epoch, x_eci: na::Vector6<f64>) -> na::Vector6<f64> {}
+// fn state_ecef_to_eci<'py>(py: Python<'py>, epc: Epoch, x_ecef: na::Vector6<f64>) -> na::Vector6<f64> {}
+// fn position_geocentric_to_ecef<'py>(py: Python<'py>, x_geoc: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn position_ecef_to_geocentric<'py>(py: Python<'py>, x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn position_geodetic_to_ecef<'py>(py: Python<'py>, x_geod: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn position_ecef_to_geodetic<'py>(py: Python<'py>, x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn position_enz_to_ecef<'py>(py: Python<'py>, x_enz: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn position_ecef_to_enz<'py>(py: Python<'py>, x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn state_enz_to_ecef<'py>(py: Python<'py>, x_enz: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
+// fn state_ecef_to_enz<'py>(py: Python<'py>, x_ecef: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
+// fn position_sez_to_ecef<'py>(py: Python<'py>, x_sez: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn position_ecef_to_sez<'py>(py: Python<'py>, x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn state_sez_to_ecef<'py>(py: Python<'py>, x_sez: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
+// fn state_ecef_to_sez<'py>(py: Python<'py>, x_ecef: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
+// fn position_enz_to_azel<'py>(py: Python<'py>, x_enz: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn state_enz_to_azel<'py>(py: Python<'py>, x_enz: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
+// fn position_sez_to_azel<'py>(py: Python<'py>, x_sez: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
+// fn state_sez_to_azel<'py>(py: Python<'py>, x_sez: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
 
 //////////////
 //  Orbits  //
@@ -1344,6 +1530,15 @@ pub fn module(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(time_system_offset, module)?)?;
     module.add_class::<Epoch>()?;
     module.add_class::<EpochRange>()?;
+
+    // Frames
+    module.add_function(wrap_pyfunction!(bias_precession_nutation, module)?)?;
+    module.add_function(wrap_pyfunction!(earth_rotation, module)?)?;
+    module.add_function(wrap_pyfunction!(polar_motion, module)?)?;
+    module.add_function(wrap_pyfunction!(rotation_eci_to_ecef, module)?)?;
+    module.add_function(wrap_pyfunction!(rotation_ecef_to_eci, module)?)?;
+
+    // Transformations
 
     // Orbits
     module.add_function(wrap_pyfunction!(orbital_period, module)?)?;

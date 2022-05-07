@@ -20,6 +20,8 @@ license = "MIT"
 
 [dependencies]
 rastro = { path = "../rastro" } # Do NOT edit. Will be updated for release by CI pipeline
+numpy = "0.16.2"
+nalgebra = "0.31.0"
 
 [dependencies.pyo3]
 version = "0.16.2"

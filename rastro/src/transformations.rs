@@ -351,18 +351,147 @@ pub fn state_ecef_to_eci(epc: Epoch, x_ecef: na::Vector6<f64>) -> na::Vector6<f6
 // Earth-Fixed Transformations //
 /////////////////////////////////
 
+const ECC2: f64 = constants::WGS84_F * (2.0 - constants::WGS84_F);
+
+/// Convert geocentric position to equivalent Earth-fixed position.
+///
+/// # Arguments:
+/// - `x_geoc`: Geocentric coordinates (lon, lat, altitude). Units: (*rad* or *deg* and *m*)
+/// - `use_degrees`: Interprets input as (deg) if `true` or (rad) if `false`
+///
+/// # Returns
+/// - `x_ecef`: Earth-fixed coordinates. Units (*m*)
+///
+/// # Examples
+/// ```rust
+/// ```
 pub fn position_geocentric_to_ecef(x_geoc: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
-    Vector3::zeros()
-}
-pub fn position_ecef_to_geocentric(x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
-    Vector3::zeros()
+    let lon = from_degrees(x_geoc[0], as_degrees);
+    let lat = from_degrees(x_geoc[1], as_degrees);
+    let alt = x_geoc[2];
+
+    // Check validity of inputs
+    if lat < -PI / 2.0 || lat > PI / 2.0 {
+        panic!("Input latitude out of range. Input must be between -90 and 90 degrees.");
+    }
+
+    // Compute Earth-fixed position
+    let r = constants::WGS84_A + alt;
+    let x = r * lat.cos() * lon.cos();
+    let y = r * lat.cos() * lon.sin();
+    let z = r * lat.sin();
+
+    Vector3::new(x, y, z)
 }
 
-pub fn position_geodetic_to_ecef(x_geod: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
-    Vector3::zeros()
+/// Convert Earth-fixed position into equivalent of geocentric position.
+///
+/// # Arguments:
+/// - `x_ecef`: Earth-fixed coordinates. Units (*m*)
+/// - `use_degrees`: Produces output in (deg) if `true` or (rad) if `false`
+///
+/// # Returns
+/// - `x_geoc`: Geocentric coordinates (lon, lat, altitude). Units: (*rad* or *deg* and *m*)
+///
+/// # Examples
+/// ```rust
+/// ```
+pub fn position_ecef_to_geocentric(x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    let x = x_ecef[0];
+    let y = x_ecef[1];
+    let z = x_ecef[2];
+
+    // Compute geocentric coordinates
+    let lon = y.atan2(x);
+    let lat = z.atan2((x * x + y * y).sqrt());
+    let alt = (x * x + y * y + z * z).sqrt() - constants::WGS84_A;
+
+    Vector3::new(
+        to_degrees(lon, as_degrees),
+        to_degrees(lat, as_degrees),
+        alt,
+    )
 }
+
+/// Convert geodetic position to equivalent Earth-fixed position.
+///
+/// # Arguments:
+/// - `x_geod`: Geodetic coordinates (lon, lat, altitude). Units: (*rad* or *deg* and *m*)
+/// - `use_degrees`: Interprets input as (deg) if `true` or (rad) if `false`
+///
+/// # Returns
+/// - `x_ecef`: Earth-fixed coordinates. Units (*m*)
+///
+/// # Examples
+/// ```rust
+/// ```
+pub fn position_geodetic_to_ecef(x_geod: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+    let lon = from_degrees(x_geod[0], as_degrees);
+    let lat = from_degrees(x_geod[1], as_degrees);
+    let alt = x_geod[2];
+
+    // Check validity of inputs
+    if lat < -PI / 2.0 || lat > PI / 2.0 {
+        panic!("Input latitude out of range. Input must be between -90 and 90 degrees.");
+    }
+
+    // Compute Earth-fixed position
+    let N = constants::WGS84_A / (1.0 - ECC2 * (lat.sin()).powi(2));
+    let x = (N + alt) * lat.cos() * lon.cos();
+    let y = (N + alt) * lat.cos() * lon.sin();
+    let z = ((1.0 - ECC2) * N + alt) * lat.sin();
+
+    Vector3::new(x, y, z)
+}
+
+/// Convert Earth-fixed position into equivalent of geodetic position.
+///
+/// # Arguments:
+/// - `x_ecef`: Earth-fixed coordinates. Units (*m*)
+/// - `use_degrees`: Produces output in (deg) if `true` or (rad) if `false`
+///
+/// # Returns
+/// - `x_geod`: Geodetic coordinates (lon, lat, altitude). Units: (*rad* or *deg* and *m*)
+///
+/// # Examples
+/// ```rust
+/// ```
 pub fn position_ecef_to_geodetic(x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
-    Vector3::zeros()
+    let x = x_ecef[0];
+    let y = x_ecef[1];
+    let z = x_ecef[2];
+
+    // Compute intermediate quantities
+    let eps = f64::EPSILON * 1.0e3;
+    let rho2 = x * x + y * x;
+    let mut dz = ECC2 * z;
+    let mut N = 0.0;
+
+    // Iterative refine coordinate estimate
+    loop {
+        let zdz = z + dz;
+        let Nh = (rho2 + zdz * zdz).sqrt();
+        let sinphi = zdz / Nh;
+        N = constants::WGS84_A / (1.0 - ECC2 * sinphi * sinphi).sqrt();
+        let dz_new = N * ECC2 * sinphi;
+
+        // Check convergence requirement
+        if (dz - dz_new).abs() < eps {
+            break;
+        }
+    }
+
+    // Extract geodetic coordiantes
+    let zdz = z + dz;
+    let lon = y.atan2(x);
+    let lat = zdz.atan2(rho2.sqrt());
+    let alt = (rho2 + zdz).sqrt() - N;
+
+    Vector3::new(
+        to_degrees(lon, as_degrees),
+        to_degrees(lat, as_degrees),
+        alt,
+    )
 }
 
 pub fn position_enz_to_ecef(x_enz: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
@@ -562,4 +691,16 @@ mod tests {
         assert_abs_diff_eq!(ecef2[4], ecef[4], epsilon = tol);
         assert_abs_diff_eq!(ecef2[5], ecef[5], epsilon = tol);
     }
+
+    #[test]
+    fn test_position_geocentric_to_ecef() {}
+
+    #[test]
+    fn test_position_ecef_to_geocentric() {}
+
+    #[test]
+    fn test_position_geodetic_to_ecef() {}
+
+    #[test]
+    fn test_position_ecef_to_geodetic() {}
 }
