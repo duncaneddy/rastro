@@ -1130,6 +1130,7 @@ fn rotation_ecef_to_eci<'py>(py: Python<'py>, epc: &Epoch) -> &'py PyArray<f64, 
 //     x_oe: &'py PyArray<f64, Ix1>,
 //     as_degrees: bool,
 // ) -> &'py PyArray<f64, Ix1> {
+//     let vec = numpy_to_vector!(x_oe);
 // }
 
 // fn state_cartesian_to_osculating<'py>(py: Python<'py>, x_cart: na::Vector6<f64>, as_degrees: bool) -> na::Vector6<f64> {}
