@@ -2,8 +2,9 @@ import pytest
 import numpy as np
 import rastro
 from pytest import approx
-def
-@pytest.fixture( == static_eop():
+
+@pytest.fixture()
+def static_eop():
     pm_x = 0.0349282 * rastro.AS2RAD
     pm_y = 0.4833163 * rastro.AS2RAD
     ut1_utc = -0.072073685

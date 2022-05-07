@@ -45,13 +45,13 @@ macro_rules! vector_to_numpy {
 
 macro_rules! numpy_to_vector {
     ($py:expr,$vec:expr,$l:expr,$typ:ty) => {{
-        let arr = numpy::PyArray1::<$typ>::new($py, [$s], false);
+        let vec = na::SVector<$typ, $l>;
 
         for i in 0..$s {
-            arr.uget_raw([i]).write($vec[i])
+            vec[i] = $vec.uget([i])
         }
 
-        arr
+        vec
     }};
 }
 
