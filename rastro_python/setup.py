@@ -18,7 +18,7 @@ if __name__ == "__main__":
         install_requires=[
             'typer>=0.4.0,<1.0.0',
             'rich>=11.0.0,<12.0.0',
-            'numpy>=1.22.0,<2.0.0'
+            'numpy>=1.3.0,<2.0.0'
         ],
         classifiers=[
             "License :: OSI Approved :: MIT License",
