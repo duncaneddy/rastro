@@ -1123,14 +1123,14 @@ fn rotation_ecef_to_eci<'py>(py: Python<'py>, epc: &Epoch) -> &'py PyArray<f64, 
 // Transformations //
 /////////////////////
 
-#[pyfunction]
-#[pyo3(text_signature = "(x_oe, as_degrees)")]
-fn state_osculating_to_cartesian<'py>(
-    py: Python<'py>,
-    x_oe: &'py PyArray<f64, Ix1>,
-    as_degrees: bool,
-) -> &'py PyArray<f64, Ix1> {
-}
+// #[pyfunction]
+// #[pyo3(text_signature = "(x_oe, as_degrees)")]
+// fn state_osculating_to_cartesian<'py>(
+//     py: Python<'py>,
+//     x_oe: &'py PyArray<f64, Ix1>,
+//     as_degrees: bool,
+// ) -> &'py PyArray<f64, Ix1> {
+// }
 
 // fn state_cartesian_to_osculating<'py>(py: Python<'py>, x_cart: na::Vector6<f64>, as_degrees: bool) -> na::Vector6<f64> {}
 // fn position_eci_to_ecef<'py>(py: Python<'py>, epc: Epoch, x: Vector3<f64>) -> Vector3<f64> {}
