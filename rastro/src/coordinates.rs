@@ -859,21 +859,21 @@ mod tests {
         let tol = 1.0e-7;
 
         // Test known position conversions
-        let geoc1 = na::Vector3::new(0.0, 0.0, 0.0);
+        let geoc1 = Vector3::new(0.0, 0.0, 0.0);
         let ecef1 = position_geocentric_to_ecef(geoc1, false).unwrap();
 
         assert_abs_diff_eq!(ecef1[0], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef1[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef1[2], 0.0, epsilon = tol);
 
-        let geoc2 = na::Vector3::new(90.0, 0.0, 0.0);
+        let geoc2 = Vector3::new(90.0, 0.0, 0.0);
         let ecef2 = position_geocentric_to_ecef(geoc2, true).unwrap();
 
         assert_abs_diff_eq!(ecef2[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef2[1], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef2[2], 0.0, epsilon = tol);
 
-        let geoc3 = na::Vector3::new(0.0, 90.0, 0.0);
+        let geoc3 = Vector3::new(0.0, 90.0, 0.0);
         let ecef3 = position_geocentric_to_ecef(geoc3, true).unwrap();
 
         assert_abs_diff_eq!(ecef3[0], 0.0, epsilon = tol);
@@ -881,21 +881,21 @@ mod tests {
         assert_abs_diff_eq!(ecef3[2], WGS84_A, epsilon = tol);
 
         // Test two-input format
-        let geoc = na::Vector3::new(0.0, 0.0, 0.0);
+        let geoc = Vector3::new(0.0, 0.0, 0.0);
         let ecef = position_geocentric_to_ecef(geoc, false).unwrap();
 
         assert_abs_diff_eq!(ecef[0], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[2], 0.0, epsilon = tol);
 
-        let geoc = na::Vector3::new(90.0, 0.0, 0.0);
+        let geoc = Vector3::new(90.0, 0.0, 0.0);
         let ecef = position_geocentric_to_ecef(geoc, true).unwrap();
 
         assert_abs_diff_eq!(ecef[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef[2], 0.0, epsilon = tol);
 
-        let geoc = na::Vector3::new(0.0, 90.0, 0.0);
+        let geoc = Vector3::new(0.0, 90.0, 0.0);
         let ecef = position_geocentric_to_ecef(geoc, true).unwrap();
 
         assert_abs_diff_eq!(ecef[0], 0.0, epsilon = tol);
@@ -920,16 +920,16 @@ mod tests {
         assert_abs_diff_eq!(geoc6[2], geoc3[2], epsilon = tol);
 
         // Random point circularity
-        let geoc = na::Vector3::new(77.875000, 20.975200, 0.000000);
+        let geoc = Vector3::new(77.875000, 20.975200, 0.000000);
         let ecef = position_geocentric_to_ecef(geoc, true).unwrap();
         let geocc = position_ecef_to_geocentric(ecef, true);
         assert_abs_diff_eq!(geoc[0], geocc[0], epsilon = tol);
         assert_abs_diff_eq!(geoc[1], geocc[1], epsilon = tol);
         assert_abs_diff_eq!(geoc[2], geocc[2], epsilon = tol);
 
-        assert!(position_geocentric_to_ecef(na::Vector3::new(0.0, 90.1, 0.0), true).is_err());
+        assert!(position_geocentric_to_ecef(Vector3::new(0.0, 90.1, 0.0), true).is_err());
 
-        assert!(position_geocentric_to_ecef(na::Vector3::new(0.0, -90.1, 0.0), true).is_err());
+        assert!(position_geocentric_to_ecef(Vector3::new(0.0, -90.1, 0.0), true).is_err());
     }
 
     #[test]
@@ -937,21 +937,21 @@ mod tests {
         let tol = 1.0e-7;
 
         // Test known position conversions
-        let geod1 = na::Vector3::new(0.0, 0.0, 0.0);
+        let geod1 = Vector3::new(0.0, 0.0, 0.0);
         let ecef1 = position_geodetic_to_ecef(geod1, false).unwrap();
 
         assert_abs_diff_eq!(ecef1[0], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef1[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef1[2], 0.0, epsilon = tol);
 
-        let geod2 = na::Vector3::new(90.0, 0.0, 0.0);
+        let geod2 = Vector3::new(90.0, 0.0, 0.0);
         let ecef2 = position_geodetic_to_ecef(geod2, true).unwrap();
 
         assert_abs_diff_eq!(ecef2[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef2[1], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef2[2], 0.0, epsilon = tol);
 
-        let geod3 = na::Vector3::new(0.0, 90.0, 0.0);
+        let geod3 = Vector3::new(0.0, 90.0, 0.0);
         let ecef3 = position_geodetic_to_ecef(geod3, true).unwrap();
 
         assert_abs_diff_eq!(ecef3[0], 0.0, epsilon = tol);
@@ -959,21 +959,21 @@ mod tests {
         assert_abs_diff_eq!(ecef3[2], WGS84_A * (1.0 - WGS84_F), epsilon = tol);
 
         // Test two-input format
-        let geod = na::Vector3::new(0.0, 0.0, 0.0);
+        let geod = Vector3::new(0.0, 0.0, 0.0);
         let ecef = position_geodetic_to_ecef(geod, false).unwrap();
 
         assert_abs_diff_eq!(ecef[0], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[2], 0.0, epsilon = tol);
 
-        let geod = na::Vector3::new(90.0, 0.0, 0.0);
+        let geod = Vector3::new(90.0, 0.0, 0.0);
         let ecef = position_geodetic_to_ecef(geod, true).unwrap();
 
         assert_abs_diff_eq!(ecef[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef[2], 0.0, epsilon = tol);
 
-        let geod = na::Vector3::new(0.0, 90.0, 0.0);
+        let geod = Vector3::new(0.0, 90.0, 0.0);
         let ecef = position_geodetic_to_ecef(geod, true).unwrap();
 
         assert_abs_diff_eq!(ecef[0], 0.0, epsilon = tol);
@@ -998,15 +998,36 @@ mod tests {
         assert_abs_diff_eq!(geod6[2], geod3[2], epsilon = tol);
 
         // Random point circularity
-        let geod = na::Vector3::new(77.875000, 20.975200, 0.000000);
+        let geod = Vector3::new(77.875000, 20.975200, 0.000000);
         let ecef = position_geodetic_to_ecef(geod, true).unwrap();
         let geodd = position_ecef_to_geodetic(ecef, true);
         assert_abs_diff_eq!(geod[0], geodd[0], epsilon = tol);
         assert_abs_diff_eq!(geod[1], geodd[1], epsilon = tol);
         assert_abs_diff_eq!(geod[2], geodd[2], epsilon = tol);
 
-        assert!(position_geodetic_to_ecef(na::Vector3::new(0.0, 90.1, 0.0), true).is_err());
+        assert!(position_geodetic_to_ecef(Vector3::new(0.0, 90.1, 0.0), true).is_err());
 
-        assert!(position_geodetic_to_ecef(na::Vector3::new(0.0, -90.1, 0.0), true).is_err());
+        assert!(position_geodetic_to_ecef(Vector3::new(0.0, -90.1, 0.0), true).is_err());
+    }
+
+    #[test]
+    fn test_enz_rotation() {
+        let x_sta = Vector3::new(0.0, 0.0, 0.0);
+
+        let rot1 = rotation_ellipsoid_to_enz(x_sta, true);
+
+        assert_eq!(rot1[(0, 0)], 0.0);
+        assert_eq!(rot1[(0, 1)], 1.0);
+        assert_eq!(rot1[(0, 2)], 0.0);
+
+        assert_eq!(rot1[(1, 0)], 0.0);
+        assert_eq!(rot1[(1, 1)], 0.0);
+        assert_eq!(rot1[(1, 2)], 1.0);
+
+        assert_eq!(rot1[(2, 0)], 1.0);
+        assert_eq!(rot1[(2, 1)], 0.0);
+        assert_eq!(rot1[(2, 2)], 0.0);
+
+        assert_eq!(rot1.determinant(), 1.0);
     }
 }

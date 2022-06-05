@@ -1116,7 +1116,7 @@ unsafe fn position_eci_to_ecef<'py>(
     epc: &Epoch,
     x: &'py PyArray<f64, Ix1>,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec = coordinates::position_eci_to_ecef(epc.obj, numpy_to_vector!(x, 3, f64));
+    let vec = frames::position_eci_to_ecef(epc.obj, numpy_to_vector!(x, 3, f64));
 
     vector_to_numpy!(py, vec, 3, f64)
 }
@@ -1128,7 +1128,7 @@ unsafe fn position_ecef_to_eci<'py>(
     epc: &Epoch,
     x: &'py PyArray<f64, Ix1>,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec = coordinates::position_ecef_to_eci(epc.obj, numpy_to_vector!(x, 3, f64));
+    let vec = frames::position_ecef_to_eci(epc.obj, numpy_to_vector!(x, 3, f64));
 
     vector_to_numpy!(py, vec, 3, f64)
 }
@@ -1140,7 +1140,7 @@ unsafe fn state_eci_to_ecef<'py>(
     epc: &Epoch,
     x_eci: &'py PyArray<f64, Ix1>,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec = coordinates::state_eci_to_ecef(epc.obj, numpy_to_vector!(x_eci, 6, f64));
+    let vec = frames::state_eci_to_ecef(epc.obj, numpy_to_vector!(x_eci, 6, f64));
 
     vector_to_numpy!(py, vec, 6, f64)
 }
@@ -1152,7 +1152,7 @@ unsafe fn state_ecef_to_eci<'py>(
     epc: &Epoch,
     x_ecef: &'py PyArray<f64, Ix1>,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec = coordinates::state_ecef_to_eci(epc.obj, numpy_to_vector!(x_ecef, 6, f64));
+    let vec = frames::state_ecef_to_eci(epc.obj, numpy_to_vector!(x_ecef, 6, f64));
 
     vector_to_numpy!(py, vec, 6, f64)
 }
@@ -1195,7 +1195,8 @@ unsafe fn position_geocentric_to_ecef<'py>(
     as_degrees: bool,
 ) -> &'py PyArray<f64, Ix1> {
     let vec =
-        coordinates::position_geocentric_to_ecef(numpy_to_vector!(x_geoc, 3, f64), as_degrees);
+        coordinates::position_geocentric_to_ecef(numpy_to_vector!(x_geoc, 3, f64), as_degrees)
+            .unwrap();
 
     vector_to_numpy!(py, vec, 3, f64)
 }
@@ -1220,7 +1221,8 @@ unsafe fn position_geodetic_to_ecef<'py>(
     x_geod: &'py PyArray<f64, Ix1>,
     as_degrees: bool,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec = coordinates::position_geodetic_to_ecef(numpy_to_vector!(x_geod, 3, f64), as_degrees);
+    let vec = coordinates::position_geodetic_to_ecef(numpy_to_vector!(x_geod, 3, f64), as_degrees)
+        .unwrap();
 
     vector_to_numpy!(py, vec, 3, f64)
 }
