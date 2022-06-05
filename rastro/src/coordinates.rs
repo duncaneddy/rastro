@@ -5,9 +5,7 @@ use std::f64::consts::PI;
 
 use crate::constants;
 use crate::constants::GM_EARTH;
-use crate::frames;
 use crate::orbits;
-use crate::time::Epoch;
 use crate::utils::*;
 
 /////////////////////////////////////
@@ -36,7 +34,7 @@ use crate::utils::*;
 /// ```rust
 /// use rastro::constants::R_EARTH;
 /// use rastro::utils::vector6_from_array;
-/// use rastro::transformations::*;
+/// use rastro::coordinates::*;
 ///
 /// let osc = vector6_from_array([R_EARTH + 500e3, 0.0, 0.0, 0.0, 0.0, 0.0]);
 /// let cart = state_osculating_to_cartesian(osc, false);
@@ -88,7 +86,7 @@ pub fn state_osculating_to_cartesian(x_oe: na::Vector6<f64>, as_degrees: bool) -
 ///
 /// # Arguments
 /// - `x_cart`: Cartesian inertial state. Units: (_m_; _m/s_)
-/// - `use_degrees`: Returns output as (deg) if `true` or (rad) if `false`
+/// - `use_degrees`: Returns output as (*deg*) if `true` or (*rad*) if `false`
 ///
 /// # Returns
 /// - `x_oe`: Osculating orbital elements
@@ -98,7 +96,7 @@ pub fn state_osculating_to_cartesian(x_oe: na::Vector6<f64>, as_degrees: bool) -
 /// use rastro::constants::R_EARTH;
 /// use rastro::utils::vector6_from_array;
 /// use rastro::orbits::perigee_velocity;
-/// use rastro::transformations::*;
+/// use rastro::coordinates::*;
 ///
 /// let cart = vector6_from_array([R_EARTH + 500e3, 0.0, 0.0, 0.0, perigee_velocity(R_EARTH + 500e3, 0.0), 0.0, ]);
 /// let osc = state_cartesian_to_osculating(cart, true);
@@ -167,6 +165,11 @@ const ECC2: f64 = constants::WGS84_F * (2.0 - constants::WGS84_F);
 
 /// Convert geocentric position to equivalent Earth-fixed position.
 ///
+/// The valid input range for each component is:
+/// - lon: [-inf, +inf]. Larger values will be wrapped appropriately
+/// - lat: [-90, +90], Out-of-bounds values will result in an `Error`
+/// - alt: [-inf, +inf]. All values are valid, but may give unintended results
+///
 /// # Arguments:
 /// - `x_geoc`: Geocentric coordinates (lon, lat, altitude). Units: (*rad* or *deg* and *m*)
 /// - `use_degrees`: Interprets input as (deg) if `true` or (rad) if `false`
@@ -176,15 +179,27 @@ const ECC2: f64 = constants::WGS84_F * (2.0 - constants::WGS84_F);
 ///
 /// # Examples
 /// ```rust
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let geoc = vector3_from_array([0.0, 0.0, 0.0]);
+/// let ecef = position_geocentric_to_ecef(geoc, true).unwrap();
+/// // Returns state [R_EARTH, 0.0, 0.0]
 /// ```
-pub fn position_geocentric_to_ecef(x_geoc: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+pub fn position_geocentric_to_ecef(
+    x_geoc: Vector3<f64>,
+    as_degrees: bool,
+) -> Result<Vector3<f64>, String> {
     let lon = from_degrees(x_geoc[0], as_degrees);
     let lat = from_degrees(x_geoc[1], as_degrees);
     let alt = x_geoc[2];
 
     // Check validity of inputs
     if lat < -PI / 2.0 || lat > PI / 2.0 {
-        panic!("Input latitude out of range. Input must be between -90 and 90 degrees.");
+        return Err(format!(
+            "Input latitude out of range. Input must be between -90 and 90 degrees. Input: {}",
+            lat
+        ));
     }
 
     // Compute Earth-fixed position
@@ -193,7 +208,7 @@ pub fn position_geocentric_to_ecef(x_geoc: Vector3<f64>, as_degrees: bool) -> Ve
     let y = r * lat.cos() * lon.sin();
     let z = r * lat.sin();
 
-    Vector3::new(x, y, z)
+    Ok(Vector3::new(x, y, z))
 }
 
 /// Convert Earth-fixed position into equivalent of geocentric position.
@@ -207,6 +222,13 @@ pub fn position_geocentric_to_ecef(x_geoc: Vector3<f64>, as_degrees: bool) -> Ve
 ///
 /// # Examples
 /// ```rust
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let ecef = vector3_from_array([R_EARTH, 0.0, 0.0]);
+/// let geoc = position_ecef_to_geocentric(ecef, true);
+/// // Returns state [0.0, 0.0, 0.0]
 /// ```
 pub fn position_ecef_to_geocentric(x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
     let x = x_ecef[0];
@@ -236,16 +258,28 @@ pub fn position_ecef_to_geocentric(x_ecef: Vector3<f64>, as_degrees: bool) -> Ve
 ///
 /// # Examples
 /// ```rust
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let geod = vector3_from_array([0.0, 0.0, 0.0]);
+/// let ecef = position_geodetic_to_ecef(geod, true).unwrap();
+/// // Returns state [R_EARTH, 0.0, 0.0]
 /// ```
 #[allow(non_snake_case)]
-pub fn position_geodetic_to_ecef(x_geod: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
+pub fn position_geodetic_to_ecef(
+    x_geod: Vector3<f64>,
+    as_degrees: bool,
+) -> Result<Vector3<f64>, String> {
     let lon = from_degrees(x_geod[0], as_degrees);
     let lat = from_degrees(x_geod[1], as_degrees);
     let alt = x_geod[2];
 
     // Check validity of inputs
     if lat < -PI / 2.0 || lat > PI / 2.0 {
-        panic!("Input latitude out of range. Input must be between -90 and 90 degrees.");
+        return Err(format!(
+            "Input latitude out of range. Input must be between -90 and 90 degrees. Input: {}",
+            lat
+        ));
     }
 
     // Compute Earth-fixed position
@@ -254,7 +288,7 @@ pub fn position_geodetic_to_ecef(x_geod: Vector3<f64>, as_degrees: bool) -> Vect
     let y = (N + alt) * lat.cos() * lon.sin();
     let z = ((1.0 - ECC2) * N + alt) * lat.sin();
 
-    Vector3::new(x, y, z)
+    Ok(Vector3::new(x, y, z))
 }
 
 /// Convert Earth-fixed position into equivalent of geodetic position.
@@ -268,6 +302,13 @@ pub fn position_geodetic_to_ecef(x_geod: Vector3<f64>, as_degrees: bool) -> Vect
 ///
 /// # Examples
 /// ```rust
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let ecef = vector3_from_array([R_EARTH, 0.0, 0.0]);
+/// let geoc = position_ecef_to_geodetic(ecef, true);
+/// // Returns state [0.0, 0.0, 0.0]
 /// ```
 #[allow(non_snake_case)]
 pub fn position_ecef_to_geodetic(x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
@@ -322,11 +363,12 @@ pub enum EllipsoidalConversionType {
     Geodetic,
 }
 
-/// Compute the rotation matrix from the Earth-fixed to the East-North-Zenith
-/// coordinate basis.
+/// Compute the rotation matrix from body-fixed to East-North-Zenith (ENZ)
+/// Cartesian coordinates for a given set of coordinates on an ellipsoidal body.
+/// The ellipsoidal coordinates can either be geodetic or geocentric.
 ///
 /// # Args:
-/// - `x_ellipsoidal`: Ellipsoidal coordinates. Can be either geodetic or geocentric ellipsoidal.
+/// - `x_ellipsoid`: Ellipsoidal coordinates.  Expected format (lon, lat, alt)
 /// - `use_degrees`: Interprets input as (deg) if `true` or (rad) if `false`
 ///
 /// # Returns:
@@ -334,10 +376,15 @@ pub enum EllipsoidalConversionType {
 ///
 /// # Examples:
 /// ```rust
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_geo = vector3_from_array([30.0, 60.0, 0.0]);
+/// let rot = rotation_ellipsoid_to_enz(x_geo, true);
 /// ```
-pub fn rotation_ellipsoidal_to_enz(x_ellipsoidal: Vector3<f64>, as_degrees: bool) -> Matrix3<f64> {
-    let lon = from_degrees(x_ellipsoidal[0], as_degrees);
-    let lat = from_degrees(x_ellipsoidal[1], as_degrees);
+pub fn rotation_ellipsoid_to_enz(x_ellipsoid: Vector3<f64>, as_degrees: bool) -> Matrix3<f64> {
+    let lon = from_degrees(x_ellipsoid[0], as_degrees);
+    let lat = from_degrees(x_ellipsoid[1], as_degrees);
 
     // Construct Rotation matrix
     Matrix3::new(
@@ -353,11 +400,12 @@ pub fn rotation_ellipsoidal_to_enz(x_ellipsoidal: Vector3<f64>, as_degrees: bool
     )
 }
 
-/// Compute the rotation matrix from the the East-North-Zenith to the
-/// Earth-Centered-Earth-Fixed coorindate basis.
+/// Compute the rotation matrix from East-North-Zenith (ENZ) to body-fixed
+/// Cartesian coordinates for a given set of coordinates on an ellipsoidal body.
+/// The ellipsoidal coordinates can either be geodetic or geocentric.
 ///
 /// # Args:
-/// - `x_ellipsoidal`: Ellipsoidal coordinates. Can be either geodetic or geocentric ellipsoidal.
+/// - `x_ellipsoid`: Ellipsoidal coordinates.  Expected format (lon, lat, alt)
 /// - `use_degrees`: Interprets input as (deg) if `true` or (rad) if `false`
 ///
 /// # Returns:
@@ -365,23 +413,40 @@ pub fn rotation_ellipsoidal_to_enz(x_ellipsoidal: Vector3<f64>, as_degrees: bool
 ///
 /// # Examples:
 /// ```rust
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_geo = vector3_from_array([30.0, 60.0, 0.0]);
+/// let rot = rotation_enz_to_ellipsoid(x_geo, true);
 /// ```
-pub fn rotation_enz_to_ellipsoidal(x_ellipsoidal: Vector3<f64>, as_degrees: bool) -> Matrix3<f64> {
-    rotation_ellipsoidal_to_enz(x_ellipsoidal, as_degrees).transpose()
+pub fn rotation_enz_to_ellipsoid(x_ellipsoid: Vector3<f64>, as_degrees: bool) -> Matrix3<f64> {
+    rotation_ellipsoid_to_enz(x_ellipsoid, as_degrees).transpose()
 }
 
-/// Compute the rotation matrix from the the East-North-Zenith to the
-/// Earth-Centered-Earth-Fixed coorindate basis.
+/// Computes the relative state in East-North-Zenith (ENZ) coordinates for a target
+/// object in the ECEF frame with respect to a fixed location (station) also in
+/// the ECEF frame.
 ///
 /// # Args:
-/// - `x_ellipsoidal`: Ellipsoidal coordinates. Can be either geodetic or geocentric ellipsoidal.
-/// - `use_degrees`: Interprets input as (deg) if `true` or (rad) if `false`
+/// - `location_ecef`: Cartesian position of the observing station in the ECEF frame.
+/// - `x_ecef`: Cartesian position of the observed object in the ECEF frame
+/// - `conversion_type`: Type of conversion to apply for computing the topocentric frame based on station coordinates.
 ///
 /// # Returns:
-/// - `E`: Topocentric to Earth-fixed rotation matrix
+/// - `r_rel`: Relative position of object in ENZ coordinates based on the station location.
 ///
 /// # Examples:
 /// ```rust
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_station = vector3_from_array([R_EARTH, 0.0, 0.0]);
+/// let x_sat = vector3_from_array([R_EARTH + 500.0e3, 0.0, 0.0]);
+///
+/// let r_enz = relative_position_ecef_to_enz(
+///     x_station, x_sat, EllipsoidalConversionType::Geocentric
+/// );
 /// ```
 #[allow(non_snake_case)]
 pub fn relative_position_ecef_to_enz(
@@ -392,10 +457,10 @@ pub fn relative_position_ecef_to_enz(
     // Create ENZ rotation matrix
     let E = match conversion_type {
         EllipsoidalConversionType::Geocentric => {
-            rotation_ellipsoidal_to_enz(position_ecef_to_geocentric(location_ecef, false), false)
+            rotation_ellipsoid_to_enz(position_ecef_to_geocentric(location_ecef, false), false)
         }
         EllipsoidalConversionType::Geodetic => {
-            rotation_ellipsoidal_to_enz(position_ecef_to_geodetic(location_ecef, false), false)
+            rotation_ellipsoid_to_enz(position_ecef_to_geodetic(location_ecef, false), false)
         }
     };
 
@@ -404,6 +469,32 @@ pub fn relative_position_ecef_to_enz(
     E * r
 }
 
+/// Computes the absolute Earth-fixed coordinates for an object given its relative
+/// position in East-North-Zenith (ENZ) coordinates and the Cartesian body-fixed
+/// coordinates of the observing location/station.
+///
+/// # Args:
+/// - `location_ecef`: Cartesian position of the observing station in the ECEF frame.
+/// - `r_rel`: Relative position of object in ENZ coordinates based on the station location.
+/// - `conversion_type`: Type of conversion to apply for computing the topocentric frame based on station coordinates.
+///
+/// # Returns:
+/// - `x_ecef`: Cartesian position of the observed object in the ECEF frame
+///
+/// # Examples:
+/// ```rust
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_station = vector3_from_array([R_EARTH, 0.0, 0.0]);
+/// let r_enz = vector3_from_array([0.0, 0.0, 500.0e3]);
+///
+/// let x_ecef = relative_position_enz_to_ecef(
+///     x_station, r_enz, EllipsoidalConversionType::Geocentric
+/// );
+/// ```
+#[allow(non_snake_case)]
 pub fn relative_position_enz_to_ecef(
     location_ecef: Vector3<f64>,
     x_enz: Vector3<f64>,
@@ -412,10 +503,10 @@ pub fn relative_position_enz_to_ecef(
     // Create ENZ rotation matrix
     let Et = match conversion_type {
         EllipsoidalConversionType::Geocentric => {
-            rotation_enz_to_ellipsoidal(position_ecef_to_geocentric(location_ecef, false), false)
+            rotation_enz_to_ellipsoid(position_ecef_to_geocentric(location_ecef, false), false)
         }
         EllipsoidalConversionType::Geodetic => {
-            rotation_enz_to_ellipsoidal(position_ecef_to_geodetic(location_ecef, false), false)
+            rotation_enz_to_ellipsoid(position_ecef_to_geodetic(location_ecef, false), false)
         }
     };
 
@@ -424,11 +515,12 @@ pub fn relative_position_enz_to_ecef(
     location_ecef + Et * r
 }
 
-/// Compute the rotation matrix from the Earth-fixed to the East-North-Zenith
-/// coordinate basis.
+/// Compute the rotation matrix from body-fixed to South-East-Zenith (SEZ)
+/// Cartesian coordinates for a given set of coordinates on an ellipsoidal body.
+/// The ellipsoidal coordinates can either be geodetic or geocentric.
 ///
 /// # Args:
-/// - `x_ellipsoidal`: Ellipsoidal coordinates. Can be either geodetic or geocentric ellipsoidal.
+/// - `x_ellipsoid`: Ellipsoidal coordinates.  Expected format (lon, lat, alt)
 /// - `use_degrees`: Interprets input as (deg) if `true` or (rad) if `false`
 ///
 /// # Returns:
@@ -436,10 +528,15 @@ pub fn relative_position_enz_to_ecef(
 ///
 /// # Examples:
 /// ```rust
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_geo = vector3_from_array([30.0, 60.0, 0.0]);
+/// let rot = rotation_sez_to_ellipsoid(x_geo, true);
 /// ```
-pub fn rotation_ellipsoidal_to_sez(x_ellipsoidal: Vector3<f64>, as_degrees: bool) -> Matrix3<f64> {
-    let lon = from_degrees(x_ellipsoidal[0], as_degrees);
-    let lat = from_degrees(x_ellipsoidal[1], as_degrees);
+pub fn rotation_ellipsoid_to_sez(x_ellipsoid: Vector3<f64>, as_degrees: bool) -> Matrix3<f64> {
+    let lon = from_degrees(x_ellipsoid[0], as_degrees);
+    let lat = from_degrees(x_ellipsoid[1], as_degrees);
 
     // Construct Rotation matrix
     Matrix3::new(
@@ -455,11 +552,12 @@ pub fn rotation_ellipsoidal_to_sez(x_ellipsoidal: Vector3<f64>, as_degrees: bool
     )
 }
 
-/// Compute the rotation matrix from the the East-North-Zenith to the
-/// Earth-Centered-Earth-Fixed coorindate basis.
+/// Compute the rotation matrix from South-East-Zenith (SEZ) to body-fixed
+/// Cartesian coordinates for a given set of coordinates on an ellipsoidal body.
+/// The ellipsoidal coordinates can either be geodetic or geocentric.
 ///
 /// # Args:
-/// - `x_ellipsoidal`: Ellipsoidal coordinates. Can be either geodetic or geocentric ellipsoidal.
+/// - `x_ellipsoid`: Ellipsoidal coordinates. Expected format (lon, lat, alt)
 /// - `use_degrees`: Interprets input as (deg) if `true` or (rad) if `false`
 ///
 /// # Returns:
@@ -467,11 +565,42 @@ pub fn rotation_ellipsoidal_to_sez(x_ellipsoidal: Vector3<f64>, as_degrees: bool
 ///
 /// # Examples:
 /// ```rust
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_geo = vector3_from_array([30.0, 60.0, 0.0]);
+/// let rot = rotation_sez_to_ellipsoid(x_geo, true);
 /// ```
-pub fn rotation_sez_to_ellipsoidal(x_ellipsoidal: Vector3<f64>, as_degrees: bool) -> Matrix3<f64> {
-    rotation_ellipsoidal_to_sez(x_ellipsoidal, as_degrees).transpose()
+pub fn rotation_sez_to_ellipsoid(x_ellipsoid: Vector3<f64>, as_degrees: bool) -> Matrix3<f64> {
+    rotation_ellipsoid_to_sez(x_ellipsoid, as_degrees).transpose()
 }
 
+/// Computes the relative state in South-East-Zenith (SEZ) coordinates for a target
+/// object in the ECEF frame with respect to a fixed location (station) also in
+/// the ECEF frame.
+///
+/// # Args:
+/// - `location_ecef`: Cartesian position of the observing station in the ECEF frame.
+/// - `x_ecef`: Cartesian position of the observed object in the ECEF frame
+/// - `conversion_type`: Type of conversion to apply for computing the topocentric frame based on station coordinates.
+///
+/// # Returns:
+/// - `r_rel`: Relative position of object in ENZ coordinates based on the station location.
+///
+/// # Examples:
+/// ```rust
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_station = vector3_from_array([R_EARTH, 0.0, 0.0]);
+/// let x_sat = vector3_from_array([R_EARTH + 500.0e3, 0.0, 0.0]);
+///
+/// let r_enz = relative_position_ecef_to_enz(
+///     x_station, x_sat, EllipsoidalConversionType::Geocentric
+/// );
+/// ```
+#[allow(non_snake_case)]
 pub fn relative_position_ecef_to_sez(
     location_ecef: Vector3<f64>,
     x_ecef: Vector3<f64>,
@@ -480,10 +609,10 @@ pub fn relative_position_ecef_to_sez(
     // Create ENZ rotation matrix
     let E = match conversion_type {
         EllipsoidalConversionType::Geocentric => {
-            rotation_ellipsoidal_to_sez(position_ecef_to_geocentric(location_ecef, false), false)
+            rotation_ellipsoid_to_sez(position_ecef_to_geocentric(location_ecef, false), false)
         }
         EllipsoidalConversionType::Geodetic => {
-            rotation_ellipsoidal_to_sez(position_ecef_to_geodetic(location_ecef, false), false)
+            rotation_ellipsoid_to_sez(position_ecef_to_geodetic(location_ecef, false), false)
         }
     };
 
@@ -492,6 +621,32 @@ pub fn relative_position_ecef_to_sez(
     E * r
 }
 
+/// Computes the absolute Earth-fixed coordinates for an object given its relative
+/// position in East-North-Zenith (ENZ) coordinates and the Cartesian body-fixed
+/// coordinates of the observing location/station.
+///
+/// # Args:
+/// - `location_ecef`: Cartesian position of the observing station in the ECEF frame.
+/// - `r_rel`: Relative position of object in ENZ coordinates based on the station location.
+/// - `conversion_type`: Type of conversion to apply for computing the topocentric frame based on station coordinates.
+///
+/// # Returns:
+/// - `x_ecef`: Cartesian position of the observed object in the ECEF frame
+///
+/// # Examples:
+/// ```rust
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_station = vector3_from_array([R_EARTH, 0.0, 0.0]);
+/// let r_sez = vector3_from_array([0.0, 0.0, 500.0e3]);
+///
+/// let x_ecef = relative_position_sez_to_ecef(
+///     x_station, r_sez, EllipsoidalConversionType::Geocentric
+/// );
+/// ```
+#[allow(non_snake_case)]
 pub fn relative_position_sez_to_ecef(
     location_ecef: Vector3<f64>,
     x_sez: Vector3<f64>,
@@ -500,10 +655,10 @@ pub fn relative_position_sez_to_ecef(
     // Create SEZ rotation matrix
     let Et = match conversion_type {
         EllipsoidalConversionType::Geocentric => {
-            rotation_sez_to_ellipsoidal(position_ecef_to_geocentric(location_ecef, false), false)
+            rotation_sez_to_ellipsoid(position_ecef_to_geocentric(location_ecef, false), false)
         }
         EllipsoidalConversionType::Geodetic => {
-            rotation_sez_to_ellipsoidal(position_ecef_to_geodetic(location_ecef, false), false)
+            rotation_sez_to_ellipsoid(position_ecef_to_geodetic(location_ecef, false), false)
         }
     };
 
@@ -512,12 +667,96 @@ pub fn relative_position_sez_to_ecef(
     location_ecef + Et * r
 }
 
+/// Converts East-North-Zenith topocentric coordinates of an location
+/// into azimuth, elevation, and range from that same location. Azimuth is measured
+/// clockwise from North.
+///
+/// # Args:
+/// - `x_enz`: Relative Cartesian position of object to location East-North-Up coordinates. Units: (*m*)
+/// - `use_degrees`: Returns output as (*deg*) if `true` or (*rad*) if `false`
+///
+/// # Returns:
+/// - `x_azel`: Azimuth, elevation and range. Units: (*angle*, *angle*, *m*)
+///
+/// # Examples:
+/// ```rust
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_enz = vector3_from_array([100.0, 0.0, 0.0]);
+///
+/// let x_azel = position_enz_to_azel(x_enz, true);
+/// // x_azel = [90.0, 0.0, 100.0]
+/// ```
 pub fn position_enz_to_azel(x_enz: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
-    x_enz
+    // Range
+    let rho = x_enz.norm();
+
+    // Elevation
+    let el = ((x_enz[0].powi(2) + x_enz[1].powi(2)).sqrt()).atan2(x_enz[2]);
+
+    // Azimuth
+    let az = if el != PI / 2.0 {
+        let azt = x_enz[1].atan2(x_enz[0]);
+
+        if azt >= 0.0 {
+            azt
+        } else {
+            azt + 2.0 * PI
+        }
+    } else {
+        // If at peak elevation azimuth is ambiguous so define as 0.0
+        0.0
+    };
+
+    Vector3::new(to_degrees(az, as_degrees), to_degrees(el, as_degrees), rho)
 }
 
+/// Converts South-East-Zenith topocentric coordinates of an location
+/// into azimuth, elevation, and range from that same location. Azimuth is measured
+/// clockwise from North.
+///
+/// # Args:
+/// - `x_sez`: Relative Cartesian position of object to location South-East-Zenith coordinates. Units: (*m*)
+/// - `use_degrees`: Returns output as (*deg*) if `true` or (*rad*) if `false`
+///
+/// # Returns:
+/// - `x_azel`: Azimuth, elevation and range. Units: (*angle*, *angle*, *m*)
+///
+/// # Examples:
+/// ```rust
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::coordinates::*;
+///
+/// let x_enz = vector3_from_array([0.0, 100.0, 0.0]);
+///
+/// let x_azel = position_sez_to_azel(x_enz, true);
+/// // x_azel = [90.0, 0.0, 100.0]
+/// ```
 pub fn position_sez_to_azel(x_sez: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {
-    x_sez
+    // Range
+    let rho = x_sez.norm();
+
+    // Elevation
+    let el = ((x_sez[0].powi(2) + x_sez[1].powi(2)).sqrt()).atan2(x_sez[2]);
+
+    // Azimuth
+    let az = if el != PI / 2.0 {
+        let azt = (-x_sez[0]).atan2(x_sez[1]);
+
+        if azt >= 0.0 {
+            azt
+        } else {
+            azt + 2.0 * PI
+        }
+    } else {
+        // If at peak elevation azimuth is ambiguous so define as 0.0
+        0.0
+    };
+
+    Vector3::new(to_degrees(az, as_degrees), to_degrees(el, as_degrees), rho)
 }
 
 ///////////
@@ -527,10 +766,9 @@ pub fn position_sez_to_azel(x_sez: Vector3<f64>, as_degrees: bool) -> Vector3<f6
 #[cfg(test)]
 mod tests {
     use crate::constants::{R_EARTH, WGS84_A, WGS84_F};
+    use crate::coordinates::*;
     use crate::eop::*;
     use crate::orbits::*;
-    use crate::time::TimeSystem;
-    use crate::transformations::*;
     use approx::assert_abs_diff_eq;
     use std::env;
     use std::path::Path;
@@ -622,21 +860,21 @@ mod tests {
 
         // Test known position conversions
         let geoc1 = na::Vector3::new(0.0, 0.0, 0.0);
-        let ecef1 = position_geocentric_to_ecef(geoc1, false);
+        let ecef1 = position_geocentric_to_ecef(geoc1, false).unwrap();
 
         assert_abs_diff_eq!(ecef1[0], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef1[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef1[2], 0.0, epsilon = tol);
 
         let geoc2 = na::Vector3::new(90.0, 0.0, 0.0);
-        let ecef2 = position_geocentric_to_ecef(geoc2, true);
+        let ecef2 = position_geocentric_to_ecef(geoc2, true).unwrap();
 
         assert_abs_diff_eq!(ecef2[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef2[1], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef2[2], 0.0, epsilon = tol);
 
         let geoc3 = na::Vector3::new(0.0, 90.0, 0.0);
-        let ecef3 = position_geocentric_to_ecef(geoc3, true);
+        let ecef3 = position_geocentric_to_ecef(geoc3, true).unwrap();
 
         assert_abs_diff_eq!(ecef3[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef3[1], 0.0, epsilon = tol);
@@ -644,21 +882,21 @@ mod tests {
 
         // Test two-input format
         let geoc = na::Vector3::new(0.0, 0.0, 0.0);
-        let ecef = position_geocentric_to_ecef(geoc, false);
+        let ecef = position_geocentric_to_ecef(geoc, false).unwrap();
 
         assert_abs_diff_eq!(ecef[0], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[2], 0.0, epsilon = tol);
 
         let geoc = na::Vector3::new(90.0, 0.0, 0.0);
-        let ecef = position_geocentric_to_ecef(geoc, true);
+        let ecef = position_geocentric_to_ecef(geoc, true).unwrap();
 
         assert_abs_diff_eq!(ecef[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef[2], 0.0, epsilon = tol);
 
         let geoc = na::Vector3::new(0.0, 90.0, 0.0);
-        let ecef = position_geocentric_to_ecef(geoc, true);
+        let ecef = position_geocentric_to_ecef(geoc, true).unwrap();
 
         assert_abs_diff_eq!(ecef[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], 0.0, epsilon = tol);
@@ -683,21 +921,15 @@ mod tests {
 
         // Random point circularity
         let geoc = na::Vector3::new(77.875000, 20.975200, 0.000000);
-        let ecef = position_geocentric_to_ecef(geoc, true);
+        let ecef = position_geocentric_to_ecef(geoc, true).unwrap();
         let geocc = position_ecef_to_geocentric(ecef, true);
         assert_abs_diff_eq!(geoc[0], geocc[0], epsilon = tol);
         assert_abs_diff_eq!(geoc[1], geocc[1], epsilon = tol);
         assert_abs_diff_eq!(geoc[2], geocc[2], epsilon = tol);
 
-        let result = std::panic::catch_unwind(|| {
-            position_geocentric_to_ecef(na::Vector3::new(0.0, 90.1, 0.0), true)
-        });
-        assert!(result.is_err());
+        assert!(position_geocentric_to_ecef(na::Vector3::new(0.0, 90.1, 0.0), true).is_err());
 
-        let result = std::panic::catch_unwind(|| {
-            position_geocentric_to_ecef(na::Vector3::new(0.0, -90.1, 0.0), true)
-        });
-        assert!(result.is_err());
+        assert!(position_geocentric_to_ecef(na::Vector3::new(0.0, -90.1, 0.0), true).is_err());
     }
 
     #[test]
@@ -706,21 +938,21 @@ mod tests {
 
         // Test known position conversions
         let geod1 = na::Vector3::new(0.0, 0.0, 0.0);
-        let ecef1 = position_geodetic_to_ecef(geod1, false);
+        let ecef1 = position_geodetic_to_ecef(geod1, false).unwrap();
 
         assert_abs_diff_eq!(ecef1[0], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef1[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef1[2], 0.0, epsilon = tol);
 
         let geod2 = na::Vector3::new(90.0, 0.0, 0.0);
-        let ecef2 = position_geodetic_to_ecef(geod2, true);
+        let ecef2 = position_geodetic_to_ecef(geod2, true).unwrap();
 
         assert_abs_diff_eq!(ecef2[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef2[1], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef2[2], 0.0, epsilon = tol);
 
         let geod3 = na::Vector3::new(0.0, 90.0, 0.0);
-        let ecef3 = position_geodetic_to_ecef(geod3, true);
+        let ecef3 = position_geodetic_to_ecef(geod3, true).unwrap();
 
         assert_abs_diff_eq!(ecef3[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef3[1], 0.0, epsilon = tol);
@@ -728,21 +960,21 @@ mod tests {
 
         // Test two-input format
         let geod = na::Vector3::new(0.0, 0.0, 0.0);
-        let ecef = position_geodetic_to_ecef(geod, false);
+        let ecef = position_geodetic_to_ecef(geod, false).unwrap();
 
         assert_abs_diff_eq!(ecef[0], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[2], 0.0, epsilon = tol);
 
         let geod = na::Vector3::new(90.0, 0.0, 0.0);
-        let ecef = position_geodetic_to_ecef(geod, true);
+        let ecef = position_geodetic_to_ecef(geod, true).unwrap();
 
         assert_abs_diff_eq!(ecef[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], WGS84_A, epsilon = tol);
         assert_abs_diff_eq!(ecef[2], 0.0, epsilon = tol);
 
         let geod = na::Vector3::new(0.0, 90.0, 0.0);
-        let ecef = position_geodetic_to_ecef(geod, true);
+        let ecef = position_geodetic_to_ecef(geod, true).unwrap();
 
         assert_abs_diff_eq!(ecef[0], 0.0, epsilon = tol);
         assert_abs_diff_eq!(ecef[1], 0.0, epsilon = tol);
@@ -767,20 +999,14 @@ mod tests {
 
         // Random point circularity
         let geod = na::Vector3::new(77.875000, 20.975200, 0.000000);
-        let ecef = position_geodetic_to_ecef(geod, true);
+        let ecef = position_geodetic_to_ecef(geod, true).unwrap();
         let geodd = position_ecef_to_geodetic(ecef, true);
         assert_abs_diff_eq!(geod[0], geodd[0], epsilon = tol);
         assert_abs_diff_eq!(geod[1], geodd[1], epsilon = tol);
         assert_abs_diff_eq!(geod[2], geodd[2], epsilon = tol);
 
-        let result = std::panic::catch_unwind(|| {
-            position_geodetic_to_ecef(na::Vector3::new(0.0, 90.1, 0.0), true)
-        });
-        assert!(result.is_err());
+        assert!(position_geodetic_to_ecef(na::Vector3::new(0.0, 90.1, 0.0), true).is_err());
 
-        let result = std::panic::catch_unwind(|| {
-            position_geodetic_to_ecef(na::Vector3::new(0.0, -90.1, 0.0), true)
-        });
-        assert!(result.is_err());
+        assert!(position_geodetic_to_ecef(na::Vector3::new(0.0, -90.1, 0.0), true).is_err());
     }
 }

@@ -1,6 +1,8 @@
 use nalgebra as na;
+use nalgebra::{Vector3, Vector6};
 use rsofa;
 
+use crate::constants;
 use crate::constants::MJD_ZERO;
 use crate::eop;
 use crate::time::{Epoch, TimeSystem};
@@ -234,12 +236,217 @@ pub fn rotation_ecef_to_eci(epc: Epoch) -> na::Matrix3<f64> {
     rotation_eci_to_ecef(epc).transpose()
 }
 
+/// Transforms a Cartesian Earth-inertial position into the
+/// equivalent Cartesian Earth-fixed position.
+///
+/// The transformation is accomplished using the IAU 2006/2000A, CIO-based
+/// theory using classical angles. The method as described in section 5.5 of
+/// the SOFA C transformation cookbook.
+///
+/// # Arguments
+/// - `epc`: Epoch instant for computation of the transformation
+/// - `x_eci`: Cartesian Earth-inertial position. Units: (*m*)
+///
+/// # Returns
+/// - `x_ecef`: Cartesian Earth-fixed position. Units: (*m*)
+///
+/// # Example
+/// ```rust
+/// use rastro::eop::{set_global_eop_from_default_standard, EOPExtrapolation, EOPType};
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::orbits::perigee_velocity;
+/// use rastro::time::{Epoch, TimeSystem};
+/// use rastro::frames::*;
+///
+/// // Quick EOP initialization
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
+///
+/// let epc = Epoch::from_datetime(2007, 4, 5, 12, 0, 0.0, 0.0, TimeSystem::UTC);
+///
+/// // Create Cartesian state
+/// let x_cart = vector3_from_array([R_EARTH, 0.0, 0.0]);
+///
+/// // Convert to ECEF state
+/// let x_ecef = position_eci_to_ecef(epc, x_cart);
+/// ```
+pub fn position_eci_to_ecef(epc: Epoch, x: Vector3<f64>) -> Vector3<f64> {
+    rotation_eci_to_ecef(epc) * x
+}
+
+/// Transforms a Cartesian Earth-fixed position into the
+/// equivalent Cartesian Earth-inertial position.
+///
+/// The transformation is accomplished using the IAU 2006/2000A, CIO-based
+/// theory using classical angles. The method as described in section 5.5 of
+/// the SOFA C transformation cookbook.
+///
+/// # Arguments
+/// - `epc`: Epoch instant for computation of the transformation
+/// - `x_ecef`: Cartesian Earth-fixed position. Units: (*m*)
+///
+/// # Returns
+/// - `x_eci`: Cartesian Earth-inertial position. Units: (*m*)
+///
+/// # Example
+/// ```rust
+/// use rastro::eop::{set_global_eop_from_default_standard, EOPExtrapolation, EOPType};
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector3_from_array;
+/// use rastro::orbits::perigee_velocity;
+/// use rastro::time::{Epoch, TimeSystem};
+/// use rastro::frames::*;
+///
+/// // Quick EOP initialization
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
+///
+/// let epc = Epoch::from_datetime(2007, 4, 5, 12, 0, 0.0, 0.0, TimeSystem::UTC);
+///
+/// // Create Cartesian state
+/// let x_ecef = vector3_from_array([R_EARTH, 0.0, 0.0]);
+///
+/// // Convert to ECEF state
+/// let x_eci = position_ecef_to_eci(epc, x_ecef);
+/// ```
+pub fn position_ecef_to_eci(epc: Epoch, x: Vector3<f64>) -> Vector3<f64> {
+    rotation_ecef_to_eci(epc) * x
+}
+
+/// Transforms a Cartesian Earth inertial state (position and velocity) into the
+/// equivalent Cartesian Earth-fixed state.
+///
+/// The transformation is accomplished using the IAU 2006/2000A, CIO-based
+/// theory using classical angles. The method as described in section 5.5 of
+/// the SOFA C transformation cookbook.
+///
+/// # Arguments
+/// - `epc`: Epoch instant for computation of the transformation
+/// - `x_eci`: Cartesian Earth inertial state (position, velocity). Units: (*m*; *m/s*)
+///
+/// # Returns
+/// - `x_ecef`: Cartesian Earth-fixed state (position, velocity). Units: (*m*; *m/s*)
+///
+/// # Example
+/// ```rust
+/// use rastro::eop::{set_global_eop_from_default_standard, EOPExtrapolation, EOPType};
+/// use rastro::utils::vector6_from_array;
+/// use rastro::constants::R_EARTH;
+/// use rastro::orbits::perigee_velocity;
+/// use rastro::time::{Epoch, TimeSystem};
+/// use rastro::frames::*;
+///
+/// // Quick EOP initialization
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
+///
+/// let epc = Epoch::from_datetime(2007, 4, 5, 12, 0, 0.0, 0.0, TimeSystem::UTC);
+///
+/// // Create Cartesian state
+/// let x_cart = vector6_from_array([R_EARTH + 500e3, 0.0, 0.0, 0.0, perigee_velocity(R_EARTH + 500e3, 0.0), 0.0]);
+///
+/// // Convert to ECEF state
+/// let x_ecef = state_eci_to_ecef(epc, x_cart);
+/// ```
+pub fn state_eci_to_ecef(epc: Epoch, x_eci: na::Vector6<f64>) -> na::Vector6<f64> {
+    // Compute Sequential Transformation Matrices
+    let bpn = bias_precession_nutation(epc);
+    let r = earth_rotation(epc);
+    let pm = polar_motion(epc);
+
+    // Create Earth's Angular Rotation Vector
+    let omega_vec = Vector3::new(0.0, 0.0, constants::OMEGA_EARTH);
+
+    let r_eci = x_eci.fixed_rows::<3>(0);
+    let v_eci = x_eci.fixed_rows::<3>(3);
+
+    let p: Vector3<f64> = Vector3::from(pm * r * bpn * r_eci);
+    let v: Vector3<f64> = pm * (r * bpn * v_eci - omega_vec.cross(&(r * bpn * r_eci)));
+
+    Vector6::new(p[0], p[1], p[2], v[0], v[1], v[2])
+}
+
+/// Transforms a Cartesian Earth-fixed state (position and velocity) into the
+/// equivalent Cartesian Earth-inertial state.
+///
+/// The transformation is accomplished using the IAU 2006/2000A, CIO-based
+/// theory using classical angles. The method as described in section 5.5 of
+/// the SOFA C transformation cookbook.
+///
+/// # Arguments
+/// - `epc`: Epoch instant for computation of the transformation
+/// - `x_ecef`: Cartesian Earth-fixed state (position, velocity). Units: (*m*; *m/s*)
+///
+/// # Returns
+/// - `x_eci`: Cartesian Earth inertial state (position, velocity). Units: (*m*; *m/s*)
+///
+/// # Example
+/// ```rust
+/// use rastro::eop::{set_global_eop_from_default_standard, EOPExtrapolation, EOPType};
+/// use rastro::constants::R_EARTH;
+/// use rastro::utils::vector6_from_array;
+/// use rastro::orbits::perigee_velocity;
+/// use rastro::time::{Epoch, TimeSystem};
+/// use rastro::frames::*;
+///
+/// // Quick EOP initialization
+/// set_global_eop_from_default_standard(EOPExtrapolation::Hold, true, EOPType::StandardBulletinA).unwrap();
+///
+/// let epc = Epoch::from_datetime(2007, 4, 5, 12, 0, 0.0, 0.0, TimeSystem::UTC);
+///
+/// // Create Cartesian inertial state
+/// let x_cart = vector6_from_array([R_EARTH + 500e3, 0.0, 0.0, 0.0, perigee_velocity(R_EARTH + 500e3, 0.0), 0.0]);
+///
+/// // Convert to ECEF state
+/// let x_ecef = state_eci_to_ecef(epc, x_cart);
+///
+/// // Convert ECEF state back to inertial state
+/// let x_eci = state_ecef_to_eci(epc, x_ecef);
+/// ```
+pub fn state_ecef_to_eci(epc: Epoch, x_ecef: na::Vector6<f64>) -> na::Vector6<f64> {
+    // Compute Sequential Transformation Matrices
+    let bpn = bias_precession_nutation(epc);
+    let r = earth_rotation(epc);
+    let pm = polar_motion(epc);
+
+    // Create Earth's Angular Rotation Vector
+    let omega_vec = Vector3::new(0.0, 0.0, constants::OMEGA_EARTH);
+
+    let r_ecef = x_ecef.fixed_rows::<3>(0);
+    let v_ecef = x_ecef.fixed_rows::<3>(3);
+
+    let p: Vector3<f64> = Vector3::from((pm * r * bpn).transpose() * r_ecef);
+    let v: Vector3<f64> = (r * bpn).transpose()
+        * (pm.transpose() * v_ecef + omega_vec.cross(&(pm.transpose() * r_ecef)));
+
+    Vector6::new(p[0], p[1], p[2], v[0], v[1], v[2])
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::constants::AS2RAD;
+    use crate::constants::{AS2RAD, R_EARTH};
+    use crate::coordinates::state_osculating_to_cartesian;
     use crate::eop::*;
     use crate::frames::*;
+    use crate::utils::vector6_from_array;
     use approx::assert_abs_diff_eq;
+    use std::env;
+    use std::path::Path;
+
+    fn set_global_test_eop() {
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let filepath = Path::new(&manifest_dir)
+            .join("test_assets")
+            .join("iau2000A_c04_14.txt");
+
+        let eop_extrapolation = EOPExtrapolation::Hold;
+        let eop_interpolation = true;
+
+        set_global_eop_from_c04_file(
+            filepath.to_str().unwrap(),
+            eop_extrapolation,
+            eop_interpolation,
+        )
+        .unwrap();
+    }
 
     #[allow(non_snake_case)]
     fn set_test_static_eop() {
@@ -374,5 +581,63 @@ mod tests {
         assert_abs_diff_eq!(r[(2, 0)], -0.000703163482198, epsilon = tol);
         assert_abs_diff_eq!(r[(2, 1)], 0.000118545366625, epsilon = tol);
         assert_abs_diff_eq!(r[(2, 2)], 0.999999745754024, epsilon = tol);
+    }
+
+    #[test]
+    fn test_position_eci_to_ecef() {
+        set_global_test_eop();
+        let epc = Epoch::from_datetime(2022, 4, 5, 0, 0, 0.0, 0.0, TimeSystem::UTC);
+
+        let p_eci = Vector3::new(R_EARTH + 500e3, 0.0, 0.0);
+
+        let p_ecef = position_eci_to_ecef(epc, p_eci);
+
+        assert_ne!(p_eci[0], p_ecef[0]);
+        assert_ne!(p_eci[1], p_ecef[1]);
+        assert_ne!(p_eci[2], p_ecef[2]);
+    }
+
+    #[test]
+    fn test_position_ecef_to_eci() {
+        set_global_test_eop();
+        let epc = Epoch::from_datetime(2022, 4, 5, 0, 0, 0.0, 0.0, TimeSystem::UTC);
+
+        let p_ecef = Vector3::new(R_EARTH + 500e3, 0.0, 0.0);
+
+        let p_eci = position_ecef_to_eci(epc, p_ecef);
+
+        assert_ne!(p_eci[0], p_ecef[0]);
+        assert_ne!(p_eci[1], p_ecef[1]);
+        assert_ne!(p_eci[2], p_ecef[2]);
+    }
+
+    #[test]
+    fn test_state_eci_to_ecef_circular() {
+        set_global_test_eop();
+        let epc = Epoch::from_datetime(2022, 4, 5, 0, 0, 0.0, 0.0, TimeSystem::UTC);
+
+        let oe = vector6_from_array([R_EARTH + 500e3, 1e-3, 97.8, 75.0, 25.0, 45.0]);
+        let eci = state_osculating_to_cartesian(oe, true);
+
+        // Perform circular transformations
+        let ecef = state_eci_to_ecef(epc, eci);
+        let eci2 = state_ecef_to_eci(epc, ecef);
+        let ecef2 = state_eci_to_ecef(epc, eci2);
+
+        let tol = 1e-6;
+        // Check equivalence of ECI coordinates
+        assert_abs_diff_eq!(eci2[0], eci[0], epsilon = tol);
+        assert_abs_diff_eq!(eci2[1], eci[1], epsilon = tol);
+        assert_abs_diff_eq!(eci2[2], eci[2], epsilon = tol);
+        assert_abs_diff_eq!(eci2[3], eci[3], epsilon = tol);
+        assert_abs_diff_eq!(eci2[4], eci[4], epsilon = tol);
+        assert_abs_diff_eq!(eci2[5], eci[5], epsilon = tol);
+        // Check equivalence of ECEF coordinates
+        assert_abs_diff_eq!(ecef2[0], ecef[0], epsilon = tol);
+        assert_abs_diff_eq!(ecef2[1], ecef[1], epsilon = tol);
+        assert_abs_diff_eq!(ecef2[2], ecef[2], epsilon = tol);
+        assert_abs_diff_eq!(ecef2[3], ecef[3], epsilon = tol);
+        assert_abs_diff_eq!(ecef2[4], ecef[4], epsilon = tol);
+        assert_abs_diff_eq!(ecef2[5], ecef[5], epsilon = tol);
     }
 }
