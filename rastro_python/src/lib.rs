@@ -1109,38 +1109,6 @@ unsafe fn rotation_ecef_to_eci<'py>(py: Python<'py>, epc: &Epoch) -> &'py PyArra
     matrix_to_numpy!(py, mat, 3, 3, f64)
 }
 
-/////////////////////
-// Transformations //
-/////////////////////
-
-#[pyfunction]
-#[pyo3(text_signature = "(x_oe, as_degrees)")]
-unsafe fn state_osculating_to_cartesian<'py>(
-    py: Python<'py>,
-    x_oe: &'py PyArray<f64, Ix1>,
-    as_degrees: bool,
-) -> &'py PyArray<f64, Ix1> {
-    let vec =
-        transformations::state_osculating_to_cartesian(numpy_to_vector!(x_oe, 6, f64), as_degrees);
-
-    vector_to_numpy!(py, vec, 6, f64)
-}
-
-#[pyfunction]
-#[pyo3(text_signature = "(x_cart, as_degrees)")]
-unsafe fn state_cartesian_to_osculating<'py>(
-    py: Python<'py>,
-    x_cart: &'py PyArray<f64, Ix1>,
-    as_degrees: bool,
-) -> &'py PyArray<f64, Ix1> {
-    let vec = transformations::state_cartesian_to_osculating(
-        numpy_to_vector!(x_cart, 6, f64),
-        as_degrees,
-    );
-
-    vector_to_numpy!(py, vec, 6, f64)
-}
-
 #[pyfunction]
 #[pyo3(text_signature = "(epc, x)")]
 unsafe fn position_eci_to_ecef<'py>(
@@ -1148,7 +1116,7 @@ unsafe fn position_eci_to_ecef<'py>(
     epc: &Epoch,
     x: &'py PyArray<f64, Ix1>,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec = transformations::position_eci_to_ecef(epc.obj, numpy_to_vector!(x, 3, f64));
+    let vec = coordinates::position_eci_to_ecef(epc.obj, numpy_to_vector!(x, 3, f64));
 
     vector_to_numpy!(py, vec, 3, f64)
 }
@@ -1160,7 +1128,7 @@ unsafe fn position_ecef_to_eci<'py>(
     epc: &Epoch,
     x: &'py PyArray<f64, Ix1>,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec = transformations::position_ecef_to_eci(epc.obj, numpy_to_vector!(x, 3, f64));
+    let vec = coordinates::position_ecef_to_eci(epc.obj, numpy_to_vector!(x, 3, f64));
 
     vector_to_numpy!(py, vec, 3, f64)
 }
@@ -1172,7 +1140,7 @@ unsafe fn state_eci_to_ecef<'py>(
     epc: &Epoch,
     x_eci: &'py PyArray<f64, Ix1>,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec = transformations::state_eci_to_ecef(epc.obj, numpy_to_vector!(x_eci, 6, f64));
+    let vec = coordinates::state_eci_to_ecef(epc.obj, numpy_to_vector!(x_eci, 6, f64));
 
     vector_to_numpy!(py, vec, 6, f64)
 }
@@ -1184,7 +1152,37 @@ unsafe fn state_ecef_to_eci<'py>(
     epc: &Epoch,
     x_ecef: &'py PyArray<f64, Ix1>,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec = transformations::state_ecef_to_eci(epc.obj, numpy_to_vector!(x_ecef, 6, f64));
+    let vec = coordinates::state_ecef_to_eci(epc.obj, numpy_to_vector!(x_ecef, 6, f64));
+
+    vector_to_numpy!(py, vec, 6, f64)
+}
+
+/////////////////
+// Coordinates //
+/////////////////
+
+#[pyfunction]
+#[pyo3(text_signature = "(x_oe, as_degrees)")]
+unsafe fn state_osculating_to_cartesian<'py>(
+    py: Python<'py>,
+    x_oe: &'py PyArray<f64, Ix1>,
+    as_degrees: bool,
+) -> &'py PyArray<f64, Ix1> {
+    let vec =
+        coordinates::state_osculating_to_cartesian(numpy_to_vector!(x_oe, 6, f64), as_degrees);
+
+    vector_to_numpy!(py, vec, 6, f64)
+}
+
+#[pyfunction]
+#[pyo3(text_signature = "(x_cart, as_degrees)")]
+unsafe fn state_cartesian_to_osculating<'py>(
+    py: Python<'py>,
+    x_cart: &'py PyArray<f64, Ix1>,
+    as_degrees: bool,
+) -> &'py PyArray<f64, Ix1> {
+    let vec =
+        coordinates::state_cartesian_to_osculating(numpy_to_vector!(x_cart, 6, f64), as_degrees);
 
     vector_to_numpy!(py, vec, 6, f64)
 }
@@ -1197,7 +1195,7 @@ unsafe fn position_geocentric_to_ecef<'py>(
     as_degrees: bool,
 ) -> &'py PyArray<f64, Ix1> {
     let vec =
-        transformations::position_geocentric_to_ecef(numpy_to_vector!(x_geoc, 3, f64), as_degrees);
+        coordinates::position_geocentric_to_ecef(numpy_to_vector!(x_geoc, 3, f64), as_degrees);
 
     vector_to_numpy!(py, vec, 3, f64)
 }
@@ -1210,7 +1208,7 @@ unsafe fn position_ecef_to_geocentric<'py>(
     as_degrees: bool,
 ) -> &'py PyArray<f64, Ix1> {
     let vec =
-        transformations::position_ecef_to_geocentric(numpy_to_vector!(x_ecef, 3, f64), as_degrees);
+        coordinates::position_ecef_to_geocentric(numpy_to_vector!(x_ecef, 3, f64), as_degrees);
 
     vector_to_numpy!(py, vec, 3, f64)
 }
@@ -1222,8 +1220,7 @@ unsafe fn position_geodetic_to_ecef<'py>(
     x_geod: &'py PyArray<f64, Ix1>,
     as_degrees: bool,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec =
-        transformations::position_geodetic_to_ecef(numpy_to_vector!(x_geod, 3, f64), as_degrees);
+    let vec = coordinates::position_geodetic_to_ecef(numpy_to_vector!(x_geod, 3, f64), as_degrees);
 
     vector_to_numpy!(py, vec, 3, f64)
 }
@@ -1235,24 +1232,10 @@ unsafe fn position_ecef_to_geodetic<'py>(
     x_ecef: &'py PyArray<f64, Ix1>,
     as_degrees: bool,
 ) -> &'py PyArray<f64, Ix1> {
-    let vec =
-        transformations::position_ecef_to_geodetic(numpy_to_vector!(x_ecef, 3, f64), as_degrees);
+    let vec = coordinates::position_ecef_to_geodetic(numpy_to_vector!(x_ecef, 3, f64), as_degrees);
 
     vector_to_numpy!(py, vec, 3, f64)
 }
-
-// fn position_enz_to_ecef<'py>(py: Python<'py>, x_enz: &'py PyArray<f64, Ix1>, as_degrees: bool) -> &'py PyArray<f64, Ix1> {}
-// fn position_ecef_to_enz<'py>(py: Python<'py>, x_ecef: &'py PyArray<f64, Ix1>, as_degrees: bool) -> &'py PyArray<f64, Ix1> {}
-// fn state_enz_to_ecef<'py>(py: Python<'py>, x_enz: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
-// fn state_ecef_to_enz<'py>(py: Python<'py>, x_ecef: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
-// fn position_sez_to_ecef<'py>(py: Python<'py>, x_sez: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
-// fn position_ecef_to_sez<'py>(py: Python<'py>, x_ecef: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
-// fn state_sez_to_ecef<'py>(py: Python<'py>, x_sez: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
-// fn state_ecef_to_sez<'py>(py: Python<'py>, x_ecef: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
-// fn position_enz_to_azel<'py>(py: Python<'py>, x_enz: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
-// fn state_enz_to_azel<'py>(py: Python<'py>, x_enz: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
-// fn position_sez_to_azel<'py>(py: Python<'py>, x_sez: Vector3<f64>, as_degrees: bool) -> Vector3<f64> {}
-// fn state_sez_to_azel<'py>(py: Python<'py>, x_sez: Vector6<f64>, as_degrees: bool) -> Vector6<f64> {}
 
 //////////////
 //  Orbits  //
@@ -1642,14 +1625,14 @@ pub fn module(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(polar_motion, module)?)?;
     module.add_function(wrap_pyfunction!(rotation_eci_to_ecef, module)?)?;
     module.add_function(wrap_pyfunction!(rotation_ecef_to_eci, module)?)?;
-
-    // Transformations
-    module.add_function(wrap_pyfunction!(state_osculating_to_cartesian, module)?)?;
-    module.add_function(wrap_pyfunction!(state_cartesian_to_osculating, module)?)?;
     module.add_function(wrap_pyfunction!(position_eci_to_ecef, module)?)?;
     module.add_function(wrap_pyfunction!(position_ecef_to_eci, module)?)?;
     module.add_function(wrap_pyfunction!(state_eci_to_ecef, module)?)?;
     module.add_function(wrap_pyfunction!(state_ecef_to_eci, module)?)?;
+
+    // Coordinates
+    module.add_function(wrap_pyfunction!(state_osculating_to_cartesian, module)?)?;
+    module.add_function(wrap_pyfunction!(state_cartesian_to_osculating, module)?)?;
     module.add_function(wrap_pyfunction!(position_geocentric_to_ecef, module)?)?;
     module.add_function(wrap_pyfunction!(position_ecef_to_geocentric, module)?)?;
     module.add_function(wrap_pyfunction!(position_geodetic_to_ecef, module)?)?;

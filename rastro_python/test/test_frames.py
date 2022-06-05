@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 import rastro
 from pytest import approx
@@ -82,3 +83,52 @@ def test_ecef_to_eci(static_eop):
     assert r[2, 0] == approx(-0.000703163482198, abs=tol)
     assert r[2, 1] == approx(+0.000118545366625, abs=tol)
     assert r[2, 2] == approx(+0.999999745754024, abs=tol)
+
+def test_position_eci_to_ecef(eop):
+    epc = rastro.Epoch.from_datetime(2022, 4, 5, 0, 0, 0.0, 0.0, "UTC")
+
+    p_eci = np.array([rastro.R_EARTH + 500e3, 0.0, 0.0])
+
+    p_ecef = rastro.position_eci_to_ecef(epc, p_eci)
+
+    assert p_eci[0] != p_ecef[0]
+    assert p_eci[1] != p_ecef[1]
+    assert p_eci[2] != p_ecef[2]
+
+def test_position_ecef_to_eci(eop):
+    epc = rastro.Epoch.from_datetime(2022, 4, 5, 0, 0, 0.0, 0.0, "UTC")
+
+    p_ecef = np.array([rastro.R_EARTH + 500e3, 0.0, 0.0])
+
+    p_eci = rastro.position_ecef_to_eci(epc, p_ecef)
+
+    assert p_eci[0] != p_ecef[0]
+    assert p_eci[1] != p_ecef[1]
+    assert p_eci[2] != p_ecef[2]
+
+def test_state_eci_to_ecef_circular(eop):
+    epc = rastro.Epoch.from_datetime(2022, 4, 5, 0, 0, 0.0, 0.0, "UTC")
+
+    oe = np.array([rastro.R_EARTH + 500e3, 1e-3, 97.8, 75.0, 25.0, 45.0])
+    eci = rastro.state_osculating_to_cartesian(oe, True)
+
+    # Perform circular transformations
+    ecef = rastro.state_eci_to_ecef(epc, eci)
+    eci2 = rastro.state_ecef_to_eci(epc, ecef)
+    ecef2 = rastro.state_eci_to_ecef(epc, eci2)
+
+    tol = 1e-6
+    # Check equivalence of ECI coordinates
+    assert eci2[0] == approx(eci[0], abs=tol)
+    assert eci2[1] == approx(eci[1], abs=tol)
+    assert eci2[2] == approx(eci[2], abs=tol)
+    assert eci2[3] == approx(eci[3], abs=tol)
+    assert eci2[4] == approx(eci[4], abs=tol)
+    assert eci2[5] == approx(eci[5], abs=tol)
+    # Check equivalence of ECEF coordinates
+    assert ecef2[0] == approx(ecef[0], abs=tol)
+    assert ecef2[1] == approx(ecef[1], abs=tol)
+    assert ecef2[2] == approx(ecef[2], abs=tol)
+    assert ecef2[3] == approx(ecef[3], abs=tol)
+    assert ecef2[4] == approx(ecef[4], abs=tol)
+    assert ecef2[5] == approx(ecef[5], abs=tol)
