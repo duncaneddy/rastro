@@ -694,11 +694,11 @@ pub fn position_enz_to_azel(x_enz: Vector3<f64>, as_degrees: bool) -> Vector3<f6
     let rho = x_enz.norm();
 
     // Elevation
-    let el = ((x_enz[0].powi(2) + x_enz[1].powi(2)).sqrt()).atan2(x_enz[2]);
+    let el = x_enz[2].atan2((x_enz[0].powi(2) + x_enz[1].powi(2)).sqrt());
 
     // Azimuth
     let az = if el != PI / 2.0 {
-        let azt = x_enz[1].atan2(x_enz[0]);
+        let azt = x_enz[0].atan2(x_enz[1]);
 
         if azt >= 0.0 {
             azt
@@ -740,11 +740,11 @@ pub fn position_sez_to_azel(x_sez: Vector3<f64>, as_degrees: bool) -> Vector3<f6
     let rho = x_sez.norm();
 
     // Elevation
-    let el = ((x_sez[0].powi(2) + x_sez[1].powi(2)).sqrt()).atan2(x_sez[2]);
+    let el = x_sez[2].atan2((x_sez[0].powi(2) + x_sez[1].powi(2)).sqrt());
 
     // Azimuth
     let az = if el != PI / 2.0 {
-        let azt = (-x_sez[0]).atan2(x_sez[1]);
+        let azt = (x_sez[1]).atan2(-x_sez[0]);
 
         if azt >= 0.0 {
             azt
@@ -1191,19 +1191,19 @@ mod tests {
         let x_sta = Vector3::new(0.0, 0.0, 0.0);
         let rot1 = rotation_ellipsoid_to_sez(x_sta, true);
 
-        // ECEF input X - [1, 0, 0] - Expected output is ENZ Z-dir
+        // ECEF input X - [1, 0, 0] - Expected output is SEZ Z-dir
         assert_abs_diff_eq!(rot1[(0, 0)], 0.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(1, 0)], 0.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(2, 0)], 1.0, epsilon = tol);
 
-        // ECEF input Y - [0, 1, 0] - Expected output is ENZ E-dir
-        assert_abs_diff_eq!(rot1[(0, 1)], 1.0, epsilon = tol);
-        assert_abs_diff_eq!(rot1[(1, 1)], 0.0, epsilon = tol);
+        // ECEF input Y - [0, 1, 0] - Expected output is SEZ E-dir
+        assert_abs_diff_eq!(rot1[(0, 1)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 1)], 1.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(2, 1)], 0.0, epsilon = tol);
 
-        // ECEF input Z - [0, 0, 1] - Expected output is ENZ N-dir
-        assert_abs_diff_eq!(rot1[(0, 2)], 0.0, epsilon = tol);
-        assert_abs_diff_eq!(rot1[(1, 2)], 1.0, epsilon = tol);
+        // ECEF input Z - [0, 0, 1] - Expected output is SEZ -S-dir
+        assert_abs_diff_eq!(rot1[(0, 2)], -1.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 2)], 0.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(2, 2)], 0.0, epsilon = tol);
 
         assert_abs_diff_eq!(rot1.determinant(), 1.0, epsilon = tol);
@@ -1212,19 +1212,19 @@ mod tests {
         let x_sta = Vector3::new(90.0, 0.0, 0.0);
         let rot1 = rotation_ellipsoid_to_sez(x_sta, true);
 
-        // ECEF input X - [1, 0, 0] - Expected output is ENZ -E-dir
-        assert_abs_diff_eq!(rot1[(0, 0)], -1.0, epsilon = tol);
-        assert_abs_diff_eq!(rot1[(1, 0)], 0.0, epsilon = tol);
+        // ECEF input X - [1, 0, 0] - Expected output is SEZ -E-dir
+        assert_abs_diff_eq!(rot1[(0, 0)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 0)], -1.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(2, 0)], 0.0, epsilon = tol);
 
-        // ECEF input Y - [0, 1, 0] - Expected output is ENZ Z-dir
+        // ECEF input Y - [0, 1, 0] - Expected output is SEZ Z-dir
         assert_abs_diff_eq!(rot1[(0, 1)], 0.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(1, 1)], 0.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(2, 1)], 1.0, epsilon = tol);
 
-        // ECEF input Z - [0, 0, 1] - Expected output is ENZ N-dir
-        assert_abs_diff_eq!(rot1[(0, 2)], 0.0, epsilon = tol);
-        assert_abs_diff_eq!(rot1[(1, 2)], 1.0, epsilon = tol);
+        // ECEF input Z - [0, 0, 1] - Expected output is SEZ -S-dir
+        assert_abs_diff_eq!(rot1[(0, 2)], -1.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 2)], 0.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(2, 2)], 0.0, epsilon = tol);
 
         assert_abs_diff_eq!(rot1.determinant(), 1.0, epsilon = tol);
@@ -1233,17 +1233,17 @@ mod tests {
         let x_sta = Vector3::new(00.0, 90.0, 0.0);
         let rot1 = rotation_ellipsoid_to_sez(x_sta, true);
 
-        // ECEF input X - [1, 0, 0] - Expected output is ENZ -N-dir
-        assert_abs_diff_eq!(rot1[(0, 0)], 0.0, epsilon = tol);
-        assert_abs_diff_eq!(rot1[(1, 0)], -1.0, epsilon = tol);
+        // ECEF input X - [1, 0, 0] - Expected output is SEZ S-dir
+        assert_abs_diff_eq!(rot1[(0, 0)], 1.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 0)], 0.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(2, 0)], 0.0, epsilon = tol);
 
-        // ECEF input Y - [0, 1, 0] - Expected output is ENZ E-dir
-        assert_abs_diff_eq!(rot1[(0, 1)], 1.0, epsilon = tol);
-        assert_abs_diff_eq!(rot1[(1, 1)], 0.0, epsilon = tol);
+        // ECEF input Y - [0, 1, 0] - Expected output is SEZ E-dir
+        assert_abs_diff_eq!(rot1[(0, 1)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 1)], 1.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(2, 1)], 0.0, epsilon = tol);
 
-        // ECEF input Z - [0, 0, 1] - Expected output is ENZ Z-dir
+        // ECEF input Z - [0, 0, 1] - Expected output is SEZ Z-dir
         assert_abs_diff_eq!(rot1[(0, 2)], 0.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(1, 2)], 0.0, epsilon = tol);
         assert_abs_diff_eq!(rot1[(2, 2)], 1.0, epsilon = tol);
@@ -1352,5 +1352,79 @@ mod tests {
         assert_abs_diff_eq!(r_ecef[0], R_EARTH + 100.0, epsilon = tol);
         assert_abs_diff_eq!(r_ecef[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(r_ecef[2], 0.0, epsilon = tol);
+    }
+
+    #[test]
+    fn test_position_enz_to_azel() {
+        let tol = f64::EPSILON;
+
+        // Directly above
+        let r_enz = Vector3::new(0.0, 0.0, 100.0);
+        let x_azel = position_enz_to_azel(r_enz, true);
+
+        assert_abs_diff_eq!(x_azel[0], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[1], 90.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[2], 100.0, epsilon = tol);
+
+        // North
+        let r_enz = Vector3::new(0.0, 100.0, 0.0);
+        let x_azel = position_enz_to_azel(r_enz, true);
+
+        assert_abs_diff_eq!(x_azel[0], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[1], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[2], 100.0, epsilon = tol);
+
+        // East
+        let r_enz = Vector3::new(100.0, 0.0, 0.0);
+        let x_azel = position_enz_to_azel(r_enz, true);
+
+        assert_abs_diff_eq!(x_azel[0], 90.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[1], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[2], 100.0, epsilon = tol);
+
+        // North-West
+        let r_enz = Vector3::new(-100.0, 100.0, 0.0);
+        let x_azel = position_enz_to_azel(r_enz, true);
+
+        assert_abs_diff_eq!(x_azel[0], 315.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[1], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[2], 100.0 * 2.0_f64.sqrt(), epsilon = tol);
+    }
+
+    #[test]
+    fn test_position_sez_to_azel() {
+        let tol = f64::EPSILON;
+
+        // Directly above
+        let r_sez = Vector3::new(0.0, 0.0, 100.0);
+        let x_azel = position_sez_to_azel(r_sez, true);
+
+        assert_abs_diff_eq!(x_azel[0], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[1], 90.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[2], 100.0, epsilon = tol);
+
+        // North
+        let r_sez = Vector3::new(-100.0, 0.0, 0.0);
+        let x_azel = position_sez_to_azel(r_sez, true);
+
+        assert_abs_diff_eq!(x_azel[0], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[1], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[2], 100.0, epsilon = tol);
+
+        // East
+        let r_sez = Vector3::new(0.0, 100.0, 0.0);
+        let x_azel = position_sez_to_azel(r_sez, true);
+
+        assert_abs_diff_eq!(x_azel[0], 90.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[1], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[2], 100.0, epsilon = tol);
+
+        // North-West
+        let r_sez = Vector3::new(-100.0, -100.0, 0.0);
+        let x_azel = position_sez_to_azel(r_sez, true);
+
+        assert_abs_diff_eq!(x_azel[0], 315.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[1], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(x_azel[2], 100.0 * 2.0_f64.sqrt(), epsilon = tol);
     }
 }
