@@ -1181,4 +1181,176 @@ mod tests {
         assert_abs_diff_eq!(r_ecef[1], 0.0, epsilon = tol);
         assert_abs_diff_eq!(r_ecef[2], 0.0, epsilon = tol);
     }
+
+    #[test]
+    fn test_rotation_ellipsoid_to_sez() {
+        // Epsilon Tolerance
+        let tol = f64::EPSILON;
+
+        // Test aligned coordinates
+        let x_sta = Vector3::new(0.0, 0.0, 0.0);
+        let rot1 = rotation_ellipsoid_to_sez(x_sta, true);
+
+        // ECEF input X - [1, 0, 0] - Expected output is ENZ Z-dir
+        assert_abs_diff_eq!(rot1[(0, 0)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 0)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(2, 0)], 1.0, epsilon = tol);
+
+        // ECEF input Y - [0, 1, 0] - Expected output is ENZ E-dir
+        assert_abs_diff_eq!(rot1[(0, 1)], 1.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 1)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(2, 1)], 0.0, epsilon = tol);
+
+        // ECEF input Z - [0, 0, 1] - Expected output is ENZ N-dir
+        assert_abs_diff_eq!(rot1[(0, 2)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 2)], 1.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(2, 2)], 0.0, epsilon = tol);
+
+        assert_abs_diff_eq!(rot1.determinant(), 1.0, epsilon = tol);
+
+        // Test 90 degree longitude
+        let x_sta = Vector3::new(90.0, 0.0, 0.0);
+        let rot1 = rotation_ellipsoid_to_sez(x_sta, true);
+
+        // ECEF input X - [1, 0, 0] - Expected output is ENZ -E-dir
+        assert_abs_diff_eq!(rot1[(0, 0)], -1.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 0)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(2, 0)], 0.0, epsilon = tol);
+
+        // ECEF input Y - [0, 1, 0] - Expected output is ENZ Z-dir
+        assert_abs_diff_eq!(rot1[(0, 1)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 1)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(2, 1)], 1.0, epsilon = tol);
+
+        // ECEF input Z - [0, 0, 1] - Expected output is ENZ N-dir
+        assert_abs_diff_eq!(rot1[(0, 2)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 2)], 1.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(2, 2)], 0.0, epsilon = tol);
+
+        assert_abs_diff_eq!(rot1.determinant(), 1.0, epsilon = tol);
+
+        // Test 90 degree latitude
+        let x_sta = Vector3::new(00.0, 90.0, 0.0);
+        let rot1 = rotation_ellipsoid_to_sez(x_sta, true);
+
+        // ECEF input X - [1, 0, 0] - Expected output is ENZ -N-dir
+        assert_abs_diff_eq!(rot1[(0, 0)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 0)], -1.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(2, 0)], 0.0, epsilon = tol);
+
+        // ECEF input Y - [0, 1, 0] - Expected output is ENZ E-dir
+        assert_abs_diff_eq!(rot1[(0, 1)], 1.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 1)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(2, 1)], 0.0, epsilon = tol);
+
+        // ECEF input Z - [0, 0, 1] - Expected output is ENZ Z-dir
+        assert_abs_diff_eq!(rot1[(0, 2)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(1, 2)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(rot1[(2, 2)], 1.0, epsilon = tol);
+
+        assert_abs_diff_eq!(rot1.determinant(), 1.0, epsilon = tol);
+    }
+
+    #[test]
+    fn test_rotation_sez_to_ellipsoid() {
+        let tol = f64::EPSILON;
+
+        let x_sta = Vector3::new(42.1, 53.9, 100.0);
+        let rot = rotation_ellipsoid_to_sez(x_sta, true);
+        let rot_t = rotation_sez_to_ellipsoid(x_sta, true);
+
+        let r = rot * rot_t;
+
+        // Confirm identity
+        assert_abs_diff_eq!(r[(0, 0)], 1.0, epsilon = tol);
+        assert_abs_diff_eq!(r[(0, 1)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r[(0, 2)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r[(1, 0)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r[(1, 1)], 1.0, epsilon = tol);
+        assert_abs_diff_eq!(r[(1, 2)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r[(2, 0)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r[(2, 1)], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r[(2, 2)], 1.0, epsilon = tol);
+    }
+
+    #[test]
+    fn test_relative_position_ecef_to_sez() {
+        let tol = f64::EPSILON;
+
+        // 100m Overhead
+        let x_sta = Vector3::new(R_EARTH, 0.0, 0.0);
+        let r_ecef = Vector3::new(R_EARTH + 100.0, 0.0, 0.0);
+
+        let r_sez =
+            relative_position_ecef_to_sez(x_sta, r_ecef, EllipsoidalConversionType::Geocentric);
+
+        assert_abs_diff_eq!(r_sez[0], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r_sez[1], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r_sez[2], 100.0, epsilon = tol);
+
+        // 100m North
+        let x_sta = Vector3::new(R_EARTH, 0.0, 0.0);
+        let r_ecef = Vector3::new(R_EARTH, 0.0, 100.0);
+
+        let r_sez =
+            relative_position_ecef_to_sez(x_sta, r_ecef, EllipsoidalConversionType::Geocentric);
+
+        assert_abs_diff_eq!(r_sez[0], -100.0, epsilon = tol);
+        assert_abs_diff_eq!(r_sez[1], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r_sez[2], 0.0, epsilon = tol);
+
+        // 100m East
+        let x_sta = Vector3::new(R_EARTH, 0.0, 0.0);
+        let r_ecef = Vector3::new(R_EARTH, 100.0, 0.0);
+
+        let r_sez =
+            relative_position_ecef_to_sez(x_sta, r_ecef, EllipsoidalConversionType::Geocentric);
+
+        assert_abs_diff_eq!(r_sez[0], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r_sez[1], 100.0, epsilon = tol);
+        assert_abs_diff_eq!(r_sez[2], 0.0, epsilon = tol);
+
+        // Confirm higher latitude and longitude is (+E, +N, -Z)
+        let x_sta = Vector3::new(R_EARTH, 0.0, 0.0);
+        let x_geoc = Vector3::new(0.5, 0.5, 0.0);
+        let r_ecef = position_geocentric_to_ecef(x_geoc, true).unwrap();
+
+        let r_sez_geoc =
+            relative_position_ecef_to_sez(x_sta, r_ecef, EllipsoidalConversionType::Geocentric);
+
+        assert!(r_sez_geoc[0] < 0.0);
+        assert!(r_sez_geoc[1] > 0.0);
+        assert!(r_sez_geoc[2] < 0.0);
+
+        // Confirm difference in geocentric and geodetic conversions
+        let x_sta = Vector3::new(R_EARTH, 0.0, 0.0);
+        let x_geod = Vector3::new(0.5, 0.5, 0.0);
+        let r_ecef = position_geodetic_to_ecef(x_geod, true).unwrap();
+
+        let r_sez_geod =
+            relative_position_ecef_to_sez(x_sta, r_ecef, EllipsoidalConversionType::Geodetic);
+
+        assert!(r_sez_geod[0] < 0.0);
+        assert!(r_sez_geod[1] > 0.0);
+        assert!(r_sez_geod[2] < 0.0);
+
+        for i in 0..3 {
+            assert_ne!(r_sez_geoc[i], r_sez_geod[i]);
+        }
+    }
+
+    #[test]
+    fn test_relative_position_sez_to_ecef() {
+        let tol = f64::EPSILON;
+
+        let x_sta = Vector3::new(R_EARTH, 0.0, 0.0);
+        let r_sez = Vector3::new(0.0, 0.0, 100.0);
+
+        let r_ecef =
+            relative_position_sez_to_ecef(x_sta, r_sez, EllipsoidalConversionType::Geodetic);
+
+        assert_abs_diff_eq!(r_ecef[0], R_EARTH + 100.0, epsilon = tol);
+        assert_abs_diff_eq!(r_ecef[1], 0.0, epsilon = tol);
+        assert_abs_diff_eq!(r_ecef[2], 0.0, epsilon = tol);
+    }
 }
