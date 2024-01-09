@@ -9,24 +9,19 @@ on:
 
 jobs:
   test-rust:
-    runs-on: ubuntu-latest
-    env:
-      CARGO_TERM_COLOR: always
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust
-        run: rustup update nightly # TODO: Remove usage of nightly when BTreeMap cursor is stabilized
-      - run: rustup default nightly
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
-      - name: Generate code coverage
-        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - uses: actions-rs/toolchain@v1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: lcov.info
-          fail_ci_if_error: true
+          toolchain: stable
+      - name: Change to nightly (TODO - Remove when BTreeMap cursor is stablilized)
+        run: rustup default nightly
+      - run: cargo test
   test-python:
     runs-on: ${{ matrix.os }}
     needs: test-rust
