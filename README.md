@@ -32,6 +32,15 @@ Source Code: https://github.com/duncaneddy/rastro
 
 ----
 
+> [!WARNING] **Deprecation Notice**
+>
+> As of November 7, 2025 RAstro is being deprecated in favor of [brahe](https://github.com/duncaneddy/brahe).
+>
+> A complete rewrite of brahe was completed as of the v0.1.2 release which uses the Rust-Python approach of RAstro 
+> with more extensive functionality, testing, and documentation.
+>
+> The project will be archived to remain available for reference, but no further development will occur.
+
 # RAstro
 RAstro is a modern satellite dynamics library for research and engineering
 applications. It is designed to be high performance, easy to learn, and
