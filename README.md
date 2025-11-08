@@ -32,7 +32,9 @@ Source Code: https://github.com/duncaneddy/rastro
 
 ----
 
-> [!WARNING] **Deprecation Notice**
+> [!WARNING]
+>
+> **Deprecation Notice**
 >
 > As of November 7, 2025 RAstro is being deprecated in favor of [brahe](https://github.com/duncaneddy/brahe).
 >
